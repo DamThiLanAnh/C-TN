@@ -1,0 +1,35 @@
+<div class="login-container">
+  <div class="login-card">
+    <h1 class="title">Welcome to</h1>
+    <h2 class="sub-title">StaffManagement</h2>
+
+    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+      <input
+        type="text"
+        placeholder="Username"
+        class="input"
+        formControlName="username"
+        [class.error]="isInvalid('username')"
+      />
+      <div class="error-text" *ngIf="isInvalid('username')">
+        * Username is required
+      </div>
+
+      <input
+        type="password"
+        placeholder="Password"
+        class="input"
+        formControlName="password"
+        [class.error]="isInvalid('password')"
+      />
+      <div class="error-text" *ngIf="isInvalid('password')">
+        * Password is required
+      </div>
+      <div class="error-text" *ngIf="loginError">
+        * Incorrect username/password
+      </div>
+
+      <button type="submit" class="btn">Continue</button>
+    </form>
+  </div>
+</div>

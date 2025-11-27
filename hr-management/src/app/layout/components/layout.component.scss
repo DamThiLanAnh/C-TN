@@ -1,11 +1,40 @@
 .app-layout {
   height: 100vh;
+  overflow: hidden;
+
+  ::ng-deep {
+    > .ant-layout {
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      overflow: hidden;
+    }
+  }
 }
 
 .inner-content {
-  margin: 16px;
-  padding: 16px;
-  background: #fff;
-  min-height: 360px;
-  border-radius: 6px;
+  margin: 20px;
+  padding: 24px;
+  background: #f0f2f5;
+  min-height: calc(100vh - 104px);
+  overflow-y: auto;
+  border-radius: 8px;
+
+  &::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 4px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 4px;
+
+    &:hover {
+      background: #555;
+    }
+  }
 }

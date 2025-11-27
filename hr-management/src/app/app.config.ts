@@ -13,5 +13,5 @@ import { provideHttpClient } from '@angular/common/http';
 registerLocaleData(vi);
 
 export const appConfig: ApplicationConfig = {
-  providers: [provideRouter(routes), provideAnimationsAsync(), provideNzIcons(), provideNzI18n(vi_VN), importProvidersFrom(FormsModule), provideAnimationsAsync(), provideHttpClient()]
+  providers: [provideRouter(routes), provideAnimationsAsync(), provideNzIcons(), provideNzI18n(vi_VN), importProvidersFrom(FormsModule), provideHttpClient()]
 };
