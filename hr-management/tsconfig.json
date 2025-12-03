@@ -15,11 +15,14 @@
     "experimentalDecorators": true,
     "moduleResolution": "node",
     "importHelpers": true,
-    "target": "ES2022",
-    "module": "ES2022",
+
+    // ⭐⭐ Quan trọng: Angular 12 chỉ hỗ trợ ES2015/ES2020
+    "target": "es2015",
+    "module": "es2020",
+
     "useDefineForClassFields": false,
     "lib": [
-      "ES2022",
+      "es2018",
       "dom"
     ]
   },

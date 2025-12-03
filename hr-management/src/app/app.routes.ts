@@ -2,23 +2,22 @@ import { Routes } from '@angular/router';
 import { LayoutComponent } from './layout/components/layout.component';
 
 export const routes: Routes = [
-  { path: '', pathMatch: 'full', redirectTo: '/welcome' },
   {
     path: '',
     component: LayoutComponent,
     children: [
       {
         path: 'welcome',
-        loadChildren: () => import('./modules/welcome/welcome.routes').then(m => m.WELCOME_ROUTES)
+        loadChildren: () => import('./modules/welcome/welcome.module').then(m => m.WelcomeModule)
       },
       {
-        path: 'staffs',
-        loadChildren: () => import('./modules/staffs/staffs.routing').then(m => m.STAFFS_ROUTES)
+        path: 'staff-calendar',
+        loadChildren: () => import('./modules/staffs/staffs.module').then(m => m.StaffsModule)
       }
     ]
-  },
-  {
+  }
+  , {
     path: 'login',
-    loadChildren: () => import('./modules/login/login-routing.module').then(m => m.LOGIN_ROUTES)
+    loadChildren: () => import('./modules/login/login.module').then(m => m.LoginModule)
   }
 ];

@@ -15,14 +15,12 @@
       "prefix": "app",
       "architect": {
         "build": {
-          "builder": "@angular-devkit/build-angular:application",
+          "builder": "@angular-devkit/build-angular:browser",
           "options": {
             "outputPath": "dist/hr-management",
             "index": "src/index.html",
-            "browser": "src/main.ts",
-            "polyfills": [
-              "zone.js"
-            ],
+            "main": "src/main.ts",
+            "polyfills": "src/polyfills.ts",
             "tsConfig": "tsconfig.app.json",
             "inlineStyleLanguage": "scss",
             "assets": [
@@ -43,6 +41,20 @@
           },
           "configurations": {
             "production": {
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.prod.ts"
+                }
+              ],
+              "optimization": true,
+              "outputHashing": "all",
+              "sourceMap": false,
+              "extractCss": true,
+              "namedChunks": false,
+              "extractLicenses": true,
+              "vendorChunk": false,
+              "buildOptimizer": true,
               "budgets": [
                 {
                   "type": "initial",
@@ -54,35 +66,41 @@
                   "maximumWarning": "2kb",
                   "maximumError": "4kb"
                 }
-              ],
-              "outputHashing": "all"
+              ]
             },
             "development": {
               "optimization": false,
               "extractLicenses": false,
-              "sourceMap": true
+              "sourceMap": true,
+              "vendorChunk": true
             }
           },
           "defaultConfiguration": "production"
         },
+
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
+          "options": {
+            "browserTarget": "hr-management:build"
+          },
           "configurations": {
             "production": {
-              "buildTarget": "hr-management:build:production"
+              "browserTarget": "hr-management:build:production"
             },
             "development": {
-              "buildTarget": "hr-management:build:development"
+              "browserTarget": "hr-management:build:development"
             }
           },
           "defaultConfiguration": "development"
         },
+
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "buildTarget": "hr-management:build"
+            "browserTarget": "hr-management:build"
           }
         },
+
         "test": {
           "builder": "@angular-devkit/build-angular:karma",
           "options": {
@@ -106,6 +124,7 @@
       }
     }
   },
+
   "cli": {
     "analytics": "663cebdb-e35c-4050-b0f6-343cd85114b5"
   }

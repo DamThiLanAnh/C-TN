@@ -4,7 +4,10 @@
   nzWidth="256px"
   nzBreakpoint="md"
   [(nzCollapsed)]="isCollapsed"
-  [nzTrigger]="null">
+  [nzTrigger]="null"
+  [nzTheme]="'light'"
+  style="background-color: #ffffff;"
+>
 
   <div class="sidebar-logo">
     <a routerLink="/welcome">
@@ -17,7 +20,7 @@
     </a>
   </div>
 
-  <ul nz-menu nzTheme="dark" nzMode="inline" [nzInlineCollapsed]="isCollapsed">
+  <ul nz-menu nzTheme="light" nzMode="inline" [nzInlineCollapsed]="isCollapsed">
     <li nz-submenu nzTitle="Trang chủ" nzIcon="home">
       <ul>
         <li nz-menu-item nzMatchRouter>
@@ -29,7 +32,7 @@
     <li nz-submenu nzTitle="Quản lý nhân viên" nzIcon="user">
       <ul>
         <li nz-menu-item nzMatchRouter>
-          <a routerLink="/staffs/staff-calendar" routerLinkActive="active">Lịch chấm công</a>
+          <a routerLink="/staff-calendar" routerLinkActive="active">Lịch chấm công</a>
         </li>
       </ul>
     </li>

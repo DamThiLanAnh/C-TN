@@ -4,13 +4,8 @@ import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { Router } from '@angular/router';
 
 @Component({
-  standalone: true,
   selector: 'app-login',
   templateUrl: './login.component.html',
-  imports: [
-    CommonModule,
-    ReactiveFormsModule
-  ],
   styleUrls: ['./login.component.scss']
 })
 export class LoginComponent implements OnInit {

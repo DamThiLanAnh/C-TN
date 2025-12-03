@@ -4,8 +4,6 @@ import { NzIconModule } from 'ng-zorro-antd/icon';
 
 @Component({
   selector: 'app-header',
-  standalone: true,
-  imports: [NzLayoutModule, NzIconModule],
   templateUrl: './header.component.html',
   styleUrls: ['./header.component.scss'],
 })

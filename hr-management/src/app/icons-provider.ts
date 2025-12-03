@@ -1,19 +1,19 @@
 import { EnvironmentProviders, importProvidersFrom } from '@angular/core';
 import {
+  CalendarOutline,
+  CheckCircleOutline,
+  DashboardOutline,
+  DownloadOutline,
+  FileTextOutline,
+  FormOutline,
+  HomeOutline,
+  LeftOutline,
   MenuFoldOutline,
   MenuUnfoldOutline,
-  FormOutline,
-  DashboardOutline,
-  HomeOutline,
-  UserOutline,
-  DownloadOutline,
-  LeftOutline,
   RightOutline,
-  CheckCircleOutline,
-  CalendarOutline,
+  SettingOutline,
   TeamOutline,
-  FileTextOutline,
-  SettingOutline
+  UserOutline
 } from '@ant-design/icons-angular/icons';
 import { NzIconModule } from 'ng-zorro-antd/icon';
 
