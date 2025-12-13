@@ -1,0 +1,201 @@
+<div>
+  <nz-layout [class.ant-layout-has-sider]="!isHorizontal">
+    <ng-container [ngTemplateOutlet]="isHorizontal ? menuHorTpl : menuVerTpl"></ng-container>
+    <nz-content>
+      <ng-container *ngTemplateOutlet="contentTpl"></ng-container>
+    </nz-content>
+  </nz-layout>
+</div>
+<ng-template #menuHorTpl>
+  <nz-header class="shadow-sm bg-white">
+    <div class="d-flex justify-content-between vss-ui-menu-header">
+      <div class="logo" style="text-align: center; ">
+        <img [src]="logoUrl" alt="" width="32px">
+      </div>
+      <div class="d-flex vss-ui-nav-menu">
+        <ng-container *ngTemplateOutlet="extendStartTpl"></ng-container>
+        <ng-container [ngTemplateOutlet]="menuTpl"></ng-container>
+        <ng-container *ngTemplateOutlet="extendEndTpl"></ng-container>
+        <div class="notify bg-transparent" nz-popover [nzPopoverContent]="popoverInfoUserTpl || InfoUser"
+             nzPopoverTrigger="click"
+             nzPopoverPlacement="rightBottom" [(nzPopoverVisible)]="nzPopoverUserVisible">
+          <nz-avatar *ngIf="currentUser?.fullName || currentUser?.userName"
+                     [nzSize]="sizeAvatar"
+                     [nzText]="(currentUser?.fullName || currentUser?.userName || 'A').substring(0, numberOfAvatar)"
+                     style="background-color:#1890ff;"></nz-avatar>
+          <nz-avatar *ngIf="!currentUser?.fullName && !currentUser?.userName" nzIcon="user" nzSrc=""></nz-avatar>
+        </div>
+      </div>
+    </div>
+  </nz-header>
+</ng-template>
+<ng-template #menuVerTpl>
+  <div class="d-flex flex-column menu-container position-relative"
+       [class]="{
+      'align-items-center': !isCollapsed
+    }"
+  >
+    <nz-sider [nzWidth]="280" nzCollapsible
+              [(nzCollapsed)]="isCollapsed" [nzTrigger]="null" class="bg-white  "
+              [class]="isCollapsed ? 'menu-sidebar-fix' : 'menu-sidebar'">
+      <div class="h-100 d-flex justify-content-between flex-column vss-ui-menu-slider">
+        <div>
+          <div class="logo" style="text-align: center;" [class]="{'w-100': isCollapsed}">
+            <img class="mt-2" [src]="isCollapsed ? './assets/icons/HR-Logo.svg' : './assets/icons/Logo-App.svg'" alt="logo">
+          </div>
+          <ng-container *ngTemplateOutlet="extendStartTpl"></ng-container>
+          <ng-container [ngTemplateOutlet]="menuTpl"
+                        [ngTemplateOutletContext]="{collapsed: isCollapsed}"></ng-container>
+        </div>
+
+      </div>
+    </nz-sider>
+    <div
+      class="trigger open"
+      (click)="changeExpand()"
+      [class]="{
+        close: isCollapsed,
+        open: !isCollapsed
+      }"
+    >
+      <img src="./assets/icons/ArrowRight.png"/>
+    </div>
+    <div class="footer-container d-flex align-items-center"
+         [class]="{
+        close: isCollapsed,
+        open: !isCollapsed
+      }"
+    >
+<!--      <img src="./assets/images/logo-vt.png" class="me-2"/>-->
+      <div class="text-center">
+        Copyright 2025<b> CDTN Group 2</b>. <br>
+        All Rights Reserved.
+      </div>
+    </div>
+  </div>
+</ng-template>
+<ng-template #menuTpl let-collapsed="collapsed">
+  <div class="wrapper cs-menu cs-menu-custom">
+    <ng-container *ngTemplateOutlet="loopMenu; context: { $implicit: _listMenus }"></ng-container>
+    <ng-template #loopMenu let-menuToShows>
+      <ul nz-menu nzTheme="light" class="h-100" [nzMode]="isHorizontal? 'horizontal':'inline'"
+          [nzInlineCollapsed]="collapsed">
+        <ng-container *ngTemplateOutlet="menuTpl; context: { $implicit: menuToShows }"></ng-container>
+        <ng-template #menuTpl let-menus>
+          <ng-container *ngFor="let menu of menus">
+            <ng-container *ngIf="isAuthorized(menu.roles)">
+              <li *ngIf="!menu.children?.length" nz-menu-item [nzDisabled]="menu?.disabled"
+                  (click)="clickItem(menu)"
+                  [nz-tooltip]="collapsed ? menu.title || '' : ''" nzTooltipPlacement="right"
+                  [nzPaddingLeft]="!collapsed && !isHorizontal ? (menu.level + 1) * 24 : 0"
+                  [nzSelected]="isSelected(menu)"
+              >
+                <ng-container [ngTemplateOutlet]="titleMenu"></ng-container>
+              </li>
+              <li *ngIf="menu?.children?.length" nz-submenu
+                  [class.active-sub-menu]="isSelected(menu)"
+                  [nzTitle]="titleSubMenu"
+                  [nzPaddingLeft]="!collapsed && !isHorizontal ? (menu.level + 1) * 24 : 0"
+                  [nzDisabled]="menu.disabled"
+              >
+                <ul class="w-100">
+                  <ng-container *ngTemplateOutlet="menuTpl; context: { $implicit: menu.children }"></ng-container>
+                </ul>
+              </li>
+              <ng-template #titleMenu>
+                <ng-container *ngIf="!isHorizontal">
+                  <!-- htmlIcon: SVG string -->
+                  <span *ngIf="menu.htmlIcon" [innerHTML]="getSafeHtml(menu.htmlIcon)" class="menu-icon-html"></span>
+
+                  <!-- FontAwesome icon -->
+                  <i *ngIf="!menu.htmlIcon && menu.icon && isFontAwesome(menu.icon)"
+                     [class]="getFontAwesomeClass(menu.icon)"
+                     class="menu-icon-fa"></i>
+
+                  <!-- Image path icon -->
+                  <img *ngIf="!menu.htmlIcon && menu.icon && isImagePath(menu.icon)"
+                    [src]="menu.icon"
+                    height="24" width="24" alt="icon"
+                    class="menu-icon-img"
+                  >
+                </ng-container>
+                <span class="icon-title">{{ menu.title }}</span>
+              </ng-template>
+
+              <ng-template #titleSubMenu>
+                <ng-container *ngIf="!isHorizontal">
+                  <!-- htmlIcon: SVG string -->
+                  <span *ngIf="menu.htmlIcon" [innerHTML]="getSafeHtml(menu.htmlIcon)" class="menu-icon-html"></span>
+
+                  <!-- FontAwesome icon -->
+                  <i *ngIf="!menu.htmlIcon && menu.icon && isFontAwesome(menu.icon)"
+                     [class]="getFontAwesomeClass(menu.icon)"
+                     class="menu-icon-fa"></i>
+
+                  <!-- Image path icon -->
+                  <img *ngIf="!menu.htmlIcon && menu.icon && isImagePath(menu.icon)"
+                    [src]="menu.icon"
+                    height="24" width="24" alt="icon"
+                    class="menu-icon-img"
+                  >
+                </ng-container>
+                <span [ngStyle]="isCollapsed && menu.level === 0 ? { 'display': 'none' } : {}" class="icon-title">{{ menu.title }}</span>
+              </ng-template>
+            </ng-container>
+          </ng-container>
+        </ng-template>
+      </ul>
+    </ng-template>
+  </div>
+</ng-template>
+
+<ng-template #InfoUser>
+  <div class="info-user">
+    <div class="title">
+      <span>Thông tin tài khoản</span>
+      <div>
+        <a (click)="nzPopoverUserVisible = false">
+          <i nz-icon nzType="close" aria-hidden="true"></i>
+        </a>
+      </div>
+    </div>
+    <div class="border-bottom text-center">
+      <div class="bg-image">
+        <div class="avatar">
+          <img [src]="currentUser?.image" alt="User Avatar" class="ant-avatar ant-avatar-circle" style="width: 80px; height: 80px; border: 2px solid white; object-fit: cover;">
+          <button
+            nz-button
+            nzType="default"
+            class="ant-btn ant-btn-icon-only"
+          >
+            <!--            style="position: absolute;right: 0; width: 30px; height: 30px; border-radius: 50% !important; bottom: 8px; color: var(&#45;&#45;gray-14); border: 1px solid var(&#45;&#45;border-color-2); background: var(&#45;&#45;w);"-->
+            <i nz-icon
+               nzType="camera"
+               class="anticon"
+               style="font-size: 15px;margin: auto;">
+            </i>
+          </button>
+        </div>
+      </div>
+
+      <div class="text-center pt-5">
+        <h5 class="mt-3">{{ currentUser?.fullName }}</h5>
+<!--        <p class="text-info-user" *ngIf="currentUser?.email">{{ currentUser?.username }} - {{ currentUser?.email }}</p>-->
+<!--        <p class="text-info-user" *ngIf="!currentUser?.email">{{ currentUser?.username }}</p>-->
+      </div>
+    </div>
+    <div class="row p-4 info">
+      <div class="col-4 text-info-user">
+        <p>Giới tính</p>
+      </div>
+      <div class="col-8">
+        <p>{{ currentUser?.gender ? 'Nam' : 'Nữ' }}</p>
+      </div>
+    </div>
+    <div class="text-center p-4 pt-0">
+      <button nz-button nzType="primary" (click)="logout()" nzGhost type="button" class="btn-logout">
+        Đăng xuất
+      </button>
+    </div>
+  </div>
+</ng-template>

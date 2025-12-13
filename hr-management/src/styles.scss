@@ -1,5 +1,307 @@
 /* You can add global styles to this file, and also import other style files */
+:root {
+  --primary-color: #ee0033;
+  --primary-color-6: #f00;
+  --primary-color-1: #f12e58;
+  --primary-color-2: #f78ba2;
+  --primary-color-3: #ffe2e5;
+  --primary-color-4: #ff00000d;
+  --primary-color-5: #ee003359;
 
-html, body { height: 100%; }
-body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+  --gray: #363535;
+  --gray-1: #707070;
+  --gray-2: #999999;
+  --gray-3: #e6e6e6;
+  --gray-4: #f5f5f5;
+  --gray-5: #f1f1f1;
+  --gray-6: rgb(218, 216, 216);
+  --gray-7: #858585b5;
+  --gray-8: #f0f2f5;
+  --gray-9: #d3d1d1;
+  --gray-10: #b7a8a8;
+  --gray-11: #ebe6ff;
+  --gray-12: #ededed;
+  --gray-13: #fafafa;
+  --gray-14: #8b8888;
+  --gray-15: #adadad;
+  --gray-16: #f0f8ff6e;
+  --gray-17: #808080;
+  --gray-18: #eaecf0;
+  --gray-19: rgba(0, 0, 0, 0.075);
+  --gray-20: #dee2e6;
 
+  --w: white;
+  --b: black;
+
+  --blue: #0d6efd;
+  --blue-1: #2e90fa;
+  --blue-2: #1890ff;
+  --blue-3: #667085;
+  --blue-4: blue;
+  --blue-5: #0074f7;
+
+  --success-color: #147541;
+  --success-color-1: #00ce00;
+  --success-color-2: #2bd276;
+  --success-color-3: #00ce000d;
+
+  --dark: #00000029;
+  --dark-1: #192a3e;
+  --dark-2: #00000013;
+  --dark-3: #fde6eb69;
+  --dark-4: #dbdbdbe6;
+  --dark-5: #000000b8;
+  --dark-6: #00000059;
+  --dark-7: #00000033;
+  --dark-8: rgba(0, 0, 0, 0.2);
+  --dark-9: rgba(0, 0, 0, 0.14);
+  --dark-10: rgba(0, 0, 0, 0.12);
+
+  --alert-color: #ff861d;
+  --alert-color-1: #faad14;
+  --alert-color-2: #f3e95f;
+
+  --v-color: #5e26f8;
+
+  --main-bg: var(--gray-8);
+  --bg-color-1: var(--gray-11);
+  --border-color: var(--gray-9);
+  --border-color-1: var(--gray-3);
+  --border-color-2: var(--gray-15);
+  --status-active: var(--success-color-2);
+  --color-disable-btn: var(--gray-10);
+  --box-shadow-1: var(--dark-8);
+  --box-shadow-2: var(--dark-9);
+  --box-shadow-3: var(--dark-10);
+}
+
+// @import "./assets/styles/custom/custom"; // File không tồn tại - đã comment out
+#tabFix {
+  .ant-tabs-content-holder {
+    padding-top: 24px;
+    height: unset !important;
+    overflow: hidden !important;
+  }
+  .ant-tabs-content {
+    margin-top: 0 !important;
+  }
+  > nz-tabset > .ant-tabs-content-holder > .ant-tabs-content {
+    height: calc(100vh - 5rem) !important;
+  }
+}
+
+nz-content.ant-layout-content {
+  overflow: hidden;
+}
+.ant-menu-sub.ant-menu-inline {
+  padding-left: 30px;
+}
+.cs-menu .ant-menu-inline.ant-menu-root .ant-menu-item,
+.cs-menu .ant-menu-inline.ant-menu-root .ant-menu-submenu-title {
+  padding-left: 24px !important;
+}
+.project {
+  border-radius: 15px;
+  opacity: 0.7;
+  &.blue {
+    color: #0e58f7;
+    background: #0e58f7;
+    border-color: #0e58f7;
+    .gantt_task_progress {
+      background: #0e58f7;
+    }
+  }
+
+  &.orange {
+    color: #ffa100;
+    background: #ffa100;
+    border-color: #ffa100;
+    .gantt_task_progress {
+      background: #ffa100;
+    }
+  }
+
+  &.purple {
+    color: #eb2fca;
+    background: #eb2fca;
+    border-color: #eb2fca;
+    .gantt_task_progress {
+      background: #eb2fca;
+    }
+  }
+
+  &.violet {
+    color: #6830eb;
+    background: #6830eb;
+    border-color: #6830eb;
+    .gantt_task_progress {
+      background: #6830eb;
+    }
+  }
+
+  &.green {
+    color: #00ac7d;
+    background: #00ac7d;
+    border-color: #00ac7d;
+    .gantt_task_progress {
+      background: #00ac7d;
+    }
+  }
+
+  &.yellow {
+    color: #ffce00;
+    background: #ffce00;
+    border-color: #ffce00;
+    .gantt_task_progress {
+      background: #ffce00;
+    }
+  }
+}
+
+.item ::ng-deep vss-ui-select-box {
+  width: 10vw;
+}
+.fs-10 {
+  font-size: 10px;
+}
+.fs-12 {
+  font-size: 12px;
+}
+.fs-14 {
+  font-size: 14px;
+}
+.fs-16 {
+  font-size: 16px;
+}
+.fs-18 {
+  font-size: 18px;
+}
+.fs-20 {
+  font-size: 20px;
+}
+.fs-22 {
+  font-size: 22px;
+}
+.fs-24 {
+  font-size: 24px;
+}
+.fs-26 {
+  font-size: 26px;
+}
+.fs-30 {
+  font-size: 30px;
+}
+.fs-32 {
+  font-size: 32px;
+}
+.fs-36 {
+  font-size: 36px;
+}
+.fs-40 {
+  font-size: 40px;
+}
+.fs-50 {
+  font-size: 50px;
+}
+.fs-60 {
+  font-size: 60px;
+}
+.fw-400 {
+  font-weight: 400;
+}
+.fw-500 {
+  font-weight: 500;
+}
+.fw-600 {
+  font-weight: 600;
+}
+.fw-900 {
+  font-weight: 900;
+}
+.fx-11 {
+  font-size: 11px;
+}
+.fz-18 {
+  font-size: 18px;
+  font-weight: 500;
+}
+.fw-500 {
+  font-weight: 500;
+}
+.fz-16 {
+  font-size: 16px;
+}
+
+.ant-switch-checked {
+  background-color: var(--primary-color);
+}
+
+.ant-switch {
+  border-radius: 15px !important;
+}
+
+.ant-form-item .ant-input-textarea-show-count::after {
+  display: none !important;
+}
+
+.ant-picker-input > input[disabled] {
+  color: #000000b8;
+}
+
+.wrapper {
+  max-height: calc(100vh - 200px) !important;
+  overflow: auto;
+}
+
+.gantt_message_area {
+  display: none !important;
+}
+.ant-menu-inline.ant-menu-root .ant-menu-item > *,
+.ant-menu-inline.ant-menu-root .ant-menu-submenu-title > * {
+  white-space: nowrap;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--gray-3);
+}
+nz-tag {
+  //max-width: 100%;
+  //text-overflow: ellipsis;
+  display: flex !important;
+  align-items: center;
+  max-width: max-content;
+  span {
+    max-width: 100%;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+    display: block;
+  }
+}
+app-trainee, app-cost-training, app-employee-competency,
+app-employee-training, app-english-certificate,
+app-trainee-cost, app-trainee-effort,
+app-trainee-project, app-training-program,
+app-training-program-score {
+  .ant-table-thead > tr > th {
+    background: #ebedf3 !important;
+  }
+}
+
+.custom-modal-border .ant-modal-content {
+  border-radius: 12px;
+}
+
+//.ant-modal-content {
+//  border-radius: 12px;
+//}
+
+
+.tag-left >.d-flex.justify-content-center {
+  justify-content: flex-start !important;
+}
+
+.required::after {
+  content: '*';
+  color: var(--primary-color); // Sử dụng CSS variable thay vì SCSS variable
+  margin-left: 2px;
+}

@@ -4,7 +4,7 @@ import { NgModule } from '@angular/core';
 
 export const STAFFS_ROUTES: Routes = [
   {
-    path: 'staff-calendar',
+    path: '',
     component: StaffCalenderComponent
   }
 ];

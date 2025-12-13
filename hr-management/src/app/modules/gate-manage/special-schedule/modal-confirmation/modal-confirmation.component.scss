@@ -1,0 +1,88 @@
+:host ::ng-deep .ant-modal-content {
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+:host ::ng-deep .ant-form-item-control {
+  width: 100%;
+}
+  
+:host ::ng-deep .ant-modal-header {
+  padding: 16px 20px;
+  border-bottom: 2px solid #f0f0f0; 
+}
+  
+:host ::ng-deep .ant-modal-body {
+  padding: 20px;
+  border-bottom: 2px solid #f0f0f0; 
+  border-radius: 12px !important;
+}
+  
+:host ::ng-deep .ant-modal-footer {
+  padding: 16px 20px;
+  border-top: none; 
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px; 
+}  
+
+:host ::ng-deep .confirm-modal .ant-modal-title h5 {
+    font-size: 18px !important; 
+}
+
+.modal-icon {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  margin-bottom: 8px;
+  width: 48px;
+  height: 48px;
+}
+
+.close-circle {
+  font-size: 24px;
+  color: #e53935;
+  background: #FDE6EB;
+  padding: 12px;
+  border-radius: 28px;
+}
+
+.check-circle {
+  font-size: 24px;
+  color: #12B76A;
+  background: #ECFDF3;
+  padding: 12px;
+  border-radius: 28px;
+}
+
+.modal-title {
+  font-size: 18px;
+  font-weight: 700;
+  margin-bottom: 4px;
+  margin-top: 4px;
+}
+
+.modal-message {
+  color: #667085;
+  font-size: 14px;
+  font-weight: 400;
+  margin-bottom: 4px;
+}
+
+.modal-reason nz-form-item,
+.modal-reason nz-form-control,
+.modal-reason textarea[nz-input] {
+  width: 100%;
+  max-width: 100%;
+  min-width: 100%;
+  box-sizing: border-box;
+}
+
+textarea[nz-input] {
+  border-radius: 12px;
+  font-size: 16px;
+  padding: 12px;
+  min-height: 100px;
+  resize: vertical;
+}
+

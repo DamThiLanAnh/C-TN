@@ -1,0 +1,66 @@
+.change-theme-button {
+  position: fixed;
+  bottom: 4.5rem;
+  left: 0rem;
+  background: var(--w);
+  width: 3rem !important;
+  height: 3rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 50%;
+  font-size: 1.5rem;
+  // box-shadow: 0 0.1rem 0.6rem var(--dark-6) !important;
+  cursor: pointer;
+  z-index: 100;
+  border: none !important;
+}
+.change-theme-button:hover {
+  // box-shadow: 0 0.1rem 0.6rem var(--primary-color-5) !important;
+  color: var(--primary-color);
+}
+.avatar-container {
+  position: relative;
+  background: #ffe2e5;
+  color: #f90037;
+  padding: 5px;
+  border-radius: 100%;
+  min-width: 32px;
+  display: flex;
+  justify-content: center;
+  font-weight: 500;
+  line-height: 22px;
+}
+
+.ml-1 {
+  margin-left: 1rem;
+}
+::ng-deep .ant-btn.ant-btn-primary[disabled], .btn-primary[disabled] {
+  border-color: #d9d9d9 !important;
+  background: var(--gray-3) !important;
+  color: rgba(0, 0, 0, 0.85) !important;
+}
+
+.spin-custom{
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1000;
+  background: #a3a3a352;
+  width: 100%;
+  height: 100%;
+  display: flex;
+}
+::ng-deep {
+  .vss-ui-menu-html-icon {
+    margin-right: 5px;
+  }
+  .vss-ui-menu-html-icon+span {
+    margin-left: 10px;
+  }
+
+  .container-card {
+    height: calc(100vh - 88px);
+    overflow: auto;
+  }
+}

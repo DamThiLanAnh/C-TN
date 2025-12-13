@@ -1,0 +1,181 @@
+<vss-menu #menu [listMenus]="menus" [contentTpl]="contentTpl" [isCollapsed]="isCollapsed"
+          (onLogout)="logout()" xmlns=""
+          logoUrl="./assets/icons/logo-full.svg"
+
+          [username]="user" [popoverInfoUserTpl]="InfoUser"
+          *ngIf="user && menus?.length">
+</vss-menu>
+
+
+<ng-template #contentTpl>
+  <nz-layout class="vh-100">
+    <div class="content">
+      <nz-content>
+        <!-- Header với thông tin user ở góc phải -->
+        <div class="content-header d-flex justify-content-end" style="margin-top: 10px">
+          <ng-container [ngTemplateOutlet]="userInforWrapper"></ng-container>
+        </div>
+        <!-- Router outlet để hiển thị nội dung của các màn hình -->
+        <div class="content-body">
+          <router-outlet></router-outlet>
+        </div>
+      </nz-content>
+    </div>
+  </nz-layout>
+</ng-template>
+<ng-template #userInforWrapper>
+  <div class="d-flex align-items-center">
+    <div class="tab-header-container me-4 ms-2">
+      <div
+        nz-popover
+        [nzPopoverContent]="popoverNotification"
+        nzPopoverTrigger="click"
+        nzPopoverOverlayClassName="notify-modal"
+        [(nzPopoverVisible)]="nzPopoverVisible"
+        (nzPopoverVisibleChange)="popoverNotifyOnChangeShow($event)"
+        nzPopoverPlacement="bottomRight">
+        <nz-badge
+          [nzCount]="totalNewNotify"
+          [nzOverflowCount]="9"
+          class="notify-icon cursor-pointer">
+          <img src="/assets/icons/icon-bell.svg" alt="">
+        </nz-badge>
+      </div>
+    </div>
+    <div class="tab-header-container">
+      <div class="d-flex flex-row justify-content-between align-items-center">
+        <div class="pointer d-inline-flex align-items-center" nz-popover
+             [nzPopoverOverlayClassName]="'info-user-popup--wrapper'" [nzPopoverContent]="InfoUser"
+             nzPopoverTrigger="click" [nzPopoverPlacement]="'bottomRight'" nzPopoverPlacement="rightBottom"
+             [(nzPopoverVisible)]="nzPopoverUserVisible" nzPopoverOverlayClassName="info-user-popup">
+          <!-- vss-ui-avatar-text thay thế bằng nz-avatar -->
+          <nz-avatar *ngIf="user?.userName || 'user name' " [nzSize]="32"
+                     [nzText]="getUserInitials(user?.userName)"></nz-avatar>
+        </div>
+      </div>
+    </div>
+  </div>
+</ng-template>
+
+<ng-template #InfoUser>
+  <div class="info-user">
+    <div class="border-bottom d-flex flex-row" style="padding: 12px 16px">
+      <!-- vss-ui-avatar-text thay thế bằng nz-avatar -->
+      <nz-avatar *ngIf="user?.userName || 'user name'" [nzSize]="32"
+                 [nzText]="getUserInitials(user?.userName)"></nz-avatar>
+
+      <div class="d-flex flex-column name-container">
+        <p class="mb-0" style="font-weight: 600">{{ user?.userName }}</p>
+        <p class="mb-0 text-info-user">{{ user?.email }}</p>
+      </div>
+    </div>
+    <!--    <div class="info">-->
+    <!--      <div class="border-bottom d-flex">-->
+    <!--        <img src="/assets/icons/icon-building.png" alt="organization" />-->
+    <!--        <span>{{ user?.organization || "-" }}</span>-->
+    <!--      </div>-->
+    <!--      <div class="border-bottom d-flex">-->
+    <!--        <img src="/assets/icons/icon-card.png" alt="position" />-->
+    <!--        <span>{{ user?.position || "-" }}</span>-->
+    <!--      </div>-->
+    <!--      <div class="border-bottom d-flex">-->
+    <!--        <img-->
+    <!--          [src]="-->
+    <!--            user?.gender-->
+    <!--              ? '/assets/icons/icon-boy.svg'-->
+    <!--              : '/assets/icons/icon-girl.png'-->
+    <!--          "-->
+    <!--          alt="logout"-->
+    <!--        />-->
+    <!--        <span>{{ user?.gender ? "Nam" : "Nữ" }}</span>-->
+    <!--      </div>-->
+    <!--    </div>-->
+    <div class="border-bottom">
+      <img src="/assets/icons/key.svg" alt="organization"/>
+      <span class="cursor-pointer" (click)="handleChangePassword()">Đổi mật khẩu</span>
+    </div>
+    <div class="border-bottom">
+      <div (click)="logout()" class="bottom-logout d-flex align-items-center cursor-pointer">
+        <img src="/assets/icons/logout.png" alt="logout"/>
+        Thoát
+      </div>
+    </div>
+  </div>
+</ng-template>
+
+<ng-template #popoverNotification>
+  <div class="content-notify">
+    <nz-tabset [nzSelectedIndex]="indexSysNotifyActivate">
+      <nz-tab [nzTitle]="titleSys" *ngFor="let sys of sysNotification">
+        <ng-template #titleSys>
+          <div>
+            {{ sys.label }}
+            <nz-badge *ngIf="sys.totalNewNotify" [nzCount]="sys.totalNewNotify" [nzOverflowCount]="9"
+                      class="notify-icon">
+            </nz-badge>
+          </div>
+        </ng-template>
+      </nz-tab>
+    </nz-tabset>
+    <nz-tabset class="px-3" [(nzSelectedIndex)]="indexTabNotifyActive">
+      <!--      (nzSelectChange)="changeTabNotify($event)"-->
+
+      <nz-tab [nzTitle]="titleTab" *ngFor="let tab of tabs" class="bg-white">
+        <ng-template #titleTab>
+          <div>
+            {{ tab.name }}
+
+            <!--            <nz-badge [nzCount]="sysNotification[indexSysNotifyActivate][tab.textCount]" [nzOverflowCount]="999"-->
+            <!--                      class="notify-icon" [nzStyle]="-->
+            <!--                tab.textCount != 'totalNewNotify'-->
+            <!--                  ? {-->
+            <!--                      backgroundColor: '#fff',-->
+            <!--                      color: '#999',-->
+            <!--                      boxShadow: '0 0 0 1px #d9d9d9 inset'-->
+            <!--                    }-->
+            <!--                  : {}-->
+            <!--              ">-->
+            <!--            </nz-badge>-->
+          </div>
+        </ng-template>
+      </nz-tab>
+    </nz-tabset>
+    <div class="button-refresh">
+      <a [nz-tooltip]="'Đánh dấu tất cả là đã đọc'" (click)="updateReadAll()">
+        <span nz-icon nzType="read" nzTheme="outline" class="me-2"></span>
+      </a>
+      <a [nz-tooltip]="'Làm mới'" (click)="refreshNotify()">
+        <i nz-icon nzType="reload" aria-hidden="true"></i>
+      </a>
+    </div>
+    <div>
+      <cdk-virtual-scroll-viewport itemSize="100" class="virtual-scroll custom-scroll-bar" maxBufferPx="320"
+                                   minBufferPx="10">
+        <div *cdkVirtualFor="let item of dataNotify; let i = index" class="px-3 scroll-item">
+          <div class="d-flex align-items-center border-bottom" *ngIf="item" (click)="routerNotify(item)">
+            <div>
+              <nz-avatar nzIcon="setting" class="bg-gray text-warning"></nz-avatar>
+            </div>
+            <div class="content p-3 pe-0 flex-fill">
+              <div class="d-flex justify-content-between">
+                <div>
+                  <span class="fw-bolder me-2">DRP</span>
+                  <span class="time-noti">{{
+                      item.createdDate | date : "dd/MM/yyyy HH:mm:ss"
+                    }}</span>
+                </div>
+                <nz-badge [nzStatus]="!item.readNotify ? 'success' : 'default'"></nz-badge>
+              </div>
+              <p class="text-blue mb-0">{{ item.staffId }}</p>
+              <p class="mb-0">{{ item.title }}</p>
+              <p class="mb-0">{{ item.message }}</p>
+            </div>
+          </div>
+          <div *ngIf="!item" class="text-center">
+            <i nz-icon nzType="loading" nzIconfont="30" aria-hidden="true"></i>
+          </div>
+        </div>
+      </cdk-virtual-scroll-viewport>
+    </div>
+  </div>
+</ng-template>

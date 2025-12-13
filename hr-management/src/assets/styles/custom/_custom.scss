@@ -1,0 +1,31 @@
+.btn-notify-group {
+  .btn-notify-close, .btn-notify-confirm {
+    width: 10rem;
+    text-align: center;
+    justify-content: center;
+    span{
+      padding: 0 !important;
+    }
+  }
+}
+
+.full-height-table .ant-card-body {
+  height: calc(100vh - 6rem);
+}
+.icon {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+}
+.icon-import-white {
+  background: url("/assets/icons/import-white.svg") no-repeat center center;
+  background-size: contain;
+}
+.icon-download {
+  background: url("/assets/icons/download.svg") no-repeat center center;
+  background-size: contain;
+}
+.icon-download-black {
+  background: url("/assets/icons/icon-download.svg") no-repeat center center;
+  background-size: contain;
+}

@@ -10,6 +10,7 @@
         class="input"
         formControlName="username"
         [class.error]="isInvalid('username')"
+        [disabled]="isLoading"
       />
       <div class="error-text" *ngIf="isInvalid('username')">
         * Username is required
@@ -21,6 +22,7 @@
         class="input"
         formControlName="password"
         [class.error]="isInvalid('password')"
+        [disabled]="isLoading"
       />
       <div class="error-text" *ngIf="isInvalid('password')">
         * Password is required
@@ -29,7 +31,20 @@
         * Incorrect username/password
       </div>
 
-      <button type="submit" class="btn">Continue</button>
+      <button
+        type="submit"
+        class="btn"
+        [disabled]="isLoading || loginForm.invalid">
+        Continue
+      </button>
     </form>
+  </div>
+
+  <!-- Loading Overlay -->
+  <div class="loading-overlay" *ngIf="isLoading">
+    <div class="spinner-container">
+      <nz-spin nzSimple nzSize="large"></nz-spin>
+      <p class="loading-text">Đang đăng nhập...</p>
+    </div>
   </div>
 </div>

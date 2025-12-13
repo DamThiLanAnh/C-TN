@@ -1,0 +1,82 @@
+<div *nzModalTitle>
+    <div>Xem chi tiết lịch làm đặc thù</div>
+</div>
+<div class="detail-grid">
+    <div>
+        <div>
+            <b>Mã nhân viên</b>
+            <div>{{ item?.userName }}</div>
+        </div>
+        <div>
+            <b>Email</b>
+            <div>{{ item?.email }}</div>
+        </div>
+        <div>
+            <b>Loại</b>
+            <div>{{ item?.scheduleType }}</div>
+        </div>
+        <div>
+            <b>Từ ngày</b>
+            <div>{{ item?.beginDate | date:'dd/MM/yyyy' }}</div>
+        </div>
+        <div>
+            <b>Thời gian làm buổi sáng (Từ)</b>
+            <div>{{ item?.morningStart }}</div>
+        </div>
+        <div>
+            <b>Thời gian làm buổi chiều (Từ)</b>
+            <div>{{ item?.afternoonStart }}</div>
+        </div>
+    </div>
+    <div>
+        <div>
+            <b>Tên nhân viên</b>
+            <div>{{ item?.fullName }}</div>
+        </div>
+        <div>
+            <b>Phòng ban</b>
+            <div>{{ item?.organizationName }}</div>
+        </div>
+        <div>
+            <b>Trạng thái</b>
+            <nz-tag [nzColor]="'transparent'" [style.border-color]="getStatusOption(item.status).color"
+                style="border-radius: 16px">
+                <span class="d-inline-flex me-1">
+                    <svg height="8" width="8">
+                        <circle cx="4" cy="4" r="3" [attr.stroke]="getStatusOption(item.status).color"
+                            [attr.fill]="getStatusOption(item.status).color" />
+                    </svg>
+                </span>
+                <span [style.color]="getStatusOption(item.status).color">
+                    {{ getStatusOption(item.status).label }}
+                </span>
+            </nz-tag>
+        </div>
+        <div>
+            <b>Đến ngày</b>
+            <div>{{ item?.endDate | date:'dd/MM/yyyy' }}</div>
+        </div>
+        <div>
+            <b>Thời gian làm buổi sáng (Đến)</b>
+            <div>{{ item?.morningEnd }}</div>
+        </div>
+        <div>
+            <b>Thời gian làm buổi chiều (Đến)</b>
+            <div>{{ item?.afternoonEnd }}</div>
+        </div>
+    </div>
+</div>
+<div *ngIf="item?.status === 'REJECTED'">
+  <b>Lý do</b>
+  <div>{{ item?.rejectReason || 'Không có lý do' }}</div>
+</div>
+<div *nzModalFooter class="text-right">
+    <ng-container *ngIf="item?.status === 'PENDING'; else noApprove">
+        <button nz-button nzType="default" type="button" (click)="destroyModal()">Đóng</button>
+        <button nz-button nzGhost nzType="primary" type="button" (click)="reject()" *ngIf="canApprove">Từ chối</button>
+        <button nz-button nzType="primary" type="button" (click)="approve()" *ngIf="canApprove">Duyệt</button>
+    </ng-container>
+    <ng-template #noApprove>
+        <button nz-button nzType="primary" type="button" (click)="destroyModal()">Đóng</button>
+    </ng-template>
+</div>

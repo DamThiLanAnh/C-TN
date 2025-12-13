@@ -1,0 +1,25 @@
+<form nz-form [formGroup]="form" (ngSubmit)="submit()">
+  <div class="modal-icon">
+    <span nz-icon [nzType]="getButtonType()" [className]="getButtonType()"></span>
+  </div>
+  <div class="modal-title">
+    {{ title }}
+  </div>
+  <div class="modal-message" *ngIf="message">
+    {{ message }}
+  </div>
+  <div *ngIf="showReasonBox" class="modal-reason">
+    <nz-form-item>
+      <nz-form-label [nzSpan]="24" nzFor="reason" [nzRequired]="true">
+        {{ reasonLabel }}
+      </nz-form-label>
+      <nz-form-control [nzSpan]="24" nzErrorTip="Không được để trống">
+        <textarea nz-input formControlName="reason" rows="4" placeholder="Nhập dữ liệu"></textarea>
+      </nz-form-control>
+    </nz-form-item>
+  </div>
+</form>
+<div *nzModalFooter>
+  <button nz-button nzType="default" (click)="cancel()">Hủy</button>
+  <button nz-button nzType="primary" (click)="submit()">Xác nhận</button>
+</div>
