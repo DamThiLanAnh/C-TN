@@ -1,6 +1,7 @@
 .wrapper {
   max-height: calc(100vh - 150px);
-  overflow: auto;
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 
 .menu-icon-html {
@@ -58,6 +59,7 @@
     min-width: 56px !important;
     width: 56px !important;
     border-radius: 12px;
+    overflow-x: hidden;
   }
   .ant-menu-inline, .ant-menu-vertical, .ant-menu-vertical-left {
     border-right: none;
@@ -70,6 +72,7 @@
   }
   .menu-sidebar-fix {
     background-size: cover;
+    overflow-x: hidden;
   }
   .menu-sidebar {
     background-size: contain;

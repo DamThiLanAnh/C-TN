@@ -109,10 +109,84 @@ export class AuthService {
       console.log('Refresh token saved');
     }
 
-    if (response.user) {
-      localStorage.setItem('user', JSON.stringify(response.user));
-      console.log('User info saved');
+    // Save user info - either from response.user or construct from response
+    const userInfo = response.user || {
+      username: response['username'],
+      roles: response['roles'],
+      status: response['status'],
+      lastLogin: response['lastLogin']
+    };
+
+    if (userInfo) {
+      localStorage.setItem('user', JSON.stringify(userInfo));
+      console.log('User info saved:', userInfo);
     }
+  }
+
+  getUser(): any {
+    const userStr = localStorage.getItem('user');
+    return userStr ? JSON.parse(userStr) : null;
+  }
+
+  getUserRole(): string | null {
+    const user = this.getUser();
+    console.log('getUserRole - user object:', user);
+
+    if (user) {
+      // Check for role in different formats
+      if (user.role) {
+        console.log('Found role:', user.role);
+        return user.role;
+      }
+      if (user.roles && Array.isArray(user.roles) && user.roles.length > 0) {
+        console.log('Found roles array:', user.roles);
+        return user.roles[0];
+      }
+    }
+
+    // Fallback: decode token to get role
+    console.log('Falling back to token role detection');
+    return this.getRoleFromToken();
+  }
+
+  getRoleFromToken(): string | null {
+    const token = this.getToken();
+    if (!token) return null;
+
+    try {
+      // Decode JWT token (format: header.payload.signature)
+      const parts = token.split('.');
+      if (parts.length !== 3) return null;
+
+      const payload = JSON.parse(atob(parts[1]));
+
+      // Check for role in different formats
+      return payload.role ||
+             payload.roles?.[0] ||
+             payload.authorities?.[0]?.authority ||
+             payload.authority ||
+             null;
+    } catch (error) {
+      console.error('Error decoding token:', error);
+      return null;
+    }
+  }
+
+  isManager(): boolean {
+    const role = this.getUserRole();
+    console.log('isManager check - role:', role);
+
+    if (!role) {
+      console.log('isManager - no role found');
+      return false;
+    }
+
+    const isManagerRole = role === 'MANAGER' ||
+           role === 'ROLE_MANAGER' ||
+           role.toUpperCase().includes('MANAGER');
+
+    console.log('isManager result:', isManagerRole);
+    return isManagerRole;
   }
 }
 

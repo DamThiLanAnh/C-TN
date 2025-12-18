@@ -40,7 +40,7 @@
               [class]="isCollapsed ? 'menu-sidebar-fix' : 'menu-sidebar'">
       <div class="h-100 d-flex justify-content-between flex-column vss-ui-menu-slider">
         <div>
-          <div class="logo" style="text-align: center;" [class]="{'w-100': isCollapsed}">
+          <div class="logo" style="text-align: center;" [class]="{'w-100': isCollapsed, 'mb-4': isCollapsed}">
             <img class="mt-2" [src]="isCollapsed ? './assets/icons/HR-Logo.svg' : './assets/icons/Logo-App.svg'" alt="logo">
           </div>
           <ng-container *ngTemplateOutlet="extendStartTpl"></ng-container>

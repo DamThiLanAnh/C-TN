@@ -29,7 +29,7 @@ export const leaveManageColumns = (): StandardColumnModel[] => {
       fixedRight: false,
       attr: 'Thao tác',
       type: StandardColumnType.ACTION,
-      width: '80px',
+      width: '30px',
       isFilter: false,
       isSort: false,
       rulesAction: {
@@ -42,7 +42,7 @@ export const leaveManageColumns = (): StandardColumnModel[] => {
           icon: 'approve',
           label: 'Duyệt',
           html: IconHtml.ACCEPT,
-          rules: ['ROLE_ADMIN_SYSTEM', 'ROLE_ABSENCE_APPROVAL'],
+          rules: [],
           fieldCheckShow: 'isActiveAction',
         } as ActionConfig,
         {
@@ -50,7 +50,7 @@ export const leaveManageColumns = (): StandardColumnModel[] => {
           icon: 'reject',
           label: 'Từ chối',
           html: IconHtml.REJECT,
-          rules: ['ROLE_ADMIN_SYSTEM', 'ROLE_ABSENCE_APPROVAL'],
+          rules: [],
           fieldCheckShow: 'isActiveAction',
         } as ActionConfig,
       ],
@@ -79,24 +79,6 @@ export const leaveManageColumns = (): StandardColumnModel[] => {
       isFilter: true,
       isSort: true,
       filter: { type: StandardColumnType.INPUT },
-    },
-    {
-      id: 5,
-      name: 'absenceStatus',
-      fixedColumn: true,
-      fixedRight: false,
-      attr: 'Trạng thái',
-      type: StandardColumnType.TAG,
-      isFilter: true,
-      width: '130px',
-      filter: {
-        name: 'absenceStatus',
-        type: StandardColumnType.SELECT,
-        options: RequestStatus, // Sử dụng RequestStatus đã định nghĩa lại
-        multiple: true,
-      },
-      isSort: true,
-      classes: 'tag-left',
     },
     {
       id: 6,
@@ -189,8 +171,28 @@ export const leaveManageColumns = (): StandardColumnModel[] => {
       isRequire: true,
       isFilter: true,
     },
+    {
+      id: 5,
+      name: 'absenceStatus',
+      fixedColumn: true,
+      fixedRight: true,
+      attr: 'Trạng thái',
+      type: StandardColumnType.TAG,
+      isFilter: true,
+      width: '130px',
+      filter: {
+        name: 'absenceStatus',
+        type: StandardColumnType.SELECT,
+        options: RequestStatus, // Sử dụng RequestStatus đã định nghĩa lại
+        multiple: true,
+      },
+      isSort: true,
+      classes: 'tag-left',
+    },
+
   ];
 };
+
 
 export const leaveColumnFilter: StandardFormItemModel[] = [
   {

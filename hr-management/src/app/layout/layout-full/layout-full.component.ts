@@ -83,7 +83,7 @@ export class LayoutFullComponent implements OnInit {
       ]
     },
     {
-      icon: 'fa-regular fa-user',
+      htmlIcon: IconHtml.STAFF,
       children: [],
       id: '11',
       level: 1,
@@ -135,6 +135,52 @@ export class LayoutFullComponent implements OnInit {
           url: '/import-vgov/leave-absence',
           roles: [],
         },
+      ]
+    },
+    {
+      htmlIcon: IconHtml.SETTING,
+      id: '13',
+      level: 1,
+      title: 'Cài đặt hệ thống',
+      url: '/settings/system-config',
+      roles: [],
+      children: [
+        {
+          icon: '',
+          children: [],
+          id: '130',
+          level: 2,
+          title: 'Thêm mới tài khoản',
+          url: '/settings/add-account',
+          roles: [],
+        },
+        {
+          icon: '',
+          children: [],
+          id: '131',
+          level: 2,
+          title: 'Quản lý vai trò',
+          url: '/settings/role-management',
+          roles: [],
+        },
+        {
+          icon: '',
+          children: [],
+          id: '132',
+          level: 2,
+          title: 'Thiết lâp người duyệt',
+          url: '/settings/approver-setup',
+          roles: [],
+        },
+        {
+          icon: '',
+          children: [],
+          id: '133',
+          level: 2,
+          title: 'Lịch sử log',
+          url: '/settings/activity-log',
+          roles: [],
+        }
       ]
     },
     // {
