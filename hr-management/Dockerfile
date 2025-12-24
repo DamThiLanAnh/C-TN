@@ -1,5 +1,5 @@
 # Bước 1: Build ứng dụng (Stage 1)
-FROM node:20-alpine AS build
+FROM node:16-alpine  AS build
 
 WORKDIR /app
 
@@ -12,7 +12,7 @@ COPY . .
 RUN npm run build
 
 # Bước 2: Chạy ứng dụng (Stage 2)
-FROM node:20-alpine
+FROM node:16-alpine
 
 WORKDIR /app
 
