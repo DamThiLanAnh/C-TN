@@ -1,0 +1,79 @@
+<nz-card class="container-card d-flex flex-column p-0">
+  <div class="d-flex justify-content-between mb-2">
+    <h6>{{ tableName }}</h6>
+    <div nz-row nzJustify="end" class="d-flex align-items-center">
+      <button class="me-2" (click)="exportFile()" [nzLoading]="isExporting" [disabled]="isExporting"
+              nz-button nzType="primary" type="button" nzDanger>
+        <span nz-icon nzType="plus-circle" nzTheme="outline" aria-hidden="true" ></span> Thêm mới
+      </button>
+    </div>
+  </div>
+
+  <div nz-row nzJustify="start" class="action-table d-flex align-items-center mb-2">
+    <div *ngIf="isDataSelected()">
+      <button nz-button class="me-2" nzType="default" type="button" (click)="onChangeUnselectData()">
+        Bỏ ({{ dataDeleteChecked.length }}) lựa chọn
+      </button>
+    </div>
+    <button nz-button nzGhost class="me-2" nzType="primary" type="button" [disabled]="!isDataSelected()" (click)="onRejectList()" *ngIf="canApprove">
+      Từ chối
+    </button>
+    <button nz-button class="me-2" nzType="primary" type="button" [disabled]="!isDataSelected()" (click)="onApproveList()" *ngIf="canApprove">
+      Duyệt
+    </button>
+  </div>
+
+  <nz-table
+    #basicTable
+    [nzData]="listOfData"
+    [nzLoading]="loadingDataTable"
+    [nzBordered]="true"
+    [nzSize]="'small'"
+    [nzScroll]="{ x: '1600px', y: 'calc(100vh - 18rem)' }"
+    [nzShowPagination]="false"
+    (nzQueryParams)="onFilterInTable($event)"
+  >
+    <thead>
+    <tr>
+      <th nzWidth="50px" [nzChecked]="checked" [nzIndeterminate]="indeterminate" (nzCheckedChange)="onChangeSelectAll($event)"></th>
+      <ng-container *ngFor="let column of columns">
+        <th
+          [nzSortFn]="column.sortFn || null"
+          [nzSortOrder]="column.sortOrder || null"
+          [nzSortDirections]="column.sortDirections || ['ascend', 'descend', null]">
+          {{ column.nzTitle }}
+        </th>
+      </ng-container>
+      <th nzWidth="100px" [nzRight]="true">Hành động</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr *ngFor="let data of basicTable.data">
+      <td [nzChecked]="data.checked" (nzCheckedChange)="onItemChecked(data, $event)" [nzDisabled]="data.disabled"></td>
+      <ng-container *ngFor="let column of columns">
+        <td>{{ data[column.nzKey] }}</td>
+      </ng-container>
+      <td [nzRight]="true">
+        <a (click)="viewDetail(data)">Xem</a>
+        <nz-divider nzType="vertical"></nz-divider>
+        <ng-container *ngIf="data.isActiveAction && canApprove">
+          <a (click)="onApproveConfirm(data)">Duyệt</a>
+          <nz-divider nzType="vertical"></nz-divider>
+          <a (click)="onRejectConfirm(data)">Từ chối</a>
+        </ng-container>
+      </td>
+    </tr>
+    </tbody>
+  </nz-table>
+
+  <div class="d-flex justify-content-end mt-2">
+    <nz-pagination
+      [nzTotal]="paging.totalElements"
+      [nzPageIndex]="paging.pageIndex"
+      [nzPageSize]="paging.pageSize"
+      [nzShowSizeChanger]="true"
+      (nzPageIndexChange)="getChangePagination($event)"
+      (nzPageSizeChange)="onPageSizeChange($event)"
+    ></nz-pagination>
+  </div>
+</nz-card>

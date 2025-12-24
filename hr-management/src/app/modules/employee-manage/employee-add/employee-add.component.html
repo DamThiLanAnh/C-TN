@@ -1,0 +1,105 @@
+<div>
+  <div class="form-employee">
+    <div class="logo text-center mb-4">
+      <nz-upload class="avatar-uploader" nzName="avatar" nzListType="picture-card"
+        [nzShowUploadList]="false" [nzBeforeUpload]="beforeUpload" [nzDisabled]="!canEdit">
+        <ng-container *ngIf="!avatarUrl">
+          <span class="upload-icon" style="margin-right: 5px;" nz-icon [nzType]="loading ? 'loading' : 'plus'"></span>
+          <div class="ant-upload-text">Tải ảnh lên</div>
+        </ng-container>
+        <img *ngIf="avatarUrl" [src]="avatarUrl" style="width: 100%; object-fit:cover;height: 100%;" />
+      </nz-upload>
+    </div>
+
+    <form nz-form [formGroup]="formGroup">
+      <div nz-row [nzGutter]="16">
+        <div nz-col [nzSpan]="12">
+          <nz-form-item>
+            <nz-form-label [nzSpan]="8" nzRequired>Mã nhân viên</nz-form-label>
+            <nz-form-control [nzSpan]="16" nzErrorTip="Vui lòng nhập mã nhân viên!">
+              <input nz-input formControlName="code" placeholder="Nhập mã nhân viên" />
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+
+        <div nz-col [nzSpan]="12">
+          <nz-form-item>
+            <nz-form-label [nzSpan]="8" nzRequired>Họ và tên</nz-form-label>
+            <nz-form-control [nzSpan]="16" nzErrorTip="Vui lòng nhập họ và tên!">
+              <input nz-input formControlName="fullName" placeholder="Nhập họ và tên" />
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+      </div>
+
+      <div nz-row [nzGutter]="16">
+        <div nz-col [nzSpan]="12">
+          <nz-form-item>
+            <nz-form-label [nzSpan]="8">Ngày sinh</nz-form-label>
+            <nz-form-control [nzSpan]="16">
+              <nz-date-picker formControlName="dateOfBirth" nzPlaceHolder="Chọn ngày sinh"
+                style="width: 100%;" nzFormat="yyyy-MM-dd"></nz-date-picker>
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+
+        <div nz-col [nzSpan]="12">
+          <nz-form-item>
+            <nz-form-label [nzSpan]="8" nzRequired>Email</nz-form-label>
+            <nz-form-control [nzSpan]="16" nzErrorTip="Vui lòng nhập email hợp lệ!">
+              <input nz-input formControlName="email" placeholder="Nhập email" type="email" />
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+      </div>
+
+      <div nz-row [nzGutter]="16">
+        <div nz-col [nzSpan]="12">
+          <nz-form-item>
+            <nz-form-label [nzSpan]="8" nzRequired>Số điện thoại</nz-form-label>
+            <nz-form-control [nzSpan]="16" nzErrorTip="Vui lòng nhập số điện thoại!">
+              <input nz-input formControlName="phoneNumber" placeholder="Nhập số điện thoại" />
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+
+        <div nz-col [nzSpan]="12">
+          <nz-form-item>
+            <nz-form-label [nzSpan]="8" nzRequired>Vị trí</nz-form-label>
+            <nz-form-control [nzSpan]="16" nzErrorTip="Vui lòng nhập vị trí!">
+              <input nz-input formControlName="position" placeholder="Nhập vị trí" />
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+      </div>
+
+      <div nz-row [nzGutter]="16">
+        <div nz-col [nzSpan]="12">
+          <nz-form-item>
+            <nz-form-label [nzSpan]="8" nzRequired>Phòng ban</nz-form-label>
+            <nz-form-control [nzSpan]="16" nzErrorTip="Vui lòng nhập phòng ban!">
+<!--              <input nz-input formControlName="department" placeholder="Nhập phòng ban" />-->
+              <nz-select nzShowSearch nzAllowClear nzPlaceHolder="Chọn phòng ban"  formControlName="department" >
+                <nz-option *ngFor="let d  of departmentOptions" [nzLabel]="d.label" [nzValue]="d.value"></nz-option>
+              </nz-select>
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+      </div>
+    </form>
+  </div>
+
+  <div class="justify-content-center d-flex mt-3">
+    <button nz-button nzType="default" class="me-3" type="button"
+      (click)="canEdit ? destroyModal() : closeModel()">
+      <i nz-icon nzType="close-circle" nzTheme="outline" aria-hidden="true"></i>
+      Thoát
+    </button>
+    <button *ngIf="canEdit" nz-button nzType="primary" class="me-3" type="button"
+      [nzLoading]="submitting" (click)="submitConfirm()">
+      <i nz-icon nzType="check-circle" nzTheme="outline" aria-hidden="true"></i>
+      Lưu lại
+    </button>
+  </div>
+</div>
+

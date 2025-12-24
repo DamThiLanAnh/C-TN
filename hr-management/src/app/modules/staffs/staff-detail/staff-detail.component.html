@@ -1,0 +1,195 @@
+<div class="staff-detail" *ngIf="dataDetail">
+  <nz-card class="rounded mb-3">
+
+    <nz-radio-group  nzSize="large" [ngModel]='select' (ngModelChange)="change($event)">
+      <label nz-radio-button nzValue="Thông tin người dùng">Thông tin người dùng</label>
+      <label nz-radio-button nzValue="Kỹ năng chuyên môn">Kỹ năng chuyên môn</label>
+      <label nz-radio-button nzValue="Lịch sử Review">Lịch sử Review</label>
+    </nz-radio-group>
+
+    <!-- <nz-tabset nzType="card" [(nzSelectedIndex)]="index" style="position: relative;">
+      <nz-tab *ngFor="let tab of tabs" [nzTitle]="tab"> -->
+    <div *ngIf="select === 'Thông tin người dùng'">
+      <div class="row" *ngIf="!isLoading">
+        <div class="col-md-5">
+          <nz-card class="mb-3 rounded staff-info py-3">
+            <div class="d-flex justify-content-between mb-2">
+              <div class="d-flex">
+                <nz-avatar [nzText]="avatarText" [nzSize]="60" class="avatar-user" [nzSrc]="avatarUrl"></nz-avatar>
+                <div class="content">
+                  <p class="mb-1 name">{{dataDetail.full_name}} - {{dataDetail.user_name}}</p>
+                  <p class="text-gray mb-0 fx-11">{{dataDetail.position_name}}</p>
+                  <p class="text-gray mb-1 fx-11">{{dataDetail.organization_name}}</p>
+                </div>
+              </div>
+              <button nz-button nzType="default" *ngIf="isUser" (click)="startEditInfor()"
+                      class="text-blue action-icon d-inline-flex align-items-center" nz-tooltip title="Sửa">
+                <i nzTheme="outline" nz-icon nzType="edit" aria-hidden="true"></i>
+              </button>
+            </div>
+            <hr>
+            <p class="text-gray fw-500">Thông tin chung</p>
+            <div class="row info">
+              <div class="col-12 mb-3" nz-tooltip="Ngày sinh">
+                <img src="../../../../assets/icons/calendar.svg" alt=""> <span>{{dataDetail.dob | date
+                :'dd/MM/yyyy'}}</span>
+              </div>
+              <div class="col-12 mb-3" nz-tooltip="Giới tính">
+                <ng-container *ngIf="dataDetail?.gender; else woman">
+                  <img src="../../../../assets/icons/man.svg" alt=""> <span> Nam</span>
+                </ng-container>
+                <ng-template #woman>
+                  <img src="../../../../assets/icons/woman.svg" alt=""> <span> Nữ</span>
+                </ng-template>
+              </div>
+              <div class="col-12 mb-3" nz-tooltip="Số điện thoại">
+                <img src="../../../../assets/icons/call.svg" alt=""><span>{{dataDetail.phone}}</span>
+              </div>
+              <div class="col-12 mb-3" nz-tooltip="Email">
+                <img src="../../../../assets/icons/sms.svg" alt=""><span> {{dataDetail.email}}</span>
+              </div>
+              <div class="col-12 mb-3" nz-tooltip="Trạng thái làm việc">
+                <img src="../../../../assets/icons/status.svg" alt=""><span>
+                      {{getNameStatus(dataDetail.status)}}</span>
+              </div>
+              <div class="col-12 mb-3" nz-tooltip="Ngày vào công ty">
+                <img src="../../../../assets/icons/entry-date.svg" alt=""><span> {{dataDetail.entryDate | date
+                :'dd/MM/yyyy'}}</span>
+              </div>
+              <div *ngIf="dataDetail?.siteName" class="col-12">
+                <img src="../../../../assets/icons/location.svg" alt=""><span>{{dataDetail.siteName}}</span>
+              </div>
+            </div>
+
+          </nz-card>
+          <nz-card class="mb-3 rounded pb-0 pt-3">
+            <div class="fz-18 mb-3"> Đào tạo</div>
+            <div class="tab-custom">
+              <div class="tab-content">
+                <nz-timeline>
+                  <nz-timeline-item [nzDot]="dotTemplate">
+                    <div class="info">
+                      <p class="fw-500 mb-2">{{dataDetail?.universityName}}</p>
+                      <p class="small mb-2"><img src="../../../../assets/icons/teacher.svg" alt=""> <span>Chuyên ngành: {{dataDetail?.majorEduName}}</span></p>
+                      <p  class="small ms-4">Trình độ: {{dataDetail?.eduLevelName}}</p>
+
+                    </div>
+                  </nz-timeline-item>
+                </nz-timeline>
+                <ng-template #dotTemplate>
+                  <img src="../../../../assets/icons/teacher.svg" alt="" class="custom-dot">
+                </ng-template>
+              </div>
+            </div>
+          </nz-card>
+        </div>
+        <div class="col-md-7">
+          <nz-card class="mb-3 rounded calender-custom pb-0 pe-0">
+            <app-staff-calender></app-staff-calender>
+          </nz-card>
+        </div>
+      </div>
+    </div>
+    <div *ngIf="select === 'Kỹ năng chuyên môn'">
+      <div class="d-flex justify-content-between mb-3 mt-1">
+        <div class="fz-18 col-md-9">
+          <div class="d-flex justify-content-between">
+            <h5>Kỹ năng chuyên môn ({{ countSkill }})</h5>
+
+            <button nz-button nzType="default" *ngIf="isUser && !isEdit" (click)="startEdit()">
+              <span nz-icon nzType="edit"></span>
+            </button>
+          </div>
+        </div>
+
+        <div class="col-md-3 d-flex">
+          <nz-input-group [nzSuffix]="suffix" class="inp-search">
+            <input
+              nz-input
+              placeholder="Tìm kiếm kỹ năng"
+              [(ngModel)]="keyword"
+              (ngModelChange)="searchSkills()"
+            />
+          </nz-input-group>
+
+          <ng-template #suffix>
+            <span nz-icon nzType="search"></span>
+          </ng-template>
+        </div>
+      </div>
+
+      <div class="row update-skill-container">
+        <div class="col-md-9 mb-2">
+          <nz-list *ngIf="!isEdit">
+            <nz-list-item *ngFor="let skill of listSkillFilter">
+              <nz-list-item-meta
+                [nzTitle]="skill.skillName"
+                nzAvatar="<span nz-icon nzType='star'></span>"
+              ></nz-list-item-meta>
+
+              <nz-tag nzColor="blue">Level: {{ skill.level }}</nz-tag>
+            </nz-list-item>
+          </nz-list>
+
+          <div *ngIf="isEdit">
+            <nz-alert nzType="info" nzMessage="Skill edit mode placeholder"></nz-alert>
+          </div>
+        </div>
+
+        <div class="col-md-3 mb-2">
+          <nz-card>
+            <p class="fw-bold mb-2">Biểu đồ kỹ năng</p>
+
+            <div *ngFor="let s of listSkillFilter">
+              <span class="fw-500">{{ s.skillName }}</span>
+              <nz-progress [nzPercent]="s.level * 20"></nz-progress>
+            </div>
+          </nz-card>
+        </div>
+      </div>
+    </div>
+
+    <div *ngIf="select === 'Lịch sử Review'">
+      <div class="d-flex justify-content-between mb-3 mt-1">
+        <div class="fz-18 col-md-9">Lịch sử review</div>
+
+        <nz-date-picker
+          nzFormat="yyyy"
+          nzMode="year"
+          [(ngModel)]="dateHistoryReview"
+          (ngModelChange)="onChangeDate($event)"
+        ></nz-date-picker>
+      </div>
+
+      <nz-table
+        [nzData]="listOfData"
+        [nzScroll]="{ y: 'calc(100vh - 21rem)' }"
+        (nzCurrentPageDataChange)="onFilterInTable($event)"
+      >
+        <thead>
+        <tr>
+          <th *ngFor="let c of col2">{{ c.title }}</th>
+        </tr>
+        </thead>
+
+        <tbody>
+        <tr
+          *ngFor="let row of listOfData"
+          (click)="onSelectLinkItem(row)"
+          style="cursor: pointer"
+        >
+<!--          <td *ngFor="let c of col2">{{ row[c.key] }}</td>-->
+        </tr>
+        </tbody>
+      </nz-table>
+    </div>
+
+    <!-- </nz-tab>
+  </nz-tabset> -->
+  </nz-card>
+
+</div>
+
+<div class="spin-custom" [hidden]="dataDetail">
+  <nz-spin nzSimple class="m-auto"></nz-spin>
+</div>

@@ -1,0 +1,77 @@
+<nz-card class="container-card d-flex flex-column p-0">
+  <div class="d-flex justify-content-between mb-2">
+    <h6>{{ tableName }}</h6>
+    <div nz-row nzJustify="end" class="d-flex align-items-center">
+      <button nz-button nzType="primary" type="button" nzDanger (click)="addStaff()"
+              *ngIf="canAdd">
+        <span nz-icon nzType="plus-circle" nzTheme="outline" aria-hidden="true"></span>Thêm mới
+      </button>
+    </div>
+  </div>
+
+  <ng-container>
+    <nz-table #basicTable [nzData]="listOfData" [nzLoading]="loadingTable"
+              [nzScroll]="{ y: 'calc(100vh - 17rem)' }" [nzShowPagination]="false" [nzSize]="'small'"
+              [nzBordered]="true"
+              (nzQueryParams)="onFilterInTable($event)"
+    >
+      <thead>
+      <tr>
+        <th nzWidth="50px">STT</th>
+        <th *ngFor="let col of columns; trackBy: trackByColumnKey" [nzWidth]="col.width" [nzSortOrder]="null"
+            [nzSortFn]="col.sortable ? true : null">
+          {{ col.title }}
+        </th>
+        <th nzWidth="100px" [nzRight]="true">Hành động</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr *ngFor="let data of basicTable.data; trackBy: trackByEmployeeId">
+        <td>{{ data.index }}</td>
+        <td *ngFor="let col of columns; trackBy: trackByColumnKey">
+          <ng-container [ngSwitch]="col.key">
+            <!--            <ng-container *ngSwitchCase="'isActive'">-->
+            <!--              <nz-badge [nzStatus]="data.isActive === 1 ? 'success' : 'error'"-->
+            <!--                        [nzText]="data.isActive === 1 ? 'Hoạt động' : 'Ngừng hoạt động'">-->
+            <!--              </nz-badge>-->
+            <!--            </ng-container>-->
+            <ng-container *ngSwitchDefault>
+              {{ data[col.key] || data[getFallbackKey(col.key)] || '-' }}
+            </ng-container>
+          </ng-container>
+        </td>
+        <td [nzRight]="true">
+          <a (click)="editUser({item: data}, false)">
+            <span nz-icon nzType="eye" nzTheme="outline"></span>
+          </a>
+          <nz-divider nzType="vertical"></nz-divider>
+
+          <ng-container *ngIf="canEdit && data.isEnableEdit">
+            <a (click)="editUser({item: data})">
+              <span nz-icon nzType="edit" nzTheme="outline"></span>
+            </a>
+            <nz-divider nzType="vertical"></nz-divider>
+          </ng-container>
+
+          <ng-container *ngIf="canDelete">
+            <a (click)="showConfirm(data)">
+              <span nz-icon nzType="delete" nzTheme="outline"></span>
+            </a>
+            <nz-divider nzType="vertical"></nz-divider>
+          </ng-container>
+
+          <ng-container *ngIf="canTransferPosition && data.isActive">
+            <a (click)="addStaffPosition(data)" class="text-blue">Chuyển đơn vị</a>
+          </ng-container>
+        </td>
+      </tr>
+      </tbody>
+    </nz-table>
+
+    <div class="d-flex justify-content-end mt-2">
+      <nz-pagination [nzTotal]="paging.totalElements" [nzPageIndex]="paging.pageIndex" [nzPageSize]="paging.pageSize"
+                     [nzShowSizeChanger]="true" (nzPageIndexChange)="onPageIndexChange($event)"
+                     (nzPageSizeChange)="onPageSizeChange($event)"></nz-pagination>
+    </div>
+  </ng-container>
+</nz-card>

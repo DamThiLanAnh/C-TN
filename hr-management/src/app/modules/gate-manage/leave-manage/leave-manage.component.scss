@@ -1,0 +1,152 @@
+
+.full-height {
+  height: 100%;
+
+  ::ng-deep .ant-card-body {
+    padding: 24px;
+  }
+}
+
+.action-table {
+  gap: 8px;
+}
+
+// Action buttons styling
+.action-buttons {
+  gap: 8px;
+}
+
+::ng-deep {
+  .action-icon-btn {
+    padding: 4px 8px !important;
+    height: auto !important;
+    min-width: 32px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+
+    svg {
+      width: 20px;
+      height: 20px;
+    }
+
+    &:hover {
+      transform: scale(1.1);
+      opacity: 0.8;
+    }
+
+    &:active {
+      transform: scale(0.95);
+    }
+  }
+}
+
+// Filter row inside table
+::ng-deep {
+  // Remove border from first header row (between header and filter row)
+  .ant-table-thead > tr:first-child > th {
+    border-bottom: none !important;
+    padding-bottom: 4px !important;
+  }
+
+  .filter-row {
+    background: #fafafa !important;
+
+    th {
+      padding: 4px 8px !important;
+      background: #fafafa !important;
+      border-bottom: none !important;
+      border-top: none !important;
+    }
+
+    .ant-input-sm {
+      border-radius: 6px;
+      font-size: 13px;
+
+      &:hover {
+        border-color: #40a9ff;
+      }
+
+      &:focus {
+        border-color: #40a9ff;
+        box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.1);
+      }
+    }
+
+    .ant-select-sm {
+      .ant-select-selector {
+        border-radius: 6px !important;
+        font-size: 13px;
+
+        &:hover {
+          border-color: #40a9ff;
+        }
+      }
+    }
+
+    .ant-picker-small {
+      border-radius: 6px;
+      font-size: 13px;
+
+      &:hover {
+        border-color: #40a9ff;
+      }
+
+      .ant-picker-input > input {
+        font-size: 13px;
+      }
+    }
+  }
+
+  // Remove all borders between filter row and data rows
+  .ant-table-thead > tr.filter-row > th {
+    border-bottom: none !important;
+    border-top: none !important;
+  }
+
+  .ant-table-thead > tr.filter-row + tr > th {
+    border-top: none !important;
+  }
+
+  .ant-table-tbody > tr:first-child > td {
+    border-top: none !important;
+  }
+
+  // Remove border from entire thead after filter row
+  .ant-table-thead {
+    th {
+      &::after {
+        display: none !important;
+      }
+    }
+  }
+
+  // Ensure no border after filter row
+  tr.filter-row {
+    & + tbody tr:first-child td {
+      border-top: none !important;
+    }
+  }
+
+  // Remove any extra borders from table
+  .ant-table-thead > tr > th {
+    border-bottom: none !important;
+  }
+
+  .ant-table-thead > tr:last-child > th {
+    border-bottom: none !important;
+  }
+}
+
+button[nz-button] {
+  display: inline-flex;
+  align-items: center;
+  gap: 0px;
+
+  span[nz-icon] {
+    display: inline-flex;
+    align-items: center;
+  }
+}
+

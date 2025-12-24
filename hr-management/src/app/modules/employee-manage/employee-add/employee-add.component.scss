@@ -1,0 +1,49 @@
+.form-employee {
+  padding: 20px;
+}
+
+.logo {
+  margin-bottom: 24px;
+}
+
+.avatar-uploader {
+  ::ng-deep .ant-upload {
+    width: 128px;
+    height: 128px;
+  }
+
+  ::ng-deep .ant-upload-select-picture-card {
+    width: 128px;
+    height: 128px;
+  }
+}
+
+.upload-icon {
+  font-size: 32px;
+  color: #999;
+}
+
+.me-3 {
+  margin-right: 1rem;
+}
+
+.d-flex {
+  display: flex;
+}
+
+.justify-content-center {
+  justify-content: center;
+}
+
+.mt-3 {
+  margin-top: 1rem;
+}
+
+.text-center {
+  text-align: center;
+}
+
+.mb-4 {
+  margin-bottom: 1.5rem;
+}
+

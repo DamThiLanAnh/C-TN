@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="48" height="48" viewBox="0 0 48 48">
+  <defs>
+    <clipPath id="clip-path">
+      <rect id="Rectangle_12919" data-name="Rectangle 12919" width="20" height="20" transform="translate(0.199 0.199)" fill="#006fea" stroke="#fcfcfd" stroke-width="1"/>
+    </clipPath>
+  </defs>
+  <g id="Group_23531" data-name="Group 23531" transform="translate(-1667 -499)">
+    <rect id="Rectangle_12918" data-name="Rectangle 12918" width="48" height="48" rx="24" transform="translate(1667 499)" fill="#006fea" opacity="0.08"/>
+    <rect id="Rectangle_12923" data-name="Rectangle 12923" width="36" height="36" rx="18" transform="translate(1673 505)" fill="#006fea" opacity="0.2"/>
+    <g id="Mask_Group_19851" data-name="Mask Group 19851" transform="translate(1680.801 512.801)" clip-path="url(#clip-path)">
+      <g id="notifications" transform="translate(1.887 0.043)">
+        <g id="Layer_2" data-name="Layer 2" transform="translate(0)">
+          <g id="Layer_1" data-name="Layer 1">
+            <g id="notifications-2" data-name="notifications">
+              <path id="Path_66333" data-name="Path 66333" d="M8.746,22.82A4.11,4.11,0,0,1,4.64,18.713a.821.821,0,1,1,1.643,0,2.464,2.464,0,1,0,4.928,0,.821.821,0,0,1,1.643,0A4.113,4.113,0,0,1,8.746,22.82Z" transform="translate(-0.893 -3.431)" fill="#006fea" stroke="#fff" stroke-width="0.1"/>
+              <path id="Path_66334" data-name="Path 66334" d="M13.512,16.1H2.195A2.194,2.194,0,0,1,.378,12.672l.828-1.225a1.918,1.918,0,0,0,.329-1.081V6.47A6.389,6.389,0,0,1,7.556,0a6.324,6.324,0,0,1,6.616,6.317v4.05a1.918,1.918,0,0,0,.329,1.081l.828,1.225A2.194,2.194,0,0,1,13.512,16.1ZM7.855,1.641h-.23A4.747,4.747,0,0,0,3.177,6.47v3.9a3.561,3.561,0,0,1-.611,2l-.828,1.225a.542.542,0,0,0-.03.568.535.535,0,0,0,.486.292H13.512A.535.535,0,0,0,14,14.16a.542.542,0,0,0-.03-.568l-.828-1.225a3.561,3.561,0,0,1-.611-2V6.316A4.675,4.675,0,0,0,7.855,1.641Z" transform="translate(-0.002 0.008)" fill="#006fea" stroke="#fff" stroke-width="0.1"/>
+            </g>
+          </g>
+        </g>
+      </g>
+    </g>
+  </g>
+</svg>

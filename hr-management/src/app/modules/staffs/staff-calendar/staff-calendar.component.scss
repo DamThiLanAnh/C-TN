@@ -1,0 +1,313 @@
+::ng-deep .ant-tooltip {
+  .ant-tooltip-content {
+    .ant-tooltip-inner {
+      border-radius: 8px !important;
+      font-size: 10px !important;
+      padding: 4px 10px !important;
+      min-height: 100% !important;
+      text-align: center !important;
+      background-color: rgba(0, 0, 0, 0.8) !important;
+      color: white !important;
+    }
+
+    .ant-tooltip-arrow {
+      &::before {
+        background-color: rgba(0, 0, 0, 0.8) !important;
+      }
+    }
+  }
+}
+
+.calendar {
+  position: relative;
+
+  .spin-custom {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 1000;
+    background: #a3a3a352;
+    width: 100%;
+    height: 100%;
+    display: flex;
+
+    ::ng-deep .tooltip-content {
+      .ant-tooltip-content {
+        .ant-tooltip-inner {
+          min-width: auto !important;
+          max-width: 150px !important;
+          text-align: center !important;
+          white-space: nowrap !important;
+        }
+      }
+    }
+  }
+
+  .custom-calendar {
+    width: calc(100% - 250px);
+
+    .calendar-cell {
+      //.project {
+      //  height: 8px;
+      //  margin-bottom: 3px;
+      //  border-radius: unset;
+      //  padding: 2px 6px 2px 6px;
+      //  margin-top: 3px;
+      //  &.round-start {
+      //    border-top-left-radius: 8px;
+      //    border-bottom-left-radius: 8px;
+      //  }
+      //  &.round-end {
+      //    border-top-right-radius: 8px;
+      //    border-bottom-right-radius: 8px;
+      //  }
+      //  &.weekend {
+      //    background: transparent;
+      //  }
+      //}
+      ::ng-deep {
+        .ant-picker-calendar-date.ant-picker-cell-inner {
+          padding: 0 !important;
+          margin: 0 !important;
+          // border-left: 1px solid #f0f0f0;
+          // border-right: 1px solid #f0f0f0;
+          position: relative;
+
+          &::before {
+            content: " ";
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: #f0f0f0;
+            z-index: 1000;
+          }
+
+          &::after {
+            content: " ";
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: #f0f0f0;
+          }
+
+          .ant-picker-calendar-date-value {
+            padding: 6px 12px;
+          }
+
+          .ant-picker-calendar-date-content {
+            height: 64px;
+          }
+        }
+
+        .ant-picker-cell-in-view.ant-picker-cell-selected
+        .ant-picker-cell-inner {
+          background: #e6f7ff !important;
+        }
+
+        .ant-fullcalendar-header {
+          display: none !important;
+        }
+
+        .ant-picker-calendar {
+          border-bottom: 1px solid #f0f0f0;
+        }
+
+        // .ant-picker-calendar-date.ant-picker-cell-inner
+        //   .ant-picker-calendar-date-value {
+        //   padding: 6px 12px;
+        //   z-index: 10;
+        //   position: relative;
+        //   font-size: 12px;
+        //   padding-right: 12px;
+        // }
+      }
+    }
+
+    .custom-select-date {
+      display: flex;
+      justify-content: space-between;
+
+      .select-date {
+        display: flex;
+        align-items: center;
+        position: relative;
+
+        .date-inline {
+          position: absolute;
+          right: 0;
+          top: 40px;
+        }
+
+        .custom-icon {
+          opacity: 0.6;
+
+          &:hover {
+            opacity: 1;
+          }
+        }
+      }
+    }
+  }
+
+  .note {
+    width: 100%;
+    flex: 1;
+
+    .project {
+      width: 30px;
+      height: 10px;
+      flex: none;
+    }
+  }
+
+  .dotFull {
+    height: 21px;
+    width: 21px;
+    background-color: #EE0033;
+    border-radius: 50%;
+    position: absolute;
+    top: 8px;
+    right: 7px;
+    text-align: center;
+    color: white;
+    font-size: 13px;
+  }
+
+  @media (max-width: 1661px) {
+    .css_text {
+      font-size: 9px;
+      font-weight: bold;
+      position: absolute;
+      top: 25px;
+      left: 5px;
+      margin-bottom: 2px;
+    }
+  }
+
+  @media (min-width: 1661px) {
+    .css_text {
+      font-size: 9px;
+      font-weight: bold;
+      position: absolute;
+      top: 10px;
+      left: 5px;
+    }
+  }
+}
+
+.status-display {
+  text-align: center;
+
+  @media (min-width: 1661px) and (max-width: 1661px) {
+    width: auto;
+    max-width: 80px;
+  }
+
+}
+
+.status {
+  width: 85%;
+  display: inline-block;
+  background-color: #f75b7c;
+  color: #fff;
+  padding: 3px 12px;
+  font-size: 11px;
+  font-weight: 600;
+  text-align: center;
+  line-height: 1;
+  white-space: nowrap;
+  transition: transform 0.12s ease, box-shadow 0.12s ease;
+  cursor: default;
+
+  @media (min-width: 1661px) {
+    padding: 3px 35px;
+    min-width: 60px;
+  }
+}
+
+.status--soft {
+  border-radius: 4px;
+  //min-width: 60px;
+
+  @media (max-width: 1661px) {
+    border-radius: 3px;
+  }
+}
+
+.calendar-legend {
+  display: flex;
+  justify-content: center;
+  margin-top: 12px;
+  color: #666;
+  font-size: 14px;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.legend-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.legend-dot.full-day {
+  background-color: #F59E0B;
+}
+
+.legend-dot.half-day {
+  background-color: #EE0033;
+}
+
+.legend-dot.off-day {
+  background-color: #898E99;
+}
+
+.time-display {
+  text-align: center;
+  margin-bottom: 8px;
+  font-size: 12px;
+  color: #000000;
+}
+
+.staff-info {
+  display: flex;
+  align-items: center;
+  padding: 16px;
+  border-bottom: 1px solid #f0f0f0;
+
+  .avatar-user {
+    background: #ffe2e5;
+    color: #f90037;
+    font-size: 32px;
+    width: 64px;
+    height: 64px;
+    line-height: 64px;
+    text-align: center;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  .content {
+    margin-left: 16px;
+
+    .name {
+      font-size: 24px;
+      font-weight: 500;
+      margin-bottom: 4px;
+    }
+
+    .position {
+      font-size: 16px;
+      color: #666666;
+    }
+  }
+}
+

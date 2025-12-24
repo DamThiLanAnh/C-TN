@@ -1,0 +1,94 @@
+<div *nzModalTitle>
+  <div>
+    {{ modalTitle }}
+  </div>
+</div>
+
+<div class="row mb-2" *ngIf="itemData">
+  <div class="col-md-6">
+    <strong>Mã NV</strong><br/>
+    {{ itemData?.employeeUserName || 'N/A' }}
+  </div>
+  <div class="col-md-6">
+    <strong>Tên nhân viên</strong><br/>
+    {{ itemData?.employeeName || 'N/A' }}
+  </div>
+  <div class="col-md-6">
+    <strong>Email</strong><br/>
+    {{ itemData?.employeeEmail || 'N/A' }}
+  </div>
+  <div class="col-md-6">
+    <strong>Phòng ban</strong><br/>
+    {{ itemData?.organizationName || 'N/A' }}
+  </div>
+  <div class="col-md-6">
+    <strong>Loại</strong><br/>
+    {{ itemData?.absenceTypeName || 'N/A' }}
+  </div>
+  <div class="col-md-6">
+    <strong>Ngày yêu cầu</strong><br/>
+    {{ itemData?.startDate | date:'dd/MM/yyyy' || 'N/A' }}
+  </div>
+</div>
+<div class="row mb-2" *ngIf="itemData">
+  <div class="col-md-6"><strong>Giờ đăng ký (Từ)</strong><br/>
+    {{ itemData?.startDate | date:'HH:mm' || 'N/A' }}
+  </div>
+  <div class="col-md-6"><strong>Giờ đăng ký (Đến)</strong><br/>
+    {{ itemData?.endDate | date:'HH:mm' || 'N/A' }}
+  </div>
+</div>
+<div class="row mb-2" *ngIf="itemData">
+  <div class="col-md-12">
+    <strong>Trạng thái</strong><br/>
+    <nz-tag
+      [nzColor]="'transparent'"
+      [style.border-color]="getStatusOption(itemData?.absenceStatus).color"
+      style="border-radius: 16px">
+                <span class="d-inline-flex me-1">
+                    <svg height="8" width="8">
+                        <circle cx="4" cy="4" r="3" [attr.stroke]="getStatusOption(itemData?.absenceStatus).color"
+                                [attr.fill]="getStatusOption(itemData?.absenceStatus).color" />
+                    </svg>
+                </span>
+      <span [style.color]="getStatusOption(itemData?.absenceStatus).color">
+                    {{ getStatusOption(itemData?.absenceStatus).label }}
+                </span>
+    </nz-tag>
+  </div>
+</div>
+
+
+<div class="col-md-12 mt-1">
+  <ng-container *ngIf="itemData?.absenceStatus === 'REJECTED'; else normalReason">
+    <strong>Lý do chi tiết</strong>
+    <p>{{ itemData?.rejectReason}}</p>
+  </ng-container>
+  <ng-template #normalReason>
+    <strong>Lý do chi tiết</strong>
+    <p>{{ itemData?.absenceReason}}</p>
+  </ng-template>
+</div>
+
+
+<ng-template>
+  <div class="text-center p-4">
+    <nz-spin nzSimple></nz-spin>
+    <p>Đang tải dữ liệu...</p>
+  </div>
+</ng-template>
+
+<div *nzModalFooter>
+  <ng-container *ngIf="itemData?.absenceStatus === 'WAITING_FOR_APPROVE'; else noApprove">
+    <div class="text-end">
+      <button nz-button nzType="default" type="button" (click)="destroyModal()">Đóng</button>
+      <button nz-button nzGhost nzType="primary" type="button" (click)="reject()" *ruleAuthorized="rolesApproveLeave">Từ chối</button>
+      <button nz-button nzType="primary" type="button" (click)="accept()" *ruleAuthorized="rolesApproveLeave">Duyệt</button>
+    </div>
+  </ng-container>
+  <ng-template #noApprove>
+    <div class="text-end">
+      <button nz-button nzType="primary" type="button" (click)="destroyModal()">Đóng</button>
+    </div>
+  </ng-template>
+</div>

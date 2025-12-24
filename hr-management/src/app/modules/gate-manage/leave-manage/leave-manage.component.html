@@ -1,0 +1,267 @@
+<nz-card class="full-height">
+  <div class="d-flex justify-content-between mb-2">
+    <h6>Quản lý vắng mặt</h6>
+    <div nz-row nzJustify="end" class="action-table">
+      <button nz-button nzType="primary" type="button" nzDanger (click)="openAddModal()">
+        <span nz-icon nzType="plus-circle" nzTheme="outline" aria-hidden="true" ></span>Thêm mới
+      </button>
+<!--      button xoa-->
+      <button
+        nz-button
+        nzGhost
+        class="me-2"
+        nzType="primary"
+        type="button"
+        nzDanger
+        [disabled]="!isDataSelected() || !isHR"
+        (click)="onDelete()"
+      >
+        <span nz-icon nzType="delete" nzTheme="outline"></span> Xóa
+      </button>
+    </div>
+  </div>
+  <div
+    nz-row
+    nzJustify="start"
+    class="action-table d-flex align-items-center mb-2">
+    <div *ngIf="isDataSelected()">
+      <button nz-button class="me-2" nzType="default" type="button" (click)="onChangeUnselectData()">
+        Bỏ ({{ dataDeleteChecked.length }}) lựa chọn
+      </button>
+    </div>
+
+    <button
+      nz-button
+      nzGhost
+      class="me-2"
+      nzType="primary"
+      type="button"
+      nzDanger
+      [disabled]="!isDataSelected()"
+      (click)="onReject()"
+      *ngIf="canApproveLeave"
+    >
+      Từ chối
+    </button>
+
+    <button nz-button class="me-2" nzType="primary" type="button" nzDanger
+            [disabled]="!isDataSelected()"
+            (click)="onAccept()"
+            *ngIf="canApproveLeave">
+      Duyệt
+    </button>
+  </div>
+
+  <nz-table #basicTable
+            [nzData]="filteredData"
+            [nzBordered]="true"
+            [nzSize]="'small'"
+            [nzScroll]="{ x: '1600px', y: 'calc(100vh - 20rem)' }"
+            [nzLoading]="loadingTable"
+            [nzShowPagination]="false"
+            (nzQueryParams)="onTableQueryParamsChange($event)"
+  >
+    <thead>
+    <tr>
+      <th
+        nzWidth="50px"
+        [nzChecked]="checked"
+        [nzIndeterminate]="indeterminate"
+        (nzCheckedChange)="onChangeSelectAll($event)"
+      ></th>
+      <th *ngFor="let col of leaveManageColumns"
+          [nzWidth]="col.width || null"
+          [nzSortFn]="col.isSort ? true : null"
+          [nzColumnKey]="col.name">
+        {{ col.attr }}
+      </th>
+    </tr>
+    <!-- Filter Row -->
+    <tr class="filter-row">
+      <!-- No filter for Checkbox -->
+      <th></th>
+      <!-- No filter for STT (Index) -->
+      <th></th>
+      <!-- No filter for Thao tác (Action) -->
+      <th></th>
+      <!-- Filter: Mã nhân viên -->
+      <th>
+        <input
+          type="text"
+          nz-input
+          [(ngModel)]="searchFilters.employeeUserName"
+          (ngModelChange)="onSearch()"
+          placeholder="Tìm..."
+          nzSize="small"
+        />
+      </th>
+      <!-- Filter: Tên nhân viên -->
+      <th>
+        <input
+          type="text"
+          nz-input
+          [(ngModel)]="searchFilters.employeeName"
+          (ngModelChange)="onSearch()"
+          placeholder="Tìm..."
+          nzSize="small"
+        />
+      </th>
+      <!-- Filter: Email -->
+      <th>
+        <input
+          type="text"
+          nz-input
+          [(ngModel)]="searchFilters.employeeEmail"
+          (ngModelChange)="onSearch()"
+          placeholder="Tìm..."
+          nzSize="small"
+        />
+      </th>
+      <!-- Filter: Phòng ban -->
+      <th>
+        <input
+          type="text"
+          nz-input
+          [(ngModel)]="searchFilters.departmentName"
+          (ngModelChange)="onSearch()"
+          placeholder="Tìm..."
+          nzSize="small"
+        />
+      </th>
+      <!-- Filter: Loại -->
+      <th>
+        <nz-select
+          [(ngModel)]="searchFilters.absenceTypeName"
+          (ngModelChange)="onSearch()"
+          nzPlaceHolder="Tìm..."
+          nzAllowClear
+          nzSize="small"
+          style="width: 100%"
+        >
+          <nz-option
+            *ngFor="let type of leaveTypeOptions"
+            [nzValue]="type.label"
+            [nzLabel]="type.label">
+          </nz-option>
+        </nz-select>
+      </th>
+      <!-- Filter: Ngày yêu cầu -->
+      <th>
+        <nz-date-picker
+          [(ngModel)]="searchFilters.startDate"
+          (ngModelChange)="onSearch()"
+          nzFormat="dd/MM/yyyy"
+          nzPlaceHolder="Chọn..."
+          nzSize="small"
+          style="width: 100%"
+        ></nz-date-picker>
+      </th>
+      <!-- Filter: Giờ đăng ký (từ) -->
+      <th>
+        <input
+          type="text"
+          nz-input
+          [(ngModel)]="searchFilters.timeRegisterStart"
+          (ngModelChange)="onSearch()"
+          placeholder="Tìm..."
+          nzSize="small"
+        />
+      </th>
+      <!-- Filter: Giờ đăng ký (đến) -->
+      <th>
+        <input
+          type="text"
+          nz-input
+          [(ngModel)]="searchFilters.timeRegisterEnd"
+          (ngModelChange)="onSearch()"
+          placeholder="Tìm..."
+          nzSize="small"
+        />
+      </th>
+      <!-- Filter: Lý do -->
+      <th>
+        <input
+          type="text"
+          nz-input
+          [(ngModel)]="searchFilters.absenceReason"
+          (ngModelChange)="onSearch()"
+          placeholder="Tìm..."
+          nzSize="small"
+        />
+      </th>
+      <!-- Filter: Trạng thái (fixedRight - cuối cùng) -->
+      <th>
+        <nz-select
+          [(ngModel)]="searchFilters.absenceStatus"
+          (ngModelChange)="onSearch()"
+          nzPlaceHolder="Tìm..."
+          nzAllowClear
+          nzSize="small"
+          style="width: 100%"
+        >
+          <nz-option
+            *ngFor="let status of requestStatusOptions"
+            [nzValue]="status.label"
+            [nzLabel]="status.label">
+          </nz-option>
+        </nz-select>
+      </th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr *ngFor="let data of basicTable.data; let i = index" (click)="openDetailModal(data)" style="cursor: pointer;">
+      <td [nzChecked]="!!data.checked" (nzCheckedChange)="onItemChecked(data, $event)" (click)="$event.stopPropagation()"></td>
+      <ng-container *ngFor="let col of leaveManageColumns">
+        <!-- Index Column -->
+        <td *ngIf="col.name === 'index'" [ngClass]="col.classes || ''" class="text-center">
+          {{ (paging.pageIndex - 1) * paging.pageSize + i + 1 }}
+        </td>
+
+        <!-- Action Column -->
+        <td *ngIf="col.name === 'action'" [ngClass]="col.classes || ''" class="text-center" (click)="$event.stopPropagation()">
+          <div class="action-buttons d-flex justify-content-center gap-2">
+            <ng-container *ngFor="let action of col.listAction">
+              <button
+                nz-button
+                nzType="link"
+                nzSize="small"
+                nz-tooltip
+                [nzTooltipTitle]="action.label"
+                (click)="handleAction(action.key, data)"
+                [innerHTML]="action.html | vssSafeHtml"
+                class="action-icon-btn"
+              >
+              </button>
+            </ng-container>
+          </div>
+        </td>
+
+        <!-- Regular Columns -->
+        <ng-container *ngIf="col.name !== 'index' && col.name !== 'action'">
+          <td *ngIf="col.type !== 7 && col.type !== 8; else tagColumn" [ngClass]="col.classes || ''">
+            {{ data[col.name] }}
+          </td>
+          <ng-template #tagColumn>
+            <td [ngClass]="col.classes || ''">
+              <nz-tag [nzColor]="getStatusColor(data[col.name])">
+                {{ data[col.name] }}
+              </nz-tag>
+            </td>
+          </ng-template>
+        </ng-container>
+      </ng-container>
+    </tr>
+    </tbody>
+  </nz-table>
+
+  <div class="mt-2 text-right">
+    <nz-pagination
+      [nzTotal]="paging.totalElements"
+      [nzPageSize]="paging.pageSize"
+      [nzPageIndex]="paging.pageIndex"
+      [nzShowSizeChanger]="true"
+      (nzPageIndexChange)="getChangePagination($event)"
+      (nzPageSizeChange)="onPageSizeChange($event)"
+    ></nz-pagination>
+  </div>
+</nz-card>
