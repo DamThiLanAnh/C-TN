@@ -84,5 +84,11 @@ export class EmployeeManageService {
       headers: this.getHeaders()
     });
   }
+
+  getAllDepartments(): Observable<any> {
+    return this.http.get(`${this.baseUrl}/api/departments/active`, {
+      headers: this.getHeaders()
+    });
+  }
 }
 

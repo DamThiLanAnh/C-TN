@@ -1,0 +1,95 @@
+<div *nzModalTitle>
+  <div>
+    {{modalTitle}}
+  </div>
+</div>
+
+<form nz-form [formGroup]="timekeepingForm" nzLayout="vertical">
+  <div nz-row [nzGutter]="16">
+    <div nz-col [nzSpan]="24">
+      <nz-form-item>
+        <nz-form-label nzRequired>Ngày làm việc</nz-form-label>
+        <nz-form-control nzErrorTip="Vui lòng chọn ngày làm việc">
+          <nz-date-picker
+            formControlName="workDate"
+            nzFormat="dd/MM/yyyy"
+            nzPlaceHolder="Chọn ngày làm việc"
+            [nzDisabledDate]="disabledDate"
+            style="width: 100%"
+          ></nz-date-picker>
+        </nz-form-control>
+      </nz-form-item>
+    </div>
+
+    <div nz-col [nzSpan]="12">
+      <nz-form-item>
+        <nz-form-label nzRequired>Giờ vào đề xuất</nz-form-label>
+        <nz-form-control nzErrorTip="Vui lòng nhập đúng định dạng HH:mm (ví dụ: 08:30)">
+          <input
+            nz-input
+            formControlName="proposedCheckIn"
+            placeholder="HH:mm (ví dụ: 08:00)"
+            maxlength="5"
+          />
+        </nz-form-control>
+      </nz-form-item>
+    </div>
+
+    <div nz-col [nzSpan]="12">
+      <nz-form-item>
+        <nz-form-label nzRequired>Giờ ra đề xuất</nz-form-label>
+        <nz-form-control nzErrorTip="Vui lòng nhập đúng định dạng HH:mm (ví dụ: 17:30)">
+          <input
+            nz-input
+            formControlName="proposedCheckOut"
+            placeholder="HH:mm (ví dụ: 17:30)"
+            maxlength="5"
+          />
+        </nz-form-control>
+      </nz-form-item>
+    </div>
+
+    <div nz-col [nzSpan]="24">
+      <nz-form-item>
+        <nz-form-label nzRequired>Lý do</nz-form-label>
+        <nz-form-control nzErrorTip="Vui lòng nhập lý do giải trình">
+          <textarea
+            nz-input
+            formControlName="reason"
+            rows="4"
+            nzPlaceHolder="Nhập lý do giải trình (ví dụ: Máy chấm công bị hỏng, Quên chấm công...)"
+            maxlength="500"
+          ></textarea>
+          <div class="text-end text-muted mt-1" style="font-size: 12px;">
+            {{ timekeepingForm.get('reason')?.value?.length || 0 }}/500
+          </div>
+        </nz-form-control>
+      </nz-form-item>
+    </div>
+  </div>
+</form>
+
+<div *nzModalFooter>
+  <div class="text-end">
+    <button
+      nz-button
+      nzType="default"
+      type="button"
+      (click)="onCancel()"
+      [disabled]="isSubmitting"
+    >
+      Hủy
+    </button>
+    <button
+      nz-button
+      nzType="primary"
+      type="button"
+      (click)="onSubmit()"
+      [nzLoading]="isSubmitting"
+      [disabled]="isSubmitting"
+    >
+      Tạo mới
+    </button>
+  </div>
+</div>
+

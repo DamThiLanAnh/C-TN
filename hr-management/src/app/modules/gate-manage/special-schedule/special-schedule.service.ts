@@ -34,7 +34,8 @@ export class SpecialScheduleService {
     });
   }
 
-  findByIdApi(id: string): Observable<any> {
+  findByIdApi(id: string | number): Observable<any> {
+    console.log('🔵 Calling GET API /special-schedules/' + id);
     return this.http.get<any>(`${this.baseUrl}/${id}`);
   }
 

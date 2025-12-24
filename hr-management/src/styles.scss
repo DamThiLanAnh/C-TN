@@ -305,3 +305,29 @@ app-training-program-score {
   color: var(--primary-color); // Sử dụng CSS variable thay vì SCSS variable
   margin-left: 2px;
 }
+
+/* Global Button Styles - Border Radius */
+.ant-btn {
+  border-radius: 8px !important;
+}
+
+.ant-btn-primary {
+  border-radius: 8px !important;
+}
+
+.ant-btn-default {
+  border-radius: 8px !important;
+}
+
+.ant-btn-ghost {
+  border-radius: 8px !important;
+}
+
+.ant-btn-link {
+  border-radius: 8px !important;
+}
+
+.ant-btn-text {
+  border-radius: 8px !important;
+}
+

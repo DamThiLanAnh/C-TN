@@ -1,0 +1,168 @@
+<div *nzModalTitle>
+  <div>
+    {{ modalTitle }}
+  </div>
+</div>
+
+<div class="modal-body" *ngIf="itemData">
+  <div class="row mb-3">
+    <div class="col-md-6 mb-2">
+      <strong class="text-muted">Mã nhân viên</strong><br/>
+      <span class="fw-medium">{{ itemData?.employeeUserName || 'N/A' }}</span>
+    </div>
+    <div class="col-md-6 mb-2">
+      <strong class="text-muted">Tên nhân viên</strong><br/>
+      <span class="fw-medium">{{ itemData?.employeeName || 'N/A' }}</span>
+    </div>
+    <div class="col-md-6 mb-2">
+      <strong class="text-muted">Email</strong><br/>
+      <span class="fw-medium">{{ itemData?.employeeEmail || 'N/A' }}</span>
+    </div>
+    <div class="col-md-6 mb-2">
+      <strong class="text-muted">Phòng ban</strong><br/>
+      <span class="fw-medium">{{ itemData?.departmentName || 'N/A' }}</span>
+    </div>
+  </div>
+
+  <nz-divider></nz-divider>
+
+  <div class="row mb-3">
+    <div class="col-md-12 mb-3">
+      <strong class="text-muted">Ngày giải trình</strong><br/>
+      <span class="fw-medium">{{ itemData?.workDate || 'N/A' }}</span>
+    </div>
+
+    <!-- Giờ chấm công thực tế -->
+    <div class="col-md-12 mb-2">
+      <div class="info-section" style="background-color: #f0f5ff; padding: 12px; border-radius: 4px; border-left: 3px solid #1890ff;">
+        <strong class="text-primary">Giờ chấm công thực tế</strong>
+        <div class="row mt-2">
+          <div class="col-md-6">
+            <span class="text-muted" style="font-size: 12px;">Giờ vào:</span><br/>
+            <span class="fw-medium">{{ itemData?.checkInTime || '--:--' }}</span>
+          </div>
+          <div class="col-md-6">
+            <span class="text-muted" style="font-size: 12px;">Giờ ra:</span><br/>
+            <span class="fw-medium">{{ itemData?.checkOutTime || '--:--' }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Giờ giải trình -->
+    <div class="col-md-12 mb-2">
+      <div class="info-section" style="background-color: #fff7e6; padding: 12px; border-radius: 4px; border-left: 3px solid #faad14;">
+        <strong class="text-warning">Giờ giải trình</strong>
+        <div class="row mt-2">
+          <div class="col-md-6">
+            <span class="text-muted" style="font-size: 12px;">Giờ vào:</span><br/>
+            <span class="fw-medium">{{ itemData?.proposedCheckIn || '--:--' }}</span>
+          </div>
+          <div class="col-md-6">
+            <span class="text-muted" style="font-size: 12px;">Giờ ra:</span><br/>
+            <span class="fw-medium">{{ itemData?.proposedCheckOut || '--:--' }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <nz-divider></nz-divider>
+
+  <div class="row mb-3">
+    <div class="col-md-12 mb-2">
+      <strong class="text-muted">Trạng thái</strong><br/>
+      <nz-tag
+        [nzColor]="'transparent'"
+        [style.border-color]="getStatusOption(itemData?.status).color"
+        [style.background-color]="getStatusOption(itemData?.status).color + '15'"
+        style="border-radius: 16px; margin-top: 4px;">
+        <span class="d-inline-flex me-1">
+          <svg height="8" width="8">
+            <circle
+              cx="4"
+              cy="4"
+              r="3"
+              [attr.stroke]="getStatusOption(itemData?.status).color"
+              [attr.fill]="getStatusOption(itemData?.status).color"
+            />
+          </svg>
+        </span>
+        <span [style.color]="getStatusOption(itemData?.status).color">
+          {{ getStatusOption(itemData?.status).label }}
+        </span>
+      </nz-tag>
+    </div>
+  </div>
+
+  <nz-divider></nz-divider>
+
+  <div class="row mb-2">
+    <div class="col-md-12">
+      <ng-container *ngIf="itemData?.status === 'Từ chối' || itemData?.status === 'REJECTED'; else normalReason">
+        <strong class="text-muted">Lý do từ chối</strong>
+        <p class="mt-2 p-3" style="background-color: #fff1f0; border-left: 3px solid #ff4d4f; border-radius: 4px;">
+          {{ itemData?.rejectReason || 'Không có lý do' }}
+        </p>
+      </ng-container>
+      <ng-template #normalReason>
+        <strong class="text-muted">Lý do giải trình</strong>
+        <p class="mt-2 p-3" style="background-color: #f5f5f5; border-left: 3px solid #1890ff; border-radius: 4px;">
+          {{ itemData?.reason || 'Không có lý do' }}
+        </p>
+      </ng-template>
+    </div>
+  </div>
+
+  <div class="row mb-2" *ngIf="itemData?.approverName">
+    <div class="col-md-6">
+      <strong class="text-muted">Người duyệt</strong><br/>
+      <span class="fw-medium">{{ itemData?.approverName }}</span>
+    </div>
+    <div class="col-md-6" *ngIf="itemData?.approvalDate">
+      <strong class="text-muted">Ngày duyệt</strong><br/>
+      <span class="fw-medium">{{ itemData?.approvalDate }}</span>
+    </div>
+  </div>
+</div>
+
+<ng-template #loadingTemplate>
+  <div class="text-center p-4">
+    <nz-spin nzSimple></nz-spin>
+    <p>Đang tải dữ liệu...</p>
+  </div>
+</ng-template>
+
+<div *nzModalFooter>
+  <ng-container *ngIf="itemData?.status === 'Chờ duyệt' || itemData?.status === 'PENDING'; else noApprove">
+    <div class="text-end">
+      <button nz-button nzType="default" type="button" (click)="destroyModal()">
+        Đóng
+      </button>
+      <button
+        nz-button
+        nzGhost
+        nzDanger
+        nzType="primary"
+        type="button"
+        (click)="reject()">
+        Từ chối
+      </button>
+      <button
+        nz-button
+        nzType="primary"
+        type="button"
+        (click)="accept()">
+        Duyệt
+      </button>
+    </div>
+  </ng-container>
+  <ng-template #noApprove>
+    <div class="text-end">
+      <button nz-button nzType="primary" type="button" (click)="destroyModal()">
+        Đóng
+      </button>
+    </div>
+  </ng-template>
+</div>
+

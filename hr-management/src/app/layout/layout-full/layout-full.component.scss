@@ -75,8 +75,8 @@ nz-layout {
   margin-top: 12px;
   > .ant-menu-item:first-child {
     border-top: none !important;
-    justify-content: center;
-    display: flex;
+    justify-content: center !important;
+    display: flex !important;
   }
   .ant-menu-item {
     display: flex;

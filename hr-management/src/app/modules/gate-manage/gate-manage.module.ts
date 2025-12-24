@@ -29,6 +29,13 @@ import { ModalAddLeaveComponent } from './leave-manage/modal-add-leave/modal-add
 
 import { SpecialScheduleModule } from './special-schedule/special-schedule.module';
 import { GateManageComponent } from './gate-manage/gate-manage.component';
+import {
+  ModalTimekeepingDetailComponent
+} from './timekeeping-explanation/modal-timekeeping-detail/modal-timekeeping-detail.component';
+import {
+  ModalAddTimekeepingComponent
+} from './timekeeping-explanation/modal-add-timekeeping/modal-add-timekeeping.component';
+import { SafeHtmlPipe } from '../shares/pipes/safe-html.pipe';
 
 @NgModule(
   {
@@ -56,7 +63,7 @@ import { GateManageComponent } from './gate-manage/gate-manage.component';
       NzDatePickerModule,
       NzInputNumberModule,
       NzToolTipModule,
-      SpecialScheduleModule
+      SpecialScheduleModule,
     ],
     declarations: [
       GateManageComponent,
@@ -64,7 +71,10 @@ import { GateManageComponent } from './gate-manage/gate-manage.component';
       TimekeepingExplanationComponent,
       ApproveScheduleConfigComponent,
       ModalLeaveComponent,
-      ModalAddLeaveComponent
+      ModalAddLeaveComponent,
+      ModalAddTimekeepingComponent,
+      ModalTimekeepingDetailComponent,
+      SafeHtmlPipe
     ],
     exports: []
   })

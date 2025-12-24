@@ -20,12 +20,14 @@ import { NZ_I18N, vi_VN } from 'ng-zorro-antd/i18n';
 import { registerLocaleData } from '@angular/common';
 import vi from '@angular/common/locales/vi';
 import { EmployeeManageComponent } from './modules/employee-manage/employee-manage/employee-manage.component';
+import { SettingComponent } from './modules/setting/setting.component';
 
 registerLocaleData(vi);
 
 @NgModule({
   declarations: [
     AppComponent,
+    SettingComponent,
   ],
   imports: [
     AppRouting,

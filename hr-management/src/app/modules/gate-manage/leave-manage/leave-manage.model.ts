@@ -14,7 +14,7 @@ export interface LeaveManageModel {
   timeRegisterEnd?: string;
   absenceReason?: string;
   absenceStatus?: string;
-  organizationId?: number;
+  departmentId?: number;
   approvalUserId?: number;
   checked?: boolean;
   [key: string]: any; // Add index signature for dynamic access
@@ -24,7 +24,7 @@ export interface LeaveSearchFilters {
   employeeUserName: string;
   employeeName: string;
   employeeEmail: string;
-  organizationName: string;
+  departmentName: string;
   absenceTypeName: string | null;
   startDate: Date | null;
   endDate: Date | null;

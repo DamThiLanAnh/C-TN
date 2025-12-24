@@ -1,49 +1,37 @@
-export interface TimeModel {
-  hour: number;
-  minute: number;
-  second: number;
-  nano: number;
+export interface SpecialScheduleDetail {
+  id: number;
+  employeeId: number;
+  employeeCode: string;
+  employeeName: string;
+  departmentId: number;
+  departmentName: string;
+  startDate: string;
+  endDate: string;
+  morningStart: string | null;
+  morningEnd: string | null;
+  afternoonStart: string | null;
+  afternoonEnd: string | null;
+  type: string;
+  reason: string;
+  status: 'PENDING' | 'APPROVED' | 'REJECTED';
+  approverId: number | null;
+  decidedBy: string | null;
+  decidedAt: string | null;
+  createdAt: string;
 }
 
-export interface StaffModel {
-  staffId: number;
-  fullName: string;
+export interface SpecialScheduleListItem {
+  id: string | number;
+  index: number;
   userName: string;
-  email: string;
-  organizationId: number;
-  organizationName: string;
-  organizationCode: string;
-}
-
-export interface ScheduleTypeModel {
-  id: number;
-  name: string;
-  code: string;
-  isActive: boolean;
-  isDeleted: boolean;
-  createdUser: string;
-  createdDate: string;
-  updatedUser: string;
-  updatedDate: string;
-}
-
-export interface SpecialScheduleModel {
-  id: number;
-  staff: StaffModel;
-  scheduleType: ScheduleTypeModel;
+  fullName: string;
+  scheduleType: string;
+  status: 'PENDING' | 'APPROVED' | 'REJECTED';
   beginDate: string;
   endDate: string;
-  morningStart: TimeModel;
-  morningEnd: TimeModel;
-  afternoonStart: TimeModel;
-  afternoonEnd: TimeModel;
-  status: string;
-  reasonDetail: string;
+  checked: boolean;
+  disabled: boolean;
+  isActiveAction: boolean;
+  [key: string]: any;
 }
 
-export interface SpecialScheduleSearchDTOModel {
-  size: number
-  page: number
-  sortBy: string
-  sortDirection: string
-}

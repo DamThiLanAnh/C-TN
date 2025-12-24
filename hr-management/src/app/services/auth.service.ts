@@ -188,5 +188,42 @@ export class AuthService {
     console.log('isManager result:', isManagerRole);
     return isManagerRole;
   }
+
+  isHR(): boolean {
+    const role = this.getUserRole();
+    console.log('isHR check - role:', role);
+
+    if (!role) {
+      console.log('isHR - no role found');
+      return false;
+    }
+
+    const isHRRole = role === 'HR' ||
+           role === 'ROLE_HR' ||
+           role.toUpperCase() === 'HR';
+
+    console.log('isHR result:', isHRRole);
+    return isHRRole;
+  }
+
+  isHROrAdmin(): boolean {
+    const role = this.getUserRole();
+    console.log('isHROrAdmin check - role:', role);
+
+    if (!role) {
+      console.log('isHROrAdmin - no role found');
+      return false;
+    }
+
+    const isHROrAdminRole = role === 'HR' ||
+           role === 'ROLE_HR' ||
+           role === 'ADMIN' ||
+           role === 'ROLE_ADMIN' ||
+           role.toUpperCase().includes('HR') ||
+           role.toUpperCase().includes('ADMIN');
+
+    console.log('isHROrAdmin result:', isHROrAdminRole);
+    return isHROrAdminRole;
+  }
 }
 
