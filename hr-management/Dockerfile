@@ -1,4 +1,4 @@
-FROM node:16-alpine
+FROM node:18-alpine
 
 WORKDIR /app
 
@@ -9,5 +9,5 @@ COPY . .
 RUN npm install
 RUN npm run build -- --configuration production
 
-EXPOSE 8080
-CMD ["serve", "-s", "dist/hr-management", "-l", "8080"]
+EXPOSE 3000
+CMD sh -c "serve -s dist/hr-management -l $PORT"
