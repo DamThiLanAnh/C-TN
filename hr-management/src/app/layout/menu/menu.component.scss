@@ -2,6 +2,16 @@
   max-height: calc(100vh - 150px);
   overflow-y: auto;
   overflow-x: hidden;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+
+  // Ẩn scrollbar
+  &::-webkit-scrollbar {
+    display: none;
+    width: 0;
+    background: transparent;
+  }
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }
 
 .menu-icon-html {
@@ -59,7 +69,11 @@
     min-width: 56px !important;
     width: 56px !important;
     border-radius: 12px;
-    overflow-x: hidden;
+    overflow: hidden !important;
+
+    .menu-sidebar {
+      overflow: hidden !important;
+    }
   }
   .ant-menu-inline, .ant-menu-vertical, .ant-menu-vertical-left {
     border-right: none;
@@ -68,11 +82,12 @@
     background-image: url(/assets/images/mask-group.png);
     background-repeat: no-repeat !important;
     background-position-x: right;
-    transition: width 3s ease-in-out;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    overflow: hidden;
   }
   .menu-sidebar-fix {
     background-size: cover;
-    overflow-x: hidden;
+    overflow: hidden;
   }
   .menu-sidebar {
     background-size: contain;
@@ -80,10 +95,36 @@
     min-height: calc(100vh - 134px) !important;
     border-radius: 16px;
     margin: 22px 22px 28px 22px;
-    overflow: auto;
+    overflow: hidden;
+    overflow-y: auto;
     min-width: calc(100% - 44px) !important;
     width: 296px !important;
     max-width: unset !important;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+
+    // Custom scrollbar với màu trong suốt và hiệu ứng mượt mà
+    &::-webkit-scrollbar {
+      width: 4px;
+    }
+
+    &::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background: rgba(0, 0, 0, 0.2);
+      border-radius: 4px;
+      transition: background 0.2s ease;
+    }
+
+    &::-webkit-scrollbar-thumb:hover {
+      background: rgba(0, 0, 0, 0.3);
+    }
+
+    // Ẩn scrollbar cho Firefox và IE/Edge
+    -ms-overflow-style: none;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(0, 0, 0, 0.2) transparent;
   }
   .trigger {
     position: absolute;
@@ -183,6 +224,43 @@
     margin-left: 8px;
   }
 }
+
+// Bo góc cho flyout submenu khi sidebar collapsed (global scope)
+::ng-deep .ant-menu-submenu-popup {
+  border-radius: 12px !important;
+  overflow: hidden;
+
+  .ant-menu {
+    border-radius: 12px !important;
+  }
+
+  .ant-menu-sub {
+    border-radius: 12px !important;
+    background: #fff;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  }
+
+  .ant-menu-item {
+    border-radius: 12px !important;
+    margin: 4px 8px;
+
+    &:hover {
+      border-radius: 12px !important;
+      background-color: var(--primary-color-3) !important;
+    }
+  }
+
+  .ant-menu-submenu-title {
+    border-radius: 12px !important;
+    margin: 4px 8px;
+
+    &:hover {
+      border-radius: 12px !important;
+      background-color: var(--primary-color-3) !important;
+    }
+  }
+}
+
 .item .notify{
   width: 35px;
   height: 35px;

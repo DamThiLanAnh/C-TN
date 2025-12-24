@@ -8,11 +8,11 @@
 
 
 <ng-template #contentTpl>
-  <nz-layout class="vh-100">
+  <nz-layout>
     <div class="content">
       <nz-content>
         <!-- Header với thông tin user ở góc phải -->
-        <div class="content-header d-flex justify-content-end" style="margin-top: 10px">
+        <div class="content-header d-flex justify-content-end mt-2 mb-1">
           <ng-container [ngTemplateOutlet]="userInforWrapper"></ng-container>
         </div>
         <!-- Router outlet để hiển thị nội dung của các màn hình -->

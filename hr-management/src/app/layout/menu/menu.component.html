@@ -86,7 +86,6 @@
             <ng-container *ngIf="isAuthorized(menu.roles)">
               <li *ngIf="!menu.children?.length" nz-menu-item [nzDisabled]="menu?.disabled"
                   (click)="clickItem(menu)"
-                  [nz-tooltip]="collapsed ? menu.title || '' : ''" nzTooltipPlacement="right"
                   [nzPaddingLeft]="!collapsed && !isHorizontal ? (menu.level + 1) * 24 : 0"
                   [nzSelected]="isSelected(menu)"
               >
