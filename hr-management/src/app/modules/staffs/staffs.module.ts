@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core'
 import { CommonModule } from '@angular/common'
-import { StaffCalenderComponent } from './staff-calender/staff-calender.component'
+import { StaffCalendarComponent } from './staff-calendar/staff-calendar.component'
 import { StaffDetailComponent } from './staff-detail/staff-detail.component';
 import { NzCardModule } from 'ng-zorro-antd/card';
 import { NzRadioModule } from 'ng-zorro-antd/radio';
@@ -49,7 +49,7 @@ import { StaffsRoutingModule } from './staffs.routing';
   ],
   exports: [],
   declarations: [
-    StaffCalenderComponent,
+    StaffCalendarComponent,
     StaffDetailComponent
   ]
 })

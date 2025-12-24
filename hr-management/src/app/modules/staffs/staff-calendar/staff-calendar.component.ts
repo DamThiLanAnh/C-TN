@@ -21,11 +21,11 @@ interface SpecialSchedule {
 }
 
 @Component({
-  selector: 'app-staff-calender',
-  templateUrl: './staff-calender.component.html',
-  styleUrls: ['./staff-calender.component.scss']
+  selector: 'app-staff-calendar',
+  templateUrl: './staff-calendar.component.html',
+  styleUrls: ['./staff-calendar.component.scss']
 })
-export class StaffCalenderComponent implements OnInit {
+export class StaffCalendarComponent implements OnInit {
   selectedDate: Date = new Date();
   isHideDatePicker = true;
   isTimekeepingDateExporting = false;
