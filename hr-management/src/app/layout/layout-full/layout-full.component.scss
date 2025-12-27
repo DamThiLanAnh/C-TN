@@ -400,75 +400,15 @@ nz-layout {
     border-bottom: 1px solid #D3D3D6;
   }
 
-  .ant-table.ant-table-bordered
-  > .ant-table-container
-  > .ant-table-content
-  > table
-  > thead
-  > tr
-  > th,
-  .ant-table.ant-table-bordered
-  > .ant-table-container
-  > .ant-table-header
-  > table
-  > thead
-  > tr
-  > th,
-  .ant-table.ant-table-bordered
-  > .ant-table-container
-  > .ant-table-body
-  > table
-  > thead
-  > tr
-  > th,
-  .ant-table.ant-table-bordered
-  > .ant-table-container
-  > .ant-table-summary
-  > table
-  > thead
-  > tr
-  > th,
-  .ant-table.ant-table-bordered
-  > .ant-table-container
-  > .ant-table-content
-  > table
-  > tfoot
-  > tr
-  > th,
-  .ant-table.ant-table-bordered
-  > .ant-table-container
-  > .ant-table-header
-  > table
-  > tfoot
-  > tr
-  > th,
-  .ant-table.ant-table-bordered
-  > .ant-table-container
-  > .ant-table-body
-  > table
-  > tfoot
-  > tr
-  > th,
-  .ant-table.ant-table-bordered
-  > .ant-table-container
-  > .ant-table-summary
-  > table
-  > tfoot
-  > tr
-  > th,
-  .ant-table.ant-table-bordered > .ant-table-container > .ant-table-content > table > thead > tr > .ant-table-cell-fix-right-first::after,
-  .ant-table.ant-table-bordered > .ant-table-container > .ant-table-header > table > thead > tr > .ant-table-cell-fix-right-first::after,
-  .ant-table.ant-table-bordered > .ant-table-container > .ant-table-body > table > thead > tr > .ant-table-cell-fix-right-first::after,
-  .ant-table.ant-table-bordered > .ant-table-container > .ant-table-summary > table > thead > tr > .ant-table-cell-fix-right-first::after,
-  .ant-table.ant-table-bordered > .ant-table-container > .ant-table-content > table > tbody > tr > .ant-table-cell-fix-right-first::after,
-  .ant-table.ant-table-bordered > .ant-table-container > .ant-table-header > table > tbody > tr > .ant-table-cell-fix-right-first::after,
-  .ant-table.ant-table-bordered > .ant-table-container > .ant-table-body > table > tbody > tr > .ant-table-cell-fix-right-first::after,
-  .ant-table.ant-table-bordered > .ant-table-container > .ant-table-summary > table > tbody > tr > .ant-table-cell-fix-right-first::after,
-  .ant-table.ant-table-bordered > .ant-table-container > .ant-table-content > table > tfoot > tr > .ant-table-cell-fix-right-first::after,
-  .ant-table.ant-table-bordered > .ant-table-container > .ant-table-header > table > tfoot > tr > .ant-table-cell-fix-right-first::after,
-  .ant-table.ant-table-bordered > .ant-table-container > .ant-table-body > table > tfoot > tr > .ant-table-cell-fix-right-first::after,
-  .ant-table.ant-table-bordered > .ant-table-container > .ant-table-summary > table > tfoot > tr > .ant-table-cell-fix-right-first::after {
-    border-right: 1px solid #D3D3D6;
+  /* 1. Nhóm các ô th và tfoot */
+  .ant-table.ant-table-bordered .ant-table-container th,
+  .ant-table.ant-table-bordered .ant-table-container tfoot th {
+    border-right: 1px solid #D3D3D6 !important;
+  }
+
+  /* 2. Nhóm các pseudo-element ::after của cột fixed */
+  .ant-table.ant-table-bordered .ant-table-container .ant-table-cell-fix-right-first::after {
+    border-right: 1px solid #D3D3D6 !important;
   }
 
   a.action-icon:hover path {
@@ -505,7 +445,7 @@ nz-layout {
   $modal-bg-images: (
     'modal-warning': '/assets/icons/background-alert.png',
     'modal-delete': '/assets/icons/background-delete.png',
-    'modal-success': '/assets/icons/background-success.png',
+    'modal-success': '/assets/icons/background-success.png'
   );
 
   @mixin modal-body-style($type) {
@@ -719,3 +659,20 @@ nz-layout {
   margin-bottom: 1rem;
 }
 
+// Variables
+$primary: #1890ff;
+$secondary: #6e6a68;
+$success: #52c41a;
+$warning: #faad14;
+$error: #ff4d4f;
+$info: #13c2c2;
+$gray-1: #f0f0f0;
+$gray-2: #fafafa;
+$gray-3: #f5f5f5;
+$gray-4: #d9d9d9;
+$gray-5: #bfbfbf;
+$gray-6: #8c8c8c;
+$gray-7: #595959;
+$gray-8: #262626;
+$gray-9: #141414;
+$gray-10: #000000;
