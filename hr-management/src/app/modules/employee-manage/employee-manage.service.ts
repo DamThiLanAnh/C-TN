@@ -49,11 +49,10 @@ export class EmployeeManageService {
 
   createEmployee(employee: any): Observable<any> {
     const payload = {
-      code: employee.userName || employee.code || '',
       fullName: employee.fullName || '',
       dateOfBirth: employee.dateOfBirth || employee.birthDay || null,
       position: employee.position || employee.workPositionName || '',
-      department: employee.department || employee.organizationName || '',
+      departmentId: employee.departmentId || employee.department || null,
       email: employee.email || '',
       phoneNumber: employee.phone || employee.phoneNumber || ''
     };

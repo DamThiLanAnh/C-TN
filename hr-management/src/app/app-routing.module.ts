@@ -31,6 +31,18 @@ export const routes: Routes = [
       {
         path: 'employee-manage',
         loadChildren: () => import('./modules/employee-manage/employee-manage.module').then(m => m.EmployeeManageModule)
+      },
+      {
+        path: 'setting',
+        loadChildren: () => import('./modules/setting/setting.module').then(m => m.SettingModule)
+      },
+      {
+        path: 'import-data',
+        loadChildren: () => import('./modules/import-data/import-data.module').then(m => m.ImportDataModule)
+      },
+      {
+        path: 'staff-cost',
+        loadChildren: () => import('./modules/staff-cost/staff-cost.module').then(m => m.StaffCostModule)
       }
     ]
   }

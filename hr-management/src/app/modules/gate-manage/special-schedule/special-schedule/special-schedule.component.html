@@ -2,6 +2,10 @@
   <div class="d-flex justify-content-between mb-2">
     <h6>{{ tableName }}</h6>
     <div nz-row nzJustify="end" class="d-flex align-items-center">
+      <!-- DEBUG BUTTON -->
+      <button class="me-2" (click)="debugToken()" nz-button nzType="default" type="button" style="background: #ff9800; color: white; border: none;">
+        🔧 Debug Token
+      </button>
       <button class="me-2" (click)="exportFile()" [nzLoading]="isExporting" [disabled]="isExporting"
               nz-button nzType="primary" type="button" nzDanger>
         <span nz-icon nzType="plus-circle" nzTheme="outline" aria-hidden="true" ></span> Thêm mới

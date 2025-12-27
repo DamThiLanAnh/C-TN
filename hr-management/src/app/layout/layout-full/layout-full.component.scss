@@ -20,55 +20,195 @@ nz-layout {
     justify-content: flex-end;
     padding: 20px;
   }
+
   .content {
     padding: 22px 22px 22px 22px;
 
     .content-header {
       display: flex;
-      justify-content: flex-end;
+      justify-content: space-between;
       align-items: center;
-      padding: 16px 24px;
+      padding: 12px 24px;
       background: #fff;
       border-radius: 8px;
       margin-bottom: 16px;
-      gap: 16px;
+      gap: 20px;
+      box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.03);
 
-      .tab-header-container {
-        display: flex;
-        align-items: center;
-
-        &:first-child {
-          margin-right: 0;
-        }
+      .tabs-container {
+        flex: 1;
+        min-width: 0;
       }
 
-      .notify-icon {
-        cursor: pointer;
-        transition: opacity 0.3s;
+      // Tab title wrapper - OUTSIDE ng-deep for proper scoping
+      .tab-title-wrapper {
+        display: flex !important;
+        align-items: center !important;
+        justify-content: space-between !important;
+        width: 100% !important;
+        gap: 12px !important;
+      }
+
+      .tab-title-text {
+        flex: 1 !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
+        white-space: nowrap !important;
+        min-width: 0 !important;
+      }
+
+      .tab-close-btn {
+        flex-shrink: 0 !important;
+        margin-left: auto !important;
+        font-size: 16px !important;
+        color: #a0aec0 !important;
+        cursor: pointer !important;
+        transition: all 0.3s ease !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        width: 20px !important;
+        height: 20px !important;
+        border-radius: 50% !important;
+        padding: 2px !important;
 
         &:hover {
-          opacity: 0.8;
+          color: #fff !important;
+          background-color: #ef4444 !important;
+          transform: rotate(90deg) !important;
+        }
+
+        svg {
+          width: 14px !important;
+          height: 14px !important;
+        }
+      }
+
+      // Ng-zorro tab styles with ::ng-deep
+      .tabs-container ::ng-deep {
+        .ant-tabs-nav {
+          margin-bottom: 0;
+
+          &::before {
+            border-bottom: none;
+          }
+        }
+
+        .ant-tabs-nav-wrap {
+          overflow: visible;
+        }
+
+        .ant-tabs-nav-list {
+          gap: 4px;
+        }
+
+        .ant-tabs-tab {
+          background: #f5f7fa;
+          border: 1px solid transparent;
+          border-radius: 6px;
+          margin: 0;
+          padding: 0 !important;
+          transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+          font-size: 13px;
+          min-height: 32px;
+          display: flex;
+          align-items: center;
+          overflow: visible;
+
+          &:hover {
+            background: #e8edf3;
+            border-color: #d0dae6;
+            transform: translateY(-1px);
+          }
+
+          &-active {
+            background: #ffffff;
+            border-color: #1890ff;
+            box-shadow: 0 2px 8px rgba(24, 144, 255, 0.15);
+
+            .ant-tabs-tab-btn {
+              color: #1890ff !important;
+              font-weight: 600 !important;
+            }
+
+            &:hover {
+              transform: translateY(0);
+              box-shadow: 0 3px 12px rgba(24, 144, 255, 0.2);
+            }
+          }
+
+          .ant-tabs-tab-btn {
+            color: #4a5568 !important;
+            font-weight: 500 !important;
+            transition: color 0.3s !important;
+            padding: 6px 10px !important;
+            display: flex !important;
+            align-items: center !important;
+            width: 100% !important;
+            box-sizing: border-box !important;
+
+            &:hover {
+              color: #2d3748 !important;
+            }
+          }
+        }
+
+        // Custom ink bar (active indicator)
+        .ant-tabs-ink-bar {
+          display: none;
+        }
+
+        // Content area
+        .ant-tabs-content-holder {
+          display: none;
         }
       }
     }
 
-    .content-body {
-      background: #fff;
-      border-radius: 8px;
-      padding: 16px;
-      min-height: calc(100vh - 150px);
+    .tab-header-container {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+
+      &:first-child {
+        margin-right: 0;
+      }
     }
 
-    ::ng-deep {
-      .ant-tabs-nav {
-        display: none !important;
+    .notify-icon {
+      cursor: pointer;
+      transition: all 0.3s;
+      padding: 8px;
+      border-radius: 8px;
+
+      &:hover {
+        background: #f5f7fa;
+        transform: scale(1.05);
       }
+
+      &:active {
+        transform: scale(0.95);
+      }
+    }
+  }
+
+  .content-body {
+    background: #fff;
+    border-radius: 8px;
+    padding: 16px;
+    min-height: calc(100vh - 150px);
+  }
+
+  ::ng-deep {
+    .ant-tabs-nav {
+      display: none !important;
     }
   }
 }
 
 .vss-side-bar {
   padding-top: 60px;
+
   .search {
     padding: 0 25px;
   }
@@ -76,14 +216,17 @@ nz-layout {
 
 .vss-layout-menu {
   margin-top: 12px;
+
   > .ant-menu-item:first-child {
     border-top: none !important;
     justify-content: center !important;
     display: flex !important;
   }
+
   .ant-menu-item {
     display: flex;
     align-items: center;
+
     .name {
       font-weight: 700;
     }
@@ -97,6 +240,7 @@ nz-layout {
   width: 100%;
   height: 35px;
   background: #fff;
+
   p {
     text-align: right;
     margin: 0;
@@ -107,22 +251,26 @@ nz-layout {
 .mr-2 {
   margin-right: 5px;
 }
+
 .notify {
   background-color: white !important;
   padding: 5px;
   border-radius: 21px;
 }
+
 ::ng-deep {
   .ant-menu-item-selected a,
   .ant-menu-item a:hover {
     color: #ee0033 !important;
   }
+
   // .ant-menu .ant-menu-item-selected {
   //   background-color: unset !important;
   // }
   .ant-menu .ant-menu-item-selected::after {
     border: none !important;
   }
+
   .ant-menu-inline.ant-menu-root .ant-menu-item > *,
   .ant-menu-inline.ant-menu-root .ant-menu-submenu-title > * {
     display: flex;
@@ -152,6 +300,7 @@ nz-layout {
     span:last-child {
       display: none;
     }
+
     &::before {
       top: 4px;
     }
@@ -171,34 +320,43 @@ nz-layout {
     margin-bottom: 0.5rem;
     justify-content: center !important;
   }
+
   .menu-sidebar-fix .logo img {
     width: 32px;
   }
+
   .ant-card {
     border-radius: 12px;
     box-shadow: none;
+
     h6 {
       font-weight: 700;
       font-size: 20px;
     }
   }
+
   .ant-table-header {
     border-radius: 12px 12px 0 0;
     border: 1px solid #d3d3d6;
     // border-bottom: none;
   }
+
   .ant-table.ant-table-bordered > .ant-table-container > .ant-table-header > table {
     border-top: none;
   }
+
   td {
     border-right: 1px solid #f0f0f0 !important;
   }
+
   .ant-table.ant-table-bordered > .ant-table-container {
     border-left: none;
   }
+
   .small-table .ant-table-body {
     // height: calc(-320px + 70vh) !important;
   }
+
   .small-table-btn {
     // height: calc(100vh - 440px) !important;
 
@@ -207,9 +365,11 @@ nz-layout {
       // min-height: 20vh;
     }
   }
+
   .card-btn .ant-card-body {
     padding: 10px !important;
   }
+
   // td:first-child {
   //   border-left: 1px solid #d3d3d6 !important;
   // }
@@ -226,9 +386,11 @@ nz-layout {
     border-top: none !important;
     border-radius: 0 0 16px 16px;
   }
+
   .ant-modal-body .ant-table-body {
     height: 30vh !important;
   }
+
   th.ant-table-cell-fix-right.ant-table-cell-fix-left .grid-th--content,
   tr th:first-child .grid-th--content {
     text-align: center !important;
@@ -237,6 +399,7 @@ nz-layout {
   tr.vss-ui-table-row:last-child td {
     border-bottom: 1px solid #D3D3D6;
   }
+
   .ant-table.ant-table-bordered
   > .ant-table-container
   > .ant-table-content
@@ -304,24 +467,28 @@ nz-layout {
   .ant-table.ant-table-bordered > .ant-table-container > .ant-table-content > table > tfoot > tr > .ant-table-cell-fix-right-first::after,
   .ant-table.ant-table-bordered > .ant-table-container > .ant-table-header > table > tfoot > tr > .ant-table-cell-fix-right-first::after,
   .ant-table.ant-table-bordered > .ant-table-container > .ant-table-body > table > tfoot > tr > .ant-table-cell-fix-right-first::after,
-  .ant-table.ant-table-bordered > .ant-table-container > .ant-table-summary > table > tfoot > tr > .ant-table-cell-fix-right-first::after
-  {
+  .ant-table.ant-table-bordered > .ant-table-container > .ant-table-summary > table > tfoot > tr > .ant-table-cell-fix-right-first::after {
     border-right: 1px solid #D3D3D6;
   }
-  a.action-icon:hover path{
+
+  a.action-icon:hover path {
     stroke: #1677FF;
   }
+
   .ant-popover-inner-content {
     padding: 0;
   }
+
   .info-user-popup {
     .ant-popover-inner {
       border-radius: 12px !important;
     }
+
     .ant-popover-arrow {
       display: none !important;
     }
   }
+
   // =========================
   // Modal Styles Refactor
   // =========================
@@ -371,6 +538,7 @@ nz-layout {
     button {
       padding: 6px 16px;
       border-radius: 12px !important;
+
       span {
         margin: 0;
         line-height: 24px;
@@ -400,13 +568,16 @@ nz-layout {
   .modal-success .ant-modal-body {
     @include modal-body-style('modal-success');
   }
+
   .colorBtn {
     border-color: #FAB0C0 !important;
     border-width: 1.5px !important;
   }
+
   .ant-divider-vertical {
     margin: 0 5px;
   }
+
   .list-action-table {
     display: flex;
     justify-content: center;
@@ -428,19 +599,23 @@ nz-layout {
     padding: 20px;
     height: 100%;
   }
+
   .ant-select-arrow .anticon > svg {
     width: 16px;
     height: 14px;
   }
+
   .ant-breadcrumb {
     line-height: 20px;
   }
 }
+
 .name-container {
   margin-left: 12px;
   // margin-bottom: 13px;
 
 }
+
 .info > .row {
   padding: 10px 16px;
   margin: 0;
@@ -451,12 +626,15 @@ nz-layout {
     padding: 0;
   }
 }
+
 .text-info-user {
   color: #9d9da4;
 }
+
 .bottom-logout {
   color: #ee0033;
 }
+
 .border-bottom {
   border-color: #F1F1F2 !important;
   font-weight: 500;
@@ -472,46 +650,58 @@ nz-layout {
   width: 400px;
   position: relative;
 }
+
 ::ng-deep {
   .content-notify .ant-tabs-content-holder {
     display: none !important;
   }
 }
+
 .virtual-scroll {
   height: 500px;
   overflow-x: hidden;
 }
+
 .scroll-item {
   cursor: pointer;
 }
+
 .button-refresh {
   position: absolute;
   top: 0.5rem;
   right: 0.5rem;
 }
+
 ::ng-deep.content-notify {
   .ant-avatar {
     line-height: 24px;
   }
+
   .ant-tabs-nav {
     margin-bottom: 0;
   }
+
   .ant-tabs-nav-list {
     width: 100%;
     background: unset;
+
     &::before,
     &::after {
       display: none;
     }
+
     .ant-tabs-ink-bar {
       background: #ee0033;
     }
+
     .ant-tabs-tab {
       flex: auto;
       justify-content: center;
+
       &:hover {
         color: #ee0033;
       }
+
       &.ant-tabs-tab-active {
         .ant-tabs-tab-btn {
           color: #ee0033;
@@ -520,6 +710,7 @@ nz-layout {
     }
   }
 }
+
 .bottom-menu {
   display: flex;
   flex-direction: column;

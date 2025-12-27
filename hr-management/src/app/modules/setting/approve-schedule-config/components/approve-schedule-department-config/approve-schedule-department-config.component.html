@@ -1,0 +1,116 @@
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h6>Phê duyệt cho cá nhân thuộc đơn vị</h6>
+  <div class="d-flex action-button align-items-center">
+    <ng-container *ruleAuthorized="rolesCanEdit">
+      <button *ngIf="isEditMode" nz-button nzType="default" (click)="onCancelEdit()">
+        <span nz-icon nzType="close-circle" nzTheme="outline"></span> Hủy
+      </button>
+      <button *ngIf="isEditMode" nz-button nzType="primary" (click)="onSaveEdit()">
+        <span nz-icon nzType="save"></span> Lưu lại
+      </button>
+      <button *ngIf="!isEditMode" nz-button nzType="primary" (click)="onEdit()">
+        <span nz-icon nzType="edit"></span> Sửa
+      </button>
+    </ng-container>
+  </div>
+</div>
+<div class="table-wrapper" #tableWrapper>
+  <nz-table [nzData]="configList" [nzShowPagination]="false" nzTableLayout="fixed" [nzBordered]="false">
+    <thead>
+    <tr>
+      <th nzWidth="50px">STT</th>
+      <th *ngIf="isEditMode" nzWidth="70px">Thao tác</th>
+      <th nzWidth="40%">Đơn vị</th>
+      <th>Người duyệt</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr *ngFor="let row of configList; let i = index">
+      <td class="text-center">{{ i + 1 }}</td>
+      <td *ngIf="isEditMode" class="text-center">
+        <i nz-icon nzType="delete" (click)="removeRow(i)" class="pointer" *ruleAuthorized="rolesCanEdit"></i>
+      </td>
+      <td>
+        <div class="multi-select-scroll">
+          <ng-container *ngFor="let id of row.departmentIds">
+            <nz-tag [nzMode]="isEditMode ? 'closeable' : 'default'"
+                    (nzOnClose)="removeOptionId(row, 'departmentIds', id)">
+              {{ getOptionLabel(id, 'departmentIds') }}
+            </nz-tag>
+          </ng-container>
+          <ng-container *ngIf="isEditMode">
+            <button nz-button nz-dropdown [nzDropdownMenu]="departmentDropdownMenu"
+                    (nzVisibleChange)="onDepartmentDropdownVisibleChange($event, i)" [nzTrigger]="'click'"
+                    nzType="default" nzShape="circle" class="plus-button"
+                    (click)="$event.stopPropagation()">
+              <span nz-icon nzType="plus"></span>
+            </button>
+            <nz-dropdown-menu #departmentDropdownMenu="nzDropdownMenu">
+              <div class="dropdown-search-wrapper">
+                <input nz-input [(ngModel)]="searchKeyword['departmentIds']"
+                       (ngModelChange)="filterOption('departmentIds')" class="dropdown-search-input" />
+                <i nz-icon nzType="search" class="search-icon"></i>
+              </div>
+              <ul nz-menu>
+                <cdk-virtual-scroll-viewport itemSize="20" #departmentViewport
+                                             [style.height.px]="getViewportHeight('departmentIds')">
+                  <li nz-menu-item *cdkVirtualFor="let dept of filteredOptions['departmentIds']"
+                      (click)="onAddValue(row, 'departmentIds', dept.value)">
+                    {{ dept.label }}
+                  </li>
+                  <li *ngIf="filteredOptions['departmentIds'].length === 0" nz-menu-item>
+                    Không có kết quả
+                  </li>
+                </cdk-virtual-scroll-viewport>
+              </ul>
+            </nz-dropdown-menu>
+          </ng-container>
+        </div>
+      </td>
+      <td>
+        <div class="multi-select-scroll">
+          <ng-container *ngFor="let id of row.approveStaffIds">
+            <nz-tag [nzMode]="isEditMode ? 'closeable' : 'default'"
+                    (nzOnClose)="removeOptionId(row, 'approveStaffIds', id)">
+              {{ getOptionLabel(id, 'approveStaffIds') }}
+            </nz-tag>
+          </ng-container>
+          <ng-container *ngIf="isEditMode">
+            <button nz-button nz-dropdown [nzDropdownMenu]="staffDropdownMenu"
+                    (nzVisibleChange)="onStaffDropdownVisibleChange($event, i)" [nzTrigger]="'click'"
+                    nzType="default" nzShape="circle" class="plus-button"
+                    (click)="$event.stopPropagation()">
+              <span nz-icon nzType="plus"></span>
+            </button>
+            <nz-dropdown-menu #staffDropdownMenu="nzDropdownMenu">
+              <div class="dropdown-search-wrapper">
+                <input nz-input [(ngModel)]="searchKeyword['approveStaffIds']"
+                       (ngModelChange)="filterOption('approveStaffIds')" class="dropdown-search-input" />
+                <i nz-icon nzType="search" class="search-icon"></i>
+              </div>
+              <ul nz-menu>
+                <cdk-virtual-scroll-viewport itemSize="20" #staffViewport
+                                             [style.height.px]="getViewportHeight('approveStaffIds')">
+                  <li nz-menu-item *cdkVirtualFor="let staff of filteredOptions['approveStaffIds']"
+                      (click)="onAddValue(row, 'approveStaffIds', staff.value)">
+                    {{ staff.label }}
+                  </li>
+                  <li *ngIf="filteredOptions['approveStaffIds'].length === 0" nz-menu-item>
+                    Không có kết quả
+                  </li>
+                </cdk-virtual-scroll-viewport>
+              </ul>
+            </nz-dropdown-menu>
+          </ng-container>
+        </div>
+      </td>
+    </tr>
+    </tbody>
+  </nz-table>
+</div>
+<div *ngIf="isEditMode" class="mt-2">
+  <div class="btn-add pointer" (click)="addRow()">
+    <i nz-icon nzType="plus" *ruleAuthorized="rolesCanEdit"></i>
+    Thêm mới
+  </div>
+</div>

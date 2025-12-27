@@ -12,9 +12,60 @@
     <div class="content">
       <nz-content>
         <!-- Header với thông tin user ở góc phải -->
-        <div class="content-header d-flex justify-content-end mt-2 mb-1">
+        <div class="content-header d-flex justify-content-between align-items-center mt-2 mb-1">
+          <!-- Dynamic Tabs -->
+          <div class="tabs-container flex-grow-1" *ngIf="dynamicTabs.length > 0">
+            <nz-tabset
+              [(nzSelectedIndex)]="selectedTabIndex"
+              nzType="card"
+              [nzHideAdd]="true"
+              (nzSelectChange)="onTabChange($event)">
+              <nz-tab
+                *ngFor="let tab of dynamicTabs; let i = index"
+                [nzTitle]="titleTemplate">
+                <ng-template #titleTemplate>
+                  <div class="tab-title-wrapper"
+                       style="
+                       display: flex;
+                       align-items: center;
+                       justify-content: space-between;
+                       width: 100%;
+                       gap: 8px;">
+                    <span
+                      class="tab-title-text"
+                      style="flex: 1;
+                      overflow: hidden;
+                      text-overflow: ellipsis;
+                      white-space: nowrap;"
+                    >{{ tab.title }}</span>
+                    <i
+                      *ngIf="dynamicTabs.length > 1"
+                      nz-icon
+                      nzType="close"
+                      class="tab-close-btn"
+                      style="
+                      flex-shrink: 0;
+                      margin-left: auto;
+                      margin-right: 0;
+                      width: 20px;
+                      height: 20px;
+                      display: inline-flex;
+                      align-items: center;
+                       justify-content: center;
+                       border-radius: 50%;
+                       color: #6e6a68;
+                       cursor: pointer;"
+                      (click)="closeTab(i, $event)">
+                    </i>
+                  </div>
+                </ng-template>
+              </nz-tab>
+            </nz-tabset>
+          </div>
+
           <ng-container [ngTemplateOutlet]="userInforWrapper"></ng-container>
         </div>
+
         <!-- Router outlet để hiển thị nội dung của các màn hình -->
         <div class="content-body">
           <router-outlet></router-outlet>
@@ -97,7 +148,7 @@
     <div class="border-bottom">
       <div (click)="logout()" class="bottom-logout d-flex align-items-center cursor-pointer">
         <img src="/assets/icons/logout.png" alt="logout"/>
-        Thoát
+        Đăng xuất
       </div>
     </div>
   </div>

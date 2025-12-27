@@ -12,16 +12,8 @@
     </div>
 
     <form nz-form [formGroup]="formGroup">
+      <!-- Row 1: Họ và tên + Ngày sinh -->
       <div nz-row [nzGutter]="16">
-        <div nz-col [nzSpan]="12">
-          <nz-form-item>
-            <nz-form-label [nzSpan]="8" nzRequired>Mã nhân viên</nz-form-label>
-            <nz-form-control [nzSpan]="16" nzErrorTip="Vui lòng nhập mã nhân viên!">
-              <input nz-input formControlName="code" placeholder="Nhập mã nhân viên" />
-            </nz-form-control>
-          </nz-form-item>
-        </div>
-
         <div nz-col [nzSpan]="12">
           <nz-form-item>
             <nz-form-label [nzSpan]="8" nzRequired>Họ và tên</nz-form-label>
@@ -30,9 +22,7 @@
             </nz-form-control>
           </nz-form-item>
         </div>
-      </div>
 
-      <div nz-row [nzGutter]="16">
         <div nz-col [nzSpan]="12">
           <nz-form-item>
             <nz-form-label [nzSpan]="8">Ngày sinh</nz-form-label>
@@ -42,18 +32,19 @@
             </nz-form-control>
           </nz-form-item>
         </div>
+      </div>
 
+      <!-- Row 2: Email + Số điện thoại -->
+      <div nz-row [nzGutter]="16">
         <div nz-col [nzSpan]="12">
           <nz-form-item>
-            <nz-form-label [nzSpan]="8" nzRequired>Email</nz-form-label>
-            <nz-form-control [nzSpan]="16" nzErrorTip="Vui lòng nhập email hợp lệ!">
-              <input nz-input formControlName="email" placeholder="Nhập email" type="email" />
+            <nz-form-label [nzSpan]="8">Email</nz-form-label>
+            <nz-form-control [nzSpan]="16">
+              <input nz-input formControlName="email" placeholder="Email sẽ tự động tạo từ họ tên" type="text" />
             </nz-form-control>
           </nz-form-item>
         </div>
-      </div>
 
-      <div nz-row [nzGutter]="16">
         <div nz-col [nzSpan]="12">
           <nz-form-item>
             <nz-form-label [nzSpan]="8" nzRequired>Số điện thoại</nz-form-label>
@@ -62,7 +53,10 @@
             </nz-form-control>
           </nz-form-item>
         </div>
+      </div>
 
+      <!-- Row 3: Vị trí + Phòng ban -->
+      <div nz-row [nzGutter]="16">
         <div nz-col [nzSpan]="12">
           <nz-form-item>
             <nz-form-label [nzSpan]="8" nzRequired>Vị trí</nz-form-label>
@@ -71,15 +65,12 @@
             </nz-form-control>
           </nz-form-item>
         </div>
-      </div>
 
-      <div nz-row [nzGutter]="16">
         <div nz-col [nzSpan]="12">
           <nz-form-item>
             <nz-form-label [nzSpan]="8" nzRequired>Phòng ban</nz-form-label>
-            <nz-form-control [nzSpan]="16" nzErrorTip="Vui lòng nhập phòng ban!">
-<!--              <input nz-input formControlName="department" placeholder="Nhập phòng ban" />-->
-              <nz-select nzShowSearch nzAllowClear nzPlaceHolder="Chọn phòng ban"  formControlName="department" >
+            <nz-form-control [nzSpan]="16" nzErrorTip="Vui lòng chọn phòng ban!">
+              <nz-select nzShowSearch nzAllowClear nzPlaceHolder="Chọn phòng ban"  formControlName="departmentId" >
                 <nz-option *ngFor="let d  of departmentOptions" [nzLabel]="d.label" [nzValue]="d.value"></nz-option>
               </nz-select>
             </nz-form-control>

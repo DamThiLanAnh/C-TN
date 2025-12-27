@@ -3,7 +3,6 @@ import { RouterModule, Routes } from '@angular/router';
 import { SpecialScheduleComponent } from './special-schedule/special-schedule/special-schedule.component';
 import { NgModule } from '@angular/core';
 import { TimekeepingExplanationComponent } from './timekeeping-explanation/timekeeping-explanation.component';
-import { ApproveScheduleConfigComponent } from './approve-schedule-config/approve-schedule-config.component';
 
 const routes: Routes = [
   {
@@ -25,13 +24,6 @@ const routes: Routes = [
   {
     path: 'timekeeping-explanation',
     component: TimekeepingExplanationComponent,
-    data: {
-      roles: []
-    }
-  },
-  {
-    path: 'approve-schedule-config',
-    component: ApproveScheduleConfigComponent,
     data: {
       roles: []
     }

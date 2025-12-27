@@ -1,9 +1,44 @@
 .full-height {
   height: 100%;
+
+  ::ng-deep .ant-card-body {
+    padding: 24px;
+  }
 }
 
 .action-table {
   gap: 8px;
+}
+
+// Action buttons styling
+.action-buttons {
+  gap: 8px;
+}
+
+::ng-deep {
+  .action-icon-btn {
+    padding: 4px 8px !important;
+    height: auto !important;
+    min-width: 32px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+
+    svg {
+      width: 20px;
+      height: 20px;
+    }
+
+    &:hover {
+      transform: scale(1.1);
+      opacity: 0.8;
+    }
+
+    &:active {
+      transform: scale(0.95);
+    }
+  }
 }
 
 .filter-row {
@@ -22,23 +57,6 @@
   }
 }
 
-.action-icon-btn {
-  padding: 0;
-  border: none;
-  background: transparent;
-  cursor: pointer;
-  transition: transform 0.2s;
-
-  &:hover {
-    transform: scale(1.1);
-  }
-}
-
-.action-buttons {
-  .action-icon-btn {
-    margin: 0 2px;
-  }
-}
 
 ::ng-deep {
   .ant-table-small {

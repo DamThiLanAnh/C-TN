@@ -5,7 +5,7 @@
 export const environment = {
   production: false,
   apiUrl: 'https://hrm-backend-1939.onrender.com',
-  bearToken: 'eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTc2NTI5MDkzOSwiZXhwIjoxNzY1ODk1NzM5fQ.tbcwbrOjIAv-WzOUovC6kWaiAO0-xkxpwsY3pY9imNE'
+  bearToken: 'eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJiZW52IiwiaWF0IjoxNzY2ODI2MjE3LCJleHAiOjE3NjY4MjgwMTd9.FtjHrCMttDeK_e_fzovJ92U3BQdWAkLJeOGIQV5Zdm4'
 };
 
 /*

@@ -1,0 +1,158 @@
+.action-button{
+  gap: 8px;
+}
+
+.pointer{
+  cursor: pointer;
+}
+
+.btn-add{
+  color: #EE0033;
+  font-weight: 600;
+  font-size: 14px;
+  display: flex;
+  justify-items: center;
+  align-items: center;
+  gap: 6px;
+  width: fit-content;
+}
+
+.plus-button {
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+}
+
+.multi-select-scroll {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  max-width: 100%;
+  min-height: 32px;
+  gap: 4px;
+  overflow-y: auto;
+  overflow-x: auto;
+  box-sizing: border-box;
+  padding: 2px;
+
+  nz-tag,
+  ::ng-deep .ant-tag {
+    margin: 0;
+    font-size: 12px;
+    padding: 2px 8px;
+    line-height: 20px;
+  }
+}
+
+.dropdown-search-wrapper {
+  position: relative;
+  margin-bottom: 4px;
+  min-width: max-content;
+  width: 400px;
+}
+
+.dropdown-search-input {
+  border-radius: 6px;
+  border: 1px solid #e0e0e0;
+  width: 100%;
+  font-size: 14px;
+  box-sizing: border-box;
+}
+
+.search-icon {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+}
+
+::ng-deep {
+  .container-div .ant-form-item {
+    align-items: center;
+    justify-content: center;
+    display: flex;
+    background-color: transparent;
+  }
+}
+
+.tab {
+  border-bottom: 1px solid #d1d3d8;
+  background-color: #fff;
+
+  button.active {
+    border-color: #ee0033;
+    border-width: 0 0 2px;
+    color: #ee0033;
+    border-bottom: 2px solid;
+  }
+
+  button {
+    border: none;
+    padding: 10px 10px;
+    max-height: unset;
+    background-color: transparent;
+    border-radius: 0 !important;
+    color: #6b7280;
+    font-weight: 500;
+  }
+}
+
+::ng-deep .ant-table-header.nz-table-hide-scrollbar {
+  padding-right: 0 !important;
+}
+
+::ng-deep nz-tag,
+::ng-deep .ant-tag {
+  border-radius: 40px !important;
+}
+
+.table-wrapper {
+  max-height: calc(100vh - 310px);
+  overflow: auto;
+
+  ::ng-deep .ant-table {
+    font-size: 13px;
+
+    .ant-table-thead > tr > th {
+      background-color: #fafafa;
+      font-weight: 600;
+      padding: 10px 12px;
+      border: 1px solid #f0f0f0;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    .ant-table-tbody > tr > td {
+      padding: 10px 12px;
+      border: 1px solid #f0f0f0;
+    }
+
+    .ant-table-tbody > tr:hover > td {
+      background-color: #fafafa;
+    }
+
+    // Fix double borders
+    .ant-table-thead > tr > th,
+    .ant-table-tbody > tr > td {
+      border-right: 1px solid #f0f0f0;
+      border-bottom: 1px solid #f0f0f0;
+
+      &:first-child {
+        border-left: 1px solid #f0f0f0;
+      }
+    }
+
+    .ant-table-thead > tr:first-child > th {
+      border-top: 1px solid #f0f0f0;
+    }
+  }
+}
+
+.title-card {
+  font-size: 14px;
+}

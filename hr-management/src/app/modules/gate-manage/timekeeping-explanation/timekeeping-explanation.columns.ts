@@ -1,4 +1,5 @@
-import { StandardColumnModel } from '../../shares/interfaces';
+import { ActionConfig, StandardColumnModel, StandardColumnType } from '../../shares/interfaces';
+import { IconHtml } from '../../shares/enum/icon-html.enum';
 
 export function timekeepingExplanationColumns(): StandardColumnModel[] {
   return [
@@ -13,24 +14,36 @@ export function timekeepingExplanationColumns(): StandardColumnModel[] {
     },
     {
       id: 2,
-      attr: 'Thao tác',
       name: 'action',
+      fixedColumn: true,
+      fixedRight: false,
+      attr: 'Thao tác',
+      type: StandardColumnType.ACTION,
       width: '100px',
-      type: 0,
+      isFilter: false,
       isSort: false,
-      classes: 'text-center',
+      rulesAction: {
+        isEdit: [''],
+        isRemove: [''],
+      },
       listAction: [
         {
           key: 'approve',
+          icon: 'approve',
           label: 'Duyệt',
-          html: '<span nz-icon nzType="check-circle" nzTheme="outline" style="color: #52c41a; font-size: 18px;"></span>'
-        },
+          html: IconHtml.ACCEPT,
+          rules: [],
+          fieldCheckShow: 'isActiveAction',
+        } as ActionConfig,
         {
           key: 'reject',
+          icon: 'reject',
           label: 'Từ chối',
-          html: '<span nz-icon nzType="close-circle" nzTheme="outline" style="color: #ff4d4f; font-size: 18px;"></span>'
-        }
-      ]
+          html: IconHtml.REJECT,
+          rules: [],
+          fieldCheckShow: 'isActiveAction',
+        } as ActionConfig,
+      ],
     },
     {
       id: 3,

@@ -7,7 +7,7 @@ import { environment } from '../../../../environments/environment';
   providedIn: 'root'
 })
 export class SpecialScheduleService {
-  private baseUrl = `${environment.apiUrl}/special-schedules`;
+  private baseUrl = `${environment.apiUrl}/api/special-schedules`;
 
   constructor(private http: HttpClient) {}
 
@@ -19,6 +19,32 @@ export class SpecialScheduleService {
       }
     });
     return this.http.post<any>(`${this.baseUrl}/search`, body, { params: httpParams });
+  }
+
+  // API for employee role - get their own special schedules
+  getMySpecialSchedulesApi(params: any): Observable<any> {
+    // Simplify params - only send page and size like leave API
+    const httpParams = new HttpParams()
+      .set('page', params.page !== undefined ? params.page.toString() : '0')
+      .set('size', params.size !== undefined ? params.size.toString() : '10');
+
+    const url = `${this.baseUrl}/my`;
+    console.log('🔵 ===== GET MY SPECIAL SCHEDULES API =====');
+    console.log('🔵 Full URL:', url);
+    console.log('🔵 Base URL:', this.baseUrl);
+    console.log('🔵 Environment API URL:', environment.apiUrl);
+    console.log('🔵 Params object:', params);
+    console.log('🔵 HttpParams string:', httpParams.toString());
+    console.log('🔵 Final URL with params:', `${url}?${httpParams.toString()}`);
+    console.log('🔵 Page:', params.page, '| Size:', params.size);
+
+    // Log token from localStorage
+    const token = localStorage.getItem('token');
+    console.log('🔵 Token in localStorage (from service):', token ? token.substring(0, 30) + '...' : 'NULL');
+
+    // Don't set headers here - let interceptor handle it
+    console.log('🔵 Making HTTP GET request...');
+    return this.http.get<any>(url, { params: httpParams });
   }
 
   exportApi(body: any, params: any): Observable<Blob> {

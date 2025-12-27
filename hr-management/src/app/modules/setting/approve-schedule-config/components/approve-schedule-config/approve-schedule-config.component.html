@@ -1,0 +1,153 @@
+<nz-card class="container-card d-flex flex-column p-0">
+  <div class="d-flex justify-content-between mb-2 align-items-center">
+        <span class="d-flex align-items-center" style="flex-wrap: wrap; gap: 8px">
+            <h6>Thiết lập người duyệt</h6>
+            <i nz-icon nzType="info-circle" class="mb-2 pointer"
+               nz-tooltip="Chức năng này nhằm mục đích thiết lập người duyệt các yêu cầu vắng mặt, đăng ký lịch làm đặc thù, giải trình công"></i>
+        </span>
+  </div>
+
+  <div class="approve-config-tab-container">
+    <div class="tab">
+      <button [class.active]="selectedTabIndex === 0" (click)="onTabChange(0)" *ruleAuthorized="personalRoles">
+        <span class="title-card">Phê duyệt cá nhân</span>
+      </button>
+      <button [class.active]="selectedTabIndex === 1" (click)="onTabChange(1)" *ruleAuthorized="businessRoles">
+        <span class="title-card">Phê duyệt đơn vị</span>
+      </button>
+    </div>
+    <nz-card style="box-shadow: none">
+      <ng-container *ngIf="selectedTabIndex === 0">
+        <ng-container *ruleAuthorized="personalRoles">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <h6>Phê duyệt cho cá nhân</h6>
+            <div class="d-flex action-button align-items-center">
+              <ng-container *ruleAuthorized="personalRoles">
+                <button *ngIf="isEditMode" nz-button nzType="default" (click)="onCancelEdit()">
+                  <span nz-icon nzType="close-circle" nzTheme="outline"></span> Hủy
+                </button>
+                <button *ngIf="isEditMode" nz-button nzType="primary" (click)="onSaveEdit()">
+                  <span nz-icon nzType="save"></span> Lưu lại
+                </button>
+                <button *ngIf="!isEditMode" nz-button nzType="primary" (click)="onEdit()">
+                  <span nz-icon nzType="edit"></span> Sửa
+                </button>
+              </ng-container>
+            </div>
+          </div>
+          <div class="table-wrapper" #tableWrapper>
+            <nz-table [nzData]="configList" [nzShowPagination]="false" nzTableLayout="fixed" [nzBordered]="true">
+              <thead>
+              <tr>
+                <th nzWidth="50px">STT</th>
+                <th *ngIf="isEditMode" nzWidth="70px">Thao tác</th>
+                <th nzWidth="40%">Người gửi duyệt</th>
+                <th>Người duyệt</th>
+              </tr>
+              </thead>
+              <tbody>
+              <tr *ngFor="let row of configList; let i = index">
+                <td class="text-center">{{ i + 1 }}</td>
+                <td *ngIf="isEditMode" class="text-center">
+                  <i nz-icon nzType="delete" (click)="removeRow(i)" class="pointer"
+                     *ruleAuthorized="personalRoles"></i>
+                </td>
+                <td>
+                  <div class="multi-select-scroll">
+                    <ng-container *ngFor="let id of row.staffIds">
+                      <nz-tag [nzMode]="isEditMode ? 'closeable' : 'default'"
+                              (nzOnClose)="removeOptionId(row, 'staffIds', id)">
+                        {{ getOptionLabel(id) }}
+                      </nz-tag>
+                    </ng-container>
+                    <ng-container *ngIf="isEditMode">
+                      <button nz-button nz-dropdown [nzDropdownMenu]="staffDropdownMenu"
+                              (nzVisibleChange)="onStaffDropdownVisibleChange($event, i)"
+                              [nzTrigger]="'click'" nzType="default" nzShape="circle" class="plus-button"
+                              (click)="$event.stopPropagation()">
+                        <span nz-icon nzType="plus"></span>
+                      </button>
+
+                      <nz-dropdown-menu #staffDropdownMenu="nzDropdownMenu">
+                        <div class="dropdown-search-wrapper">
+                          <input nz-input [(ngModel)]="searchKeyword['staffIds']"
+                                 (ngModelChange)="filterOption('staffIds')"
+                                 class="dropdown-search-input"/>
+                          <i nz-icon nzType="search" class="search-icon"></i>
+                        </div>
+                        <ul nz-menu>
+                          <cdk-virtual-scroll-viewport itemSize="20" #staffViewport
+                                                       [style.height.px]="getViewportHeight('staffIds')">
+                            <li nz-menu-item
+                                *cdkVirtualFor="let staff of filteredOptions['staffIds']"
+                                (click)="onAddValue(row, 'staffIds', staff.value)">
+                              {{ staff.label }}
+                            </li>
+                            <li *ngIf="filteredOptions['staffIds'].length === 0" nz-menu-item>
+                              Không có kết quả
+                            </li>
+                          </cdk-virtual-scroll-viewport>
+                        </ul>
+                      </nz-dropdown-menu>
+                    </ng-container>
+                  </div>
+                </td>
+                <td>
+                  <div class="multi-select-scroll">
+                    <ng-container *ngFor="let id of row.approverIds">
+                      <nz-tag [nzMode]="isEditMode ? 'closeable' : 'default'"
+                              (nzOnClose)="removeOptionId(row, 'approverIds', id)">
+                        {{ getOptionLabel(id) }}
+                      </nz-tag>
+                    </ng-container>
+                    <ng-container *ngIf="isEditMode">
+                      <button nz-button nz-dropdown [nzDropdownMenu]="approverDropdownMenu"
+                              (nzVisibleChange)="onApproverDropdownVisibleChange($event, i)"
+                              [nzTrigger]="'click'" nzType="default" nzShape="circle" class="plus-button"
+                              (click)="$event.stopPropagation()">
+                        <span nz-icon nzType="plus"></span>
+                      </button>
+                      <nz-dropdown-menu #approverDropdownMenu="nzDropdownMenu">
+                        <div class="dropdown-search-wrapper">
+                          <input nz-input [(ngModel)]="searchKeyword['approverIds']"
+                                 (ngModelChange)="filterOption('approverIds')"
+                                 class="dropdown-search-input"/>
+                          <i nz-icon nzType="search" class="search-icon"></i>
+                        </div>
+                        <ul nz-menu>
+                          <cdk-virtual-scroll-viewport itemSize="20" #approverViewport
+                                                       [style.height.px]="getViewportHeight('approverIds')">
+                            <li nz-menu-item
+                                *cdkVirtualFor="let staff of filteredOptions['approverIds']"
+                                (click)="onAddValue(row, 'approverIds', staff.value)">
+                              {{ staff.label }}
+                            </li>
+                            <li *ngIf="filteredOptions['approverIds'].length === 0"
+                                nz-menu-item>
+                              Không có kết quả
+                            </li>
+                          </cdk-virtual-scroll-viewport>
+                        </ul>
+                      </nz-dropdown-menu>
+                    </ng-container>
+                  </div>
+                </td>
+              </tr>
+              </tbody>
+            </nz-table>
+          </div>
+          <div *ngIf="isEditMode" class="mt-2">
+            <div class="btn-add pointer" (click)="addRow()">
+              <i nz-icon nzType="plus" *ruleAuthorized="personalRoles"></i>
+              Thêm mới
+            </div>
+          </div>
+        </ng-container>
+      </ng-container>
+      <ng-container *ngIf="selectedTabIndex === 1">
+        <app-approve-schedule-department-config
+          *ruleAuthorized="businessRoles"></app-approve-schedule-department-config>
+      </ng-container>
+    </nz-card>
+  </div>
+</nz-card>

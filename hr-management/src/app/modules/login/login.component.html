@@ -13,7 +13,7 @@
         [disabled]="isLoading"
       />
       <div class="error-text" *ngIf="isInvalid('username')">
-        * Username is required
+        * Bạn cần nhập tài khoản
       </div>
 
       <input
@@ -25,17 +25,17 @@
         [disabled]="isLoading"
       />
       <div class="error-text" *ngIf="isInvalid('password')">
-        * Password is required
+        * Bạn cần nhập mật khẩu
       </div>
       <div class="error-text" *ngIf="loginError">
-        * Incorrect username/password
+        * Tài khoản hoặc mật khẩu không đúng
       </div>
 
       <button
         type="submit"
         class="btn"
         [disabled]="isLoading || loginForm.invalid">
-        Continue
+        Đăng nhâp
       </button>
     </form>
   </div>

@@ -1,7 +1,8 @@
 import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
+import { Router, NavigationEnd } from '@angular/router';
 import { CurrentUser, UiNavModel } from '../menu/menu.component';
 import { IconHtml } from '../../modules/shares/enum/icon-html.enum';
+import { filter } from 'rxjs/operators';
 
 interface Notification {
   id: string;
@@ -10,6 +11,12 @@ interface Notification {
   staffId: string;
   createdDate: Date;
   readNotify: boolean;
+}
+
+interface Tab {
+  title: string;
+  url: string;
+  active: boolean;
 }
 
 @Component({
@@ -21,6 +28,11 @@ export class LayoutFullComponent implements OnInit {
   isCollapsed = false;
   nzPopoverVisible = false;
   nzPopoverUserVisible = false;
+
+  // Dynamic Tabs management
+  dynamicTabs: Tab[] = [];
+  selectedTabIndex = 0;
+
   menus: UiNavModel[] = [
     {
       htmlIcon: IconHtml.HOME,
@@ -71,15 +83,7 @@ export class LayoutFullComponent implements OnInit {
           title: 'Giải trình công',
           url: '/gate-manage/timekeeping-explanation',
           roles: [],
-        },
-        {
-          children: [],
-          id: '104',
-          level: 2,
-          title: 'Thiết lập người duyệt',
-          url: '/gate-manage/approve-schedule-config',
-          roles: [],
-        },
+        }
       ]
     },
     {
@@ -92,6 +96,25 @@ export class LayoutFullComponent implements OnInit {
       // roles: ['ROLE_INFOR_BY_SELF']
     },
     {
+      htmlIcon: IconHtml.COST,
+      id: '1111',
+      level: 1,
+      url: '/staff-cost',
+      title: 'Chi phí',
+      // roles: ['ROLE_VIEW_COST']
+      children: [
+        // {
+        //   icon: '',
+        //   children: [],
+        //   id: '12',
+        //   level: 2,
+        //   title: 'Danh sách tổng lương',
+        //   url: '/staff-cost',
+        //   roles: [],
+        // },
+      ],
+    },
+    {
       htmlIcon: IconHtml.IMPORT,
       id: '12',
       level: 1,
@@ -99,31 +122,13 @@ export class LayoutFullComponent implements OnInit {
       url: '',
       roles: [],
       children: [
-        // {
-        //   icon: '',
-        //   children: [],
-        //   id: '120',
-        //   level: 2,
-        //   title: 'Import số lượng thực tập sinh',
-        //   url: '/import/trainee',
-        //   roles: [],
-        // },
-        // {
-        //   icon: '',
-        //   children: [],
-        //   id: '121',
-        //   level: 2,
-        //   title: 'Import chi phí hỗ trợ thực tập sinh',
-        //   url: '/import/trainee-cost',
-        //   roles: [],
-        // },
         {
           icon: '',
           children: [],
           id: '123',
           level: 2,
           title: 'Import dữ liệu công',
-          url: '/import-vgov/attendance',
+          url: '/import-data/attendance',
           roles: [],
         },
         {
@@ -131,8 +136,8 @@ export class LayoutFullComponent implements OnInit {
           children: [],
           id: '123',
           level: 2,
-          title: 'Import dữ liệu KPI',
-          url: '/import-vgov/leave-absence',
+          title: 'Import dữ liệu vào ra',
+          url: '/import-data/check-in-out',
           roles: [],
         },
       ]
@@ -142,7 +147,6 @@ export class LayoutFullComponent implements OnInit {
       id: '13',
       level: 1,
       title: 'Cài đặt hệ thống',
-      url: '/settings/system-config',
       roles: [],
       children: [
         {
@@ -151,16 +155,7 @@ export class LayoutFullComponent implements OnInit {
           id: '130',
           level: 2,
           title: 'Thêm mới tài khoản',
-          url: '/settings/add-account',
-          roles: [],
-        },
-        {
-          icon: '',
-          children: [],
-          id: '131',
-          level: 2,
-          title: 'Quản lý vai trò',
-          url: '/settings/role-management',
+          url: '/setting/user-account',
           roles: [],
         },
         {
@@ -169,7 +164,7 @@ export class LayoutFullComponent implements OnInit {
           id: '132',
           level: 2,
           title: 'Thiết lâp người duyệt',
-          url: '/settings/approver-setup',
+          url: '/setting/approve-schedule-config',
           roles: [],
         },
         {
@@ -178,39 +173,11 @@ export class LayoutFullComponent implements OnInit {
           id: '133',
           level: 2,
           title: 'Lịch sử log',
-          url: '/settings/activity-log',
+          url: '/setting/activity-log',
           roles: [],
         }
       ]
     },
-    // {
-    //   icon: 'fa-money-bill',
-    //   id: '1111',
-    //   level: 1,
-    //   url: '/staff-cost',
-    //   title: 'Chi phí',
-    //   // roles: ['ROLE_VIEW_COST']
-    //   children: [
-    //     {
-    //       icon: '',
-    //       children: [],
-    //       id: '12',
-    //       level: 2,
-    //       title: 'Danh sách tổng lương',
-    //       url: '/staff-cost',
-    //       roles: [],
-    //     },
-    //     {
-    //       icon: '',
-    //       children: [],
-    //       id: '13',
-    //       level: 2,
-    //       title: 'Lương bình quân',
-    //       url: '/free-effort/standard-effort-price',
-    //       roles: [],
-    //     },
-    //   ],
-    // }
   ];
 
 // Cập nhật kiểu dữ liệu User sang CurrentUser
@@ -270,7 +237,130 @@ export class LayoutFullComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    // Initialize component
+    console.log('🔍 [LayoutFull] ngOnInit called');
+
+    // Initialize with current route
+    this.addTabFromCurrentRoute();
+    console.log('🔍 [LayoutFull] Initial tabs:', this.dynamicTabs);
+
+    // Listen to route changes and add/switch tabs
+    this.router.events.pipe(
+      filter(event => event instanceof NavigationEnd)
+    ).subscribe((event) => {
+      const navEvent = event as NavigationEnd;
+      console.log('🔍 [LayoutFull] Route changed to:', navEvent.urlAfterRedirects);
+      this.addOrSelectTab(navEvent.urlAfterRedirects);
+      console.log('🔍 [LayoutFull] Tabs after route change:', this.dynamicTabs);
+    });
+  }
+
+  private addTabFromCurrentRoute(): void {
+    const currentUrl = this.router.url;
+    this.addOrSelectTab(currentUrl);
+  }
+
+  private addOrSelectTab(url: string): void {
+    console.log('🔍 [addOrSelectTab] URL:', url);
+
+    // Skip login or other non-content routes
+    if (url === '/login' || url === '/') {
+      console.log('⏭️ [addOrSelectTab] Skipped (login or root)');
+      return;
+    }
+
+    // Get menu title for this URL
+    const menuTitle = this.getMenuTitleFromUrl(url);
+    console.log('🔍 [addOrSelectTab] Title:', menuTitle);
+
+    // Check if tab already exists
+    const existingTabIndex = this.dynamicTabs.findIndex(tab => tab.url === url);
+
+    if (existingTabIndex !== -1) {
+      // Tab exists, just select it
+      console.log('✅ [addOrSelectTab] Tab exists at index:', existingTabIndex);
+      this.selectedTabIndex = existingTabIndex;
+      this.dynamicTabs[existingTabIndex].active = true;
+      this.dynamicTabs.forEach((tab, index) => {
+        if (index !== existingTabIndex) {
+          tab.active = false;
+        }
+      });
+    } else {
+      // Create new tab
+      console.log('➕ [addOrSelectTab] Creating new tab');
+      const newTab: Tab = {
+        title: menuTitle,
+        url: url,
+        active: true
+      };
+
+      // Deactivate all dynamicTabs
+      this.dynamicTabs.forEach(tab => tab.active = false);
+
+      // Add new tab
+      this.dynamicTabs.push(newTab);
+      this.selectedTabIndex = this.dynamicTabs.length - 1;
+      console.log('✅ [addOrSelectTab] New tab added. Total tabs:', this.dynamicTabs.length);
+    }
+  }
+
+  private getMenuTitleFromUrl(url: string): string {
+    // Map URLs to titles
+    const titleMap: { [key: string]: string } = {
+      '/welcome': 'Trang chủ',
+      '/employee-manage': 'Nhân viên',
+      '/gate-manage/leave-manage': 'Quản lý vắng mặt',
+      '/gate-manage/special-schedule': 'Quản lý lịch đặc thù',
+      '/gate-manage/timekeeping-explanation': 'Giải trình công',
+      '/staffs/user-information': 'Thông tin người dùng',
+      '/import-vgov/attendance': 'Import dữ liệu công',
+      '/import-vgov/leave-absence': 'Import dữ liệu KPI',
+      '/setting/user-account': 'Thêm mới tài khoản',
+      '/setting/approve-schedule-config': 'Thiết lập người duyệt',
+      '/setting/activity-log': 'Lịch sử log'
+    };
+
+    return titleMap[url] || 'Tab mới';
+  }
+
+  onTabChange(event: any): void {
+    console.log('🔄 [onTabChange] Event:', event);
+    const index = typeof event === 'number' ? event : event.index;
+    console.log('🔄 [onTabChange] Tab index:', index);
+
+    if (index >= 0 && index < this.dynamicTabs.length) {
+      const tab = this.dynamicTabs[index];
+      console.log('🔄 [onTabChange] Navigating to:', tab.url);
+      this.router.navigateByUrl(tab.url);
+    }
+  }
+
+  closeTab(index: number, event: Event): void {
+    console.log('❌ [closeTab] Closing tab at index:', index, 'Total tabs:', this.dynamicTabs.length);
+    event.stopPropagation();
+
+    // Don't close if it's the only tab
+    if (this.dynamicTabs.length === 1) {
+      console.log('⚠️ [closeTab] Cannot close - only 1 tab left');
+      return;
+    }
+
+    // Remove the tab
+    this.dynamicTabs.splice(index, 1);
+    console.log('✅ [closeTab] Tab removed. Remaining tabs:', this.dynamicTabs.length);
+
+    // Adjust selected index
+    if (index === this.selectedTabIndex) {
+      // If closing the active tab, navigate to the previous or next tab
+      const newIndex = index > 0 ? index - 1 : 0;
+      this.selectedTabIndex = newIndex;
+      console.log('🔄 [closeTab] Navigating to tab at index:', newIndex);
+      this.router.navigateByUrl(this.dynamicTabs[newIndex].url);
+    } else if (index < this.selectedTabIndex) {
+      // If closing a tab before the active one, adjust index
+      this.selectedTabIndex--;
+      console.log('🔄 [closeTab] Adjusted selected index to:', this.selectedTabIndex);
+    }
   }
 
   getUserInitials(userName: string | undefined): string {

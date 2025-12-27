@@ -83,6 +83,21 @@ export class TimekeepingExplanationComponent implements OnInit {
     console.log('User is manager:', this.isManager);
     console.log('User is HR or Admin:', this.isHROrAdmin);
 
+    // Debug: Check if columns are loaded correctly
+    console.log('Timekeeping Columns:', this.timekeepingColumns);
+    const actionColumn = this.timekeepingColumns.find(col => col.name === 'action');
+    if (actionColumn) {
+      console.log('Action Column found:', actionColumn);
+      console.log('Action Column listAction:', actionColumn.listAction);
+      if (actionColumn.listAction) {
+        actionColumn.listAction.forEach((action: any) => {
+          console.log(`Action ${action.key}:`, action.label, 'has HTML:', !!action.html);
+        });
+      }
+    } else {
+      console.warn('Action Column NOT found!');
+    }
+
     this.loadData();
   }
 

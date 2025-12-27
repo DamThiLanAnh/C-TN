@@ -70,7 +70,15 @@ export class EmployeeManageComponent implements OnInit {
       .subscribe({
         next: (response: any) => {
           if (response?.content) {
-            this.listOfData = response.content.map((item: any, index: number) => ({
+            const sortedContent = [...response.content].sort((a, b) => {
+              const codeA = a.code || '';
+              const codeB = b.code || '';
+              const numA = parseInt(codeA.replace(/\D/g, '')) || 0;
+              const numB = parseInt(codeB.replace(/\D/g, '')) || 0;
+              return numB - numA;
+            });
+
+            this.listOfData = sortedContent.map((item: any, index: number) => ({
               ...item,
               index: page * size + index + 1,
               userName: item.code,
@@ -120,6 +128,8 @@ export class EmployeeManageComponent implements OnInit {
           .subscribe({
             next: () => {
               this.messageService.success('Thêm nhân viên thành công');
+              // Reset to page 1 to show the newest employee at the top
+              this.paging.pageIndex = 1;
               this.loadData();
             },
             error: (error) => {

@@ -22,11 +22,9 @@ import { NzDatePickerModule } from 'ng-zorro-antd/date-picker';
 import { NzInputNumberModule } from 'ng-zorro-antd/input-number';
 import { NzToolTipModule } from 'ng-zorro-antd/tooltip';
 import { TimekeepingExplanationComponent } from './timekeeping-explanation/timekeeping-explanation.component';
-import { ApproveScheduleConfigComponent } from './approve-schedule-config/approve-schedule-config.component';
 import { GateManageRoutingModule } from './gate-manage-routing.module';
 import { ModalLeaveComponent } from './leave-manage/modal-leave/modal-leave.component';
 import { ModalAddLeaveComponent } from './leave-manage/modal-add-leave/modal-add-leave.component';
-
 import { SpecialScheduleModule } from './special-schedule/special-schedule.module';
 import { GateManageComponent } from './gate-manage/gate-manage.component';
 import {
@@ -69,7 +67,6 @@ import { SafeHtmlPipe } from '../shares/pipes/safe-html.pipe';
       GateManageComponent,
       LeaveManageComponent,
       TimekeepingExplanationComponent,
-      ApproveScheduleConfigComponent,
       ModalLeaveComponent,
       ModalAddLeaveComponent,
       ModalAddTimekeepingComponent,
@@ -78,4 +75,5 @@ import { SafeHtmlPipe } from '../shares/pipes/safe-html.pipe';
     ],
     exports: []
   })
-export class GateManageModule {}
+export class GateManageModule {
+}

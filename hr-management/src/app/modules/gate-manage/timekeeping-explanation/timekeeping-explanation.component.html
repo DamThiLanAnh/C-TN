@@ -194,19 +194,21 @@
 
         <!-- Action Column -->
         <td *ngIf="col.name === 'action'" [ngClass]="col.classes || ''" class="text-center" (click)="$event.stopPropagation()">
+          <!-- Debug: Show action count -->
+          <!-- Actions: {{col.listAction?.length || 0}} -->
           <div class="action-buttons d-flex justify-content-center gap-2">
-            <ng-container *ngFor="let action of col.listAction">
+            <ng-container *ngFor="let action of col.listAction; let idx = index">
               <button
-                *ngIf="data.status === 'Chờ duyệt'"
                 nz-button
                 nzType="link"
                 nzSize="small"
                 nz-tooltip
                 [nzTooltipTitle]="action.label"
                 (click)="handleAction(action.key, data)"
-                [innerHTML]="action.html"
+                [innerHTML]="action.html | vssSafeHtml"
                 class="action-icon-btn"
-              ></button>
+              >
+              </button>
             </ng-container>
           </div>
         </td>
