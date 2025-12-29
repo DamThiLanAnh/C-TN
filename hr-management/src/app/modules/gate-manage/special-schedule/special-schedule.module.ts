@@ -1,7 +1,6 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule } from '@angular/forms';
-import { HttpClientModule } from '@angular/common/http';
 import { NzCardModule } from 'ng-zorro-antd/card';
 import { NzButtonModule } from 'ng-zorro-antd/button';
 import { NzIconModule } from 'ng-zorro-antd/icon';
@@ -18,17 +17,18 @@ import {
   ModalViewDetailSpecialScheduleComponent
 } from './modal-view-detail-special-schedule/modal-view-detail-special-schedule.component';
 import { SpecialScheduleService } from './special-schedule.service';
+import { ModalAddSpecialScheduleComponent } from './modal-add-special-schedule/modal-add-special-schedule.component';
 
 @NgModule({
   declarations: [
     SpecialScheduleComponent,
     ModalViewDetailSpecialScheduleComponent,
-    ModalConfirmationComponent
+    ModalConfirmationComponent,
+    ModalAddSpecialScheduleComponent
   ],
   imports: [
     CommonModule,
     ReactiveFormsModule,
-    HttpClientModule,
     NzCardModule,
     NzButtonModule,
     NzIconModule,

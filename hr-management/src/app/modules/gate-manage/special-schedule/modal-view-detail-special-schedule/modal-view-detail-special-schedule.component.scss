@@ -1,10 +1,10 @@
 .detail-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 16px;
-    margin-bottom: 24px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 24px;
 
-    div > div:not(:last-child) {
-        margin-bottom: 16px;
-    }
+  div > div:not(:last-child) {
+    margin-bottom: 16px;
+  }
 }

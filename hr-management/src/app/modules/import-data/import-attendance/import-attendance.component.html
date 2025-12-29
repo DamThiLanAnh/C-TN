@@ -1,1 +1,48 @@
-<p>import-attendance works!</p>
+<nz-card class="d-block mb-3">
+  <div class="d-flex justify-content-between mb-2">
+    <h6>Danh sách dữ liệu công</h6>
+    <div nz-row nzJustify="end" class="action-table">
+      <button
+        nz-button
+        nzType="primary"
+        type="button"
+        nzShape="round"
+        (click)="importFile()"
+      >
+        <span nz-icon nzType="download" class="me-1"></span> Import
+      </button>
+    </div>
+  </div>
+  <nz-table
+    [nzData]="pagedData"
+    [nzLoading]="loading"
+    nzBordered
+    [nzScroll]="{ x: '100%' }"
+    *ngIf="columns && columns.length"
+    [nzShowPagination]="false"
+  >
+    <thead>
+      <tr>
+        <th *ngFor="let col of columns">{{ col.attr }}</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let row of pagedData">
+        <td *ngFor="let col of columns">{{ row[col.name] }}</td>
+      </tr>
+      <tr *ngIf="!pagedData.length">
+        <td [attr.colspan]="columns.length" class="text-center text-muted py-4">
+          Không có dữ liệu
+        </td>
+      </tr>
+    </tbody>
+  </nz-table>
+  <nz-pagination
+    [nzPageIndex]="pageIndex"
+    [nzTotal]="total"
+    [nzPageSize]="pageSize"
+    [nzShowSizeChanger]="false"
+    (nzPageIndexChange)="onPageIndexChange($event)"
+    class="mt-3 d-flex justify-content-end"
+  ></nz-pagination>
+</nz-card>

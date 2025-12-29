@@ -1,13 +1,9 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, BehaviorSubject } from 'rxjs';
 import { tap } from 'rxjs/operators';
 import { environment } from '../../environments/environment';
-
-export interface LoginRequest {
-  username: string;
-  password: string;
-}
+import jwt_decode from 'jwt-decode';
 
 export interface LoginResponse {
   token?: string;
@@ -26,11 +22,20 @@ export interface RefreshTokenResponse {
   [key: string]: any;
 }
 
+export interface AuthState {
+  user: any;
+  token: string | null;
+}
+
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
   private apiUrl = environment.apiUrl;
+  private _authState$ = new BehaviorSubject<AuthState>({ user: this.getUser(), token: this.getToken() });
+  public get authState$() {
+    return this._authState$.asObservable();
+  }
 
   constructor(private http: HttpClient) {}
 
@@ -76,18 +81,8 @@ export class AuthService {
     );
   }
 
-  logout(): void {
-    localStorage.removeItem('token');
-    localStorage.removeItem('refreshToken');
-    localStorage.removeItem('user');
-  }
-
   getToken(): string | null {
     return localStorage.getItem('token');
-  }
-
-  getRefreshToken(): string | null {
-    return localStorage.getItem('refreshToken');
   }
 
   isLoggedIn(): boolean {
@@ -121,6 +116,8 @@ export class AuthService {
       localStorage.setItem('user', JSON.stringify(userInfo));
       console.log('User info saved:', userInfo);
     }
+    // Cập nhật trạng thái đăng nhập cho toàn app
+    this._authState$.next({ user: userInfo, token: token ?? null });
   }
 
   getUser(): any {
@@ -152,18 +149,12 @@ export class AuthService {
   getRoleFromToken(): string | null {
     const token = this.getToken();
     if (!token) return null;
-
     try {
-      // Decode JWT token (format: header.payload.signature)
-      const parts = token.split('.');
-      if (parts.length !== 3) return null;
-
-      const payload = JSON.parse(atob(parts[1]));
-
-      // Check for role in different formats
+      // Sử dụng jwt-decode để giải mã JWT an toàn
+      const payload: any = jwt_decode(token);
       return payload.role ||
-             payload.roles?.[0] ||
-             payload.authorities?.[0]?.authority ||
+             (payload.roles && Array.isArray(payload.roles) ? payload.roles[0] : undefined) ||
+             (payload.authorities && Array.isArray(payload.authorities) ? payload.authorities[0]?.authority : undefined) ||
              payload.authority ||
              null;
     } catch (error) {
@@ -226,4 +217,3 @@ export class AuthService {
     return isHROrAdminRole;
   }
 }
-

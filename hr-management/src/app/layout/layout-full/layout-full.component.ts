@@ -154,7 +154,7 @@ export class LayoutFullComponent implements OnInit {
           children: [],
           id: '130',
           level: 2,
-          title: 'Thêm mới tài khoản',
+          title: 'Quản lý người dùng',
           url: '/setting/user-account',
           roles: [],
         },
@@ -315,9 +315,12 @@ export class LayoutFullComponent implements OnInit {
       '/staffs/user-information': 'Thông tin người dùng',
       '/import-vgov/attendance': 'Import dữ liệu công',
       '/import-vgov/leave-absence': 'Import dữ liệu KPI',
-      '/setting/user-account': 'Thêm mới tài khoản',
+      '/setting/user-account': 'Quản lý người dùng',
       '/setting/approve-schedule-config': 'Thiết lập người duyệt',
-      '/setting/activity-log': 'Lịch sử log'
+      '/setting/activity-log': 'Lịch sử log',
+      '/staff-cost': 'Chi phí',
+      '/import-data/attendance': 'Import dữ liệu công',
+      '/import-data/check-in-out': 'Import dữ liệu vào ra',
     };
 
     return titleMap[url] || 'Tab mới';

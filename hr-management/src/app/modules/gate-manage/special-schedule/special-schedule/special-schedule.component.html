@@ -2,13 +2,14 @@
   <div class="d-flex justify-content-between mb-2">
     <h6>{{ tableName }}</h6>
     <div nz-row nzJustify="end" class="d-flex align-items-center">
-      <!-- DEBUG BUTTON -->
-      <button class="me-2" (click)="debugToken()" nz-button nzType="default" type="button" style="background: #ff9800; color: white; border: none;">
-        🔧 Debug Token
-      </button>
-      <button class="me-2" (click)="exportFile()" [nzLoading]="isExporting" [disabled]="isExporting"
-              nz-button nzType="primary" type="button" nzDanger>
-        <span nz-icon nzType="plus-circle" nzTheme="outline" aria-hidden="true" ></span> Thêm mới
+      <button
+        class="me-2"
+        nz-button
+        nzType="primary"
+        type="button" nzDanger
+        *ngIf="isEmployee"
+        (click)="openAddSpecialScheduleModal()">
+        <span nz-icon nzType="plus-circle" nzTheme="outline" aria-hidden="true"></span> Thêm mới
       </button>
     </div>
   </div>
@@ -19,10 +20,12 @@
         Bỏ ({{ dataDeleteChecked.length }}) lựa chọn
       </button>
     </div>
-    <button nz-button nzGhost class="me-2" nzType="primary" type="button" [disabled]="!isDataSelected()" (click)="onRejectList()" *ngIf="canApprove">
+    <button nz-button nzGhost class="me-2" nzType="primary" type="button" [disabled]="!isDataSelected()"
+            (click)="onRejectList()" *ngIf="canApprove">
       Từ chối
     </button>
-    <button nz-button class="me-2" nzType="primary" type="button" [disabled]="!isDataSelected()" (click)="onApproveList()" *ngIf="canApprove">
+    <button nz-button class="me-2" nzType="primary" type="button" [disabled]="!isDataSelected()"
+            (click)="onApproveList()" *ngIf="canApprove">
       Duyệt
     </button>
   </div>
@@ -39,7 +42,8 @@
   >
     <thead>
     <tr>
-      <th nzWidth="50px" [nzChecked]="checked" [nzIndeterminate]="indeterminate" (nzCheckedChange)="onChangeSelectAll($event)"></th>
+      <th nzWidth="50px" [nzChecked]="checked" [nzIndeterminate]="indeterminate"
+          (nzCheckedChange)="onChangeSelectAll($event)"></th>
       <ng-container *ngFor="let column of columns">
         <th
           [nzSortFn]="column.sortFn || null"
