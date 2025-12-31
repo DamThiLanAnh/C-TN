@@ -2,6 +2,7 @@ import { RouterModule, Routes } from '@angular/router';
 import { NgModule } from '@angular/core';
 import { EmployeeManageComponent } from './employee-manage/employee-manage.component';
 import { DepartmentManageComponent } from './department-manage/department-manage.component';
+import { CertificatesManageComponent } from './certificates-manage/certificates-manage.component';
 
 const routes: Routes = [
   {
@@ -14,6 +15,13 @@ const routes: Routes = [
   {
     path: 'department-manage',
     component: DepartmentManageComponent,
+    data: {
+      roles: []
+    }
+  },
+  {
+    path: 'certificates-manage',
+    component: CertificatesManageComponent,
     data: {
       roles: []
     }
