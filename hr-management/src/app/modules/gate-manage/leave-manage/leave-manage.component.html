@@ -82,10 +82,18 @@
       <ng-container *ngFor="let col of leaveManageColumns">
         <th *ngIf="col.isFilter">
           <input *ngIf="col.filter?.type === StandardColumnType.INPUT || col.type === StandardColumnType.TEXT" type="text" nz-input [(ngModel)]="searchFilters[col.name]" (ngModelChange)="filterChanged$.next()" [placeholder]="'Tìm...'" nzSize="small" />
-          <nz-select *ngIf="col.filter?.type === StandardColumnType.SELECT || col.type === StandardColumnType.SELECT" [(ngModel)]="searchFilters[col.name]" (ngModelChange)="filterChanged$.next()" nzPlaceHolder="Tìm..." nzAllowClear nzSize="small" style="width: 100%">
-            <nz-option *ngFor="let opt of (col.filter?.options || [])" [nzValue]="opt.label || opt.value" [nzLabel]="opt.label || opt.value"></nz-option>
+          <nz-select *ngIf="col.filter?.type === StandardColumnType.SELECT || col.type === StandardColumnType.SELECT"
+                     [(ngModel)]="searchFilters[col.name]"
+                     (ngModelChange)="filterChanged$.next()"
+                     [nzMode]="col.filter?.multiple ? 'multiple' : 'default'"
+                     [nzPlaceHolder]="'Chọn ' + col.attr"
+                     nzAllowClear
+                     [nzShowArrow]="true"
+                     style="width: 100%">
+            <nz-option *ngFor="let opt of (col.filter?.options || [])" [nzValue]="opt.value" [nzLabel]="opt.label"></nz-option>
           </nz-select>
           <nz-date-picker *ngIf="col.type === StandardColumnType.DATE_RANGE_PICKER" [(ngModel)]="searchFilters[col.name]" (ngModelChange)="filterChanged$.next()" nzFormat="dd/MM/yyyy" nzPlaceHolder="Chọn..." nzSize="small" style="width: 100%"></nz-date-picker>
+          <nz-time-picker *ngIf="col.type === StandardColumnType.TIME_RANGE_PICKER" [(ngModel)]="searchFilters[col.name]" (ngModelChange)="filterChanged$.next()" nzFormat="HH:mm" nzPlaceHolder="Chọn..." nzSize="small" style="width: 100%"></nz-time-picker>
         </th>
         <th *ngIf="!col.isFilter"></th>
       </ng-container>

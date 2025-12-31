@@ -81,6 +81,7 @@ export class LeaveManageComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    console.log('LeaveManageComponent ngOnInit started');
     // Check if user is manager
     this.isManager = this.authService.isManager();
 
@@ -94,35 +95,63 @@ export class LeaveManageComponent implements OnInit, OnDestroy {
     this.filterChanged$
       .pipe(debounceTime(300), takeUntil(this.destroy$))
       .subscribe(() => {
+        this.paging.pageIndex = 1; // Reset to page 1 for new search
         this.onSearch();
       });
 
+    this.loadDepartments();
     this.loadLeaveData();
+  }
+
+  loadDepartments(): void {
+      this.leaveService.getActiveDepartments().subscribe((res: any) => {
+          const content = res.data || res;
+          console.log('API Departments:', content);
+          if (Array.isArray(content)) {
+              const options = content.map((d: any) => ({ label: d.name, value: d.name }));
+              console.log('Mapped Options:', options);
+              
+              // Find and update column options
+              const deptCol = this.leaveManageColumns.find(c => c.name === 'departmentName');
+              if (deptCol && deptCol.filter) {
+                  deptCol.filter.options = options;
+                  // Force change detection by creating a new reference for the columns array
+                  this.leaveManageColumns = [...this.leaveManageColumns];
+              }
+          }
+      }, err => console.error('Error loading departments:', err));
   }
 
   loadLeaveData(): void {
     this.loadingTable = true;
-    const page = this.paging.pageIndex - 1;
+    // Client-side: Load "all" (limit 1000) for HR, default page for others
+    const pageSize = this.isHROrAdmin ? 1000 : this.paging.pageSize;
+    const page = 0; // Always load first page (which is "all" if size is big enough)
+
     let apiCall;
     if (this.isHROrAdmin) {
-      const filters = this.buildFilterParams();
+      // Remove filters for initial load to get full dataset for client-side filtering
       apiCall = this.leaveService.getAllLeaveRequests({
         page,
-        size: this.paging.pageSize,
-        ...filters
+        size: pageSize
       });
     } else if (this.isManager) {
-      apiCall = this.leaveService.getLeaveByDepartment(page, this.paging.pageSize);
+      // Manager also client-side filtering on limited set or full set?
+      // Keeping original behavior but ensure we have enough data?
+      // Assuming Manager also wants client-side filter -> increase size
+      apiCall = this.leaveService.getLeaveByDepartment(page, 1000);
     } else {
-      apiCall = this.leaveService.getLeaveMy(page, this.paging.pageSize);
+      // Employee
+      apiCall = this.leaveService.getLeaveMy(page, 1000);
     }
+
     apiCall.subscribe(
       (response) => {
         const content = response?.content || (Array.isArray(response) ? response : []);
         if (content.length > 0) {
           this.listOfData = content.map((item: any) => this.mapApiItemToLeaveData(item));
-          this.filteredData = [...this.listOfData];
-          this.paging.totalElements = response?.totalElements || this.listOfData.length;
+          // After loading, apply current filters and pagination
+          this.onSearch(); 
         } else {
           this.listOfData = [];
           this.filteredData = [];
@@ -356,15 +385,13 @@ export class LeaveManageComponent implements OnInit, OnDestroy {
 
   getChangePagination(pageIndex: number): void {
     this.paging.pageIndex = pageIndex;
-    console.log('Page changed to:', pageIndex);
-    this.loadLeaveData();
+    this.onSearch(); // Re-slice
   }
 
   onPageSizeChange(pageSize: number): void {
     this.paging.pageSize = pageSize;
     this.paging.pageIndex = 1;
-    console.log('Page size changed to:', pageSize);
-    this.loadLeaveData();
+    this.onSearch();
   }
 
   openDetailModal(data: LeaveManageModel): void {
@@ -408,15 +435,8 @@ export class LeaveManageComponent implements OnInit, OnDestroy {
   }
 
   onSearch(): void {
-    // For HR/Admin, reload data from API with filters (server-side filtering)
-    if (this.isHROrAdmin) {
-      this.paging.pageIndex = 1;
-      this.loadLeaveData();
-      return;
-    }
-
-    // For Manager and Employee, use client-side filtering
-    this.filteredData = this.listOfData.filter(item => {
+    // Client-side filtering
+    const matches = this.listOfData.filter(item => {
       // Filter by employeeUserName
       if (this.searchFilters['employeeUserName'] &&
         !item.employeeUserName?.toLowerCase().includes(this.searchFilters['employeeUserName'].toLowerCase())) {
@@ -435,15 +455,38 @@ export class LeaveManageComponent implements OnInit, OnDestroy {
         return false;
       }
 
-      // Filter by organizationName
-      if (this.searchFilters['departmentName'] &&
-        !item.organizationName?.toLowerCase().includes(this.searchFilters['departmentName'].toLowerCase())) {
-        return false;
+      // Filter by departmentName (mapped from organizationName)
+      if (this.searchFilters['departmentName'] && this.searchFilters['departmentName'].length > 0) {
+          // If multiple select, searchFilters['departmentName'] is an array
+          const selectedDepts = this.searchFilters['departmentName'];
+          if (Array.isArray(selectedDepts)) {
+              if (!selectedDepts.includes(item.departmentName)) {
+                  return false;
+              }
+          } else {
+             // Fallback for single string search if user input text (though it's select now)
+             if (!item.departmentName?.toLowerCase().includes(selectedDepts.toLowerCase())) {
+                 return false;
+             }
+          }
       }
 
       // Filter by absenceTypeName
-      if (this.searchFilters['absenceTypeName'] && item.absenceTypeName !== this.searchFilters['absenceTypeName']) {
-        return false;
+      if (this.searchFilters['absenceTypeName'] && this.searchFilters['absenceTypeName'].length > 0) {
+        const selectedTypes = this.searchFilters['absenceTypeName'];
+        // Debug log
+        // console.log('Filtering Type:', { selected: selectedTypes, currentItemType: item.absenceTypeName });
+        
+         if (Array.isArray(selectedTypes)) {
+             // value is just the string name e.g. 'Nghỉ phép năm'
+             if (!selectedTypes.includes(item.absenceTypeName)) {
+                 return false;
+             }
+         } else {
+             if (item.absenceTypeName !== selectedTypes) {
+               return false;
+             }
+         }
       }
 
       // Filter by absenceStatus
@@ -468,15 +511,19 @@ export class LeaveManageComponent implements OnInit, OnDestroy {
       }
 
       // Filter by timeRegisterStart
-      if (this.searchFilters['timeRegisterStart'] &&
-        !item.timeRegisterStart?.toLowerCase().includes(this.searchFilters['timeRegisterStart'].toLowerCase())) {
-        return false;
+      if (this.searchFilters['timeRegisterStart']) {
+        const filterTime = this.formatTimeForComparison(this.searchFilters['timeRegisterStart']);
+        if (item.timeRegisterStart !== filterTime) {
+          return false;
+        }
       }
 
       // Filter by timeRegisterEnd
-      if (this.searchFilters['timeRegisterEnd'] &&
-        !item.timeRegisterEnd?.toLowerCase().includes(this.searchFilters['timeRegisterEnd'].toLowerCase())) {
-        return false;
+      if (this.searchFilters['timeRegisterEnd']) {
+         const filterTime = this.formatTimeForComparison(this.searchFilters['timeRegisterEnd']);
+        if (item.timeRegisterEnd !== filterTime) {
+          return false;
+        }
       }
 
       // Filter by absenceReason
@@ -488,8 +535,18 @@ export class LeaveManageComponent implements OnInit, OnDestroy {
       return true;
     });
 
-    this.paging.totalElements = this.filteredData.length;
-    this.paging.pageIndex = 1;
+    // Update Pagination
+    this.paging.totalElements = matches.length;
+    // this.paging.pageIndex = 1; // Reset to page 1 on search? User expectation. Usually yes.
+    // If called from pagination change, we shouldn't reset.
+    // So split logic?
+    // For now, onSearch logic is primarily Filter input change -> Reset Page 1.
+    // But I also need a method just to slice.
+    
+    // Slicing
+    const start = (this.paging.pageIndex - 1) * this.paging.pageSize;
+    const end = start + this.paging.pageSize;
+    this.filteredData = matches.slice(start, end);
   }
 
   onResetFilters(): void {
@@ -507,12 +564,14 @@ export class LeaveManageComponent implements OnInit, OnDestroy {
       absenceReason: ''
     };
 
-    // For HR/Admin, reload data from API without filters
+    // For HR/Admin, reload data from API without filters - REMOVED
+    /*
     if (this.isHROrAdmin) {
       this.paging.pageIndex = 1;
       this.loadLeaveData();
       return;
     }
+    */
 
     // For Manager and Employee, reset client-side filtering
     this.filteredData = [...this.listOfData];
@@ -535,6 +594,13 @@ export class LeaveManageComponent implements OnInit, OnDestroy {
     const date = new Date(dateString);
     if (isNaN(date.getTime())) return '--:--';
 
+    const hours = String(date.getHours()).padStart(2, '0');
+    const minutes = String(date.getMinutes()).padStart(2, '0');
+    return `${hours}:${minutes}`;
+  }
+
+  formatTimeForComparison(date: Date): string {
+    if (!date) return '';
     const hours = String(date.getHours()).padStart(2, '0');
     const minutes = String(date.getMinutes()).padStart(2, '0');
     return `${hours}:${minutes}`;

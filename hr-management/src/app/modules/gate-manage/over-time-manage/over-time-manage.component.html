@@ -2,7 +2,8 @@
   <div class="d-flex justify-content-between mb-2">
     <h6>{{ tableName }}</h6>
     <div nz-row nzJustify="end" class="d-flex align-items-center">
-      <button *ngIf="isHR" class="me-2 d-flex align-items-center gap-1" nz-button nzType="primary" nzDanger (click)="openAddCertificateModal()">
+      <!-- Show Add button for everyone for now, or based on requirement. Assuming Employees can request OT. -->
+      <button *ngIf="isManager" class="me-2 d-flex align-items-center gap-1" nz-button nzType="primary" nzDanger (click)="openAddOverTimeModal()">
         <span nz-icon nzType="plus-circle" nzTheme="outline" aria-hidden="true"></span> Thêm mới
       </button>
     </div>
@@ -19,10 +20,10 @@
   >
     <thead>
       <tr>
-        <th *ngFor="let col of certificatesColumns" [nzWidth]="col.width || null" [nzLeft]="col.fixedColumn || false" [nzRight]="col.fixedRight || false" [ngClass]="col.classes || ''">{{ col.attr }}</th>
+        <th *ngFor="let col of overtimeColumns" [nzWidth]="col.width || null" [nzLeft]="col.fixedColumn || false" [nzRight]="col.fixedRight || false" [ngClass]="col.classes || ''">{{ col.attr }}</th>
       </tr>
       <tr class="filter-row">
-        <ng-container *ngFor="let col of certificatesColumns">
+        <ng-container *ngFor="let col of overtimeColumns">
           <th *ngIf="col.isFilter" [nzLeft]="col.fixedColumn || false" [nzRight]="col.fixedRight || false">
             <input *ngIf="(col.filter?.type === StandardColumnType.INPUT || col.type === StandardColumnType.TEXT) && col.filter?.type !== StandardColumnType.DATE_PICKER && col.filter?.type !== StandardColumnType.SELECT" type="text" nz-input [(ngModel)]="searchFilters[col.name]" (ngModelChange)="searchSubject.next()" [placeholder]="'Tìm...'" nzSize="small" />
             <nz-select *ngIf="col.filter?.type === StandardColumnType.SELECT || col.type === StandardColumnType.SELECT" [(ngModel)]="searchFilters[col.name]" (ngModelChange)="searchSubject.next()" nzPlaceHolder="Tìm..." nzAllowClear nzSize="small" style="width: 100%">
@@ -45,22 +46,26 @@
     </thead>
     <tbody>
       <tr *ngFor="let data of basicTable.data; let i = index">
-        <ng-container *ngFor="let col of certificatesColumns">
+        <ng-container *ngFor="let col of overtimeColumns">
             <!-- Normal Column -->
             <td *ngIf="col.type !== StandardColumnType.ACTION" [nzLeft]="col.fixedColumn || false" [nzRight]="col.fixedRight || false" [ngClass]="col.classes || ''">
                 <ng-container [ngSwitch]="col.name">
-                    <span *ngSwitchCase="'issuedDate'">
-                        {{ data.issuedDate | date: 'dd/MM/yyyy' }}
+                    <!-- Status Mapping -->
+                    <span *ngSwitchCase="'status'">
+                        <nz-tag [nzColor]="data.status === 'ACCEPTED' ? 'success' : (data.status === 'REJECTED' ? 'error' : 'processing')">
+                            {{ data.status === 'ACCEPTED' ? 'Đã duyệt' : (data.status === 'REJECTED' ? 'Từ chối' : 'Chờ duyệt') }}
+                        </nz-tag>
                     </span>
-                    <span *ngSwitchCase="'expiredDate'">
-                        {{ data.expiredDate | date: 'dd/MM/yyyy' }}
+                     <!-- Date Mapping -->
+                    <span *ngSwitchCase="'otDate'">
+                        {{ data.otDate | date: 'dd/MM/yyyy' }}
                     </span>
                     <span *ngSwitchDefault>{{ data[col.name] }}</span>
                 </ng-container>
             </td>
 
             <!-- Action Column -->
-            <td *ngIf="col.name === 'action'" [ngClass]="col.classes || ''" class="text-center" (click)="$event.stopPropagation()" [nzLeft]="col.fixedColumn || false" [nzRight]="col.fixedRight || false">
+            <td *ngIf="col.type === StandardColumnType.ACTION" [ngClass]="col.classes || ''" class="text-center" (click)="$event.stopPropagation()" [nzLeft]="col.fixedColumn || false" [nzRight]="col.fixedRight || false">
                 <div class="action-buttons d-flex justify-content-center gap-1">
                 <ng-container *ngFor="let action of col.listAction">
                     <button
@@ -72,6 +77,7 @@
                     (click)="handleAction(action.key, data)"
                     [innerHTML]="action.html | vssSafeHtml"
                     class="action-icon-btn"
+                    [disabled]="action.fieldCheckShow && !data[action.fieldCheckShow]"
                     >
                     </button>
                 </ng-container>
@@ -93,3 +99,9 @@
     ></nz-pagination>
   </div>
 </nz-card>
+
+<nz-modal [(nzVisible)]="isVisibleReject" nzTitle="Từ chối yêu cầu" (nzOnCancel)="handleCancelReject()" (nzOnOk)="handleOkReject()">
+    <ng-container *nzModalContent>
+        <textarea nz-input placeholder="Nhập lý do từ chối..." [(ngModel)]="rejectReason" [nzAutosize]="{ minRows: 3, maxRows: 5 }"></textarea>
+    </ng-container>
+</nz-modal>

@@ -99,4 +99,10 @@ export class LeaveManagementService {
 
     return this.http.delete(url, { headers });
   }
+
+  // Get active departments for dropdown
+  getActiveDepartments(): Observable<any> {
+    console.log('LeaveManagementService.getActiveDepartments called');
+    return this.http.get(`${this.baseUrl}/api/departments/active`); // Fixed: departments (plural)
+  }
 }

@@ -3,6 +3,7 @@ import { RouterModule, Routes } from '@angular/router';
 import { SpecialScheduleComponent } from './special-schedule/special-schedule/special-schedule.component';
 import { NgModule } from '@angular/core';
 import { TimekeepingExplanationComponent } from './timekeeping-explanation/timekeeping-explanation.component';
+import { OverTimeManageComponent } from './over-time-manage/over-time-manage.component';
 
 const routes: Routes = [
   {
@@ -24,6 +25,13 @@ const routes: Routes = [
   {
     path: 'timekeeping-explanation',
     component: TimekeepingExplanationComponent,
+    data: {
+      roles: []
+    }
+  },
+  {
+    path: 'over-time-manage',
+    component: OverTimeManageComponent,
     data: {
       roles: []
     }
