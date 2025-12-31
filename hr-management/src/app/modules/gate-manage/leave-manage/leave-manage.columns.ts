@@ -102,8 +102,9 @@ export const leaveManageColumns = (): StandardColumnModel[] => {
       isFilter: true,
       isSort: false,
       filter: {
-        name: 'departmentId',
-        // selectOptionsType: EnumSelectOptionType.organizationProfile, // BỎ
+        name: 'departmentName',
+        type: StandardColumnType.SELECT,
+        options: [],
         multiple: true,
       },
       type: StandardColumnType.SELECT,
@@ -117,11 +118,15 @@ export const leaveManageColumns = (): StandardColumnModel[] => {
       type: StandardColumnType.SELECT,
       width: '130px',
       isRequire: false,
-      isFilter: false,
+      isFilter: true,
       filter: {
         type: StandardColumnType.SELECT,
-        name: 'absenceTypeCode',
-        // selectOptionsType: EnumSelectOptionType.leaveType, // BỎ
+        name: 'absenceTypeName',
+        options: [
+          { value: 'Nghỉ phép năm', label: 'Phép năm' },
+          { value: 'Nghỉ không lương', label: 'Không lương' },
+          { value: 'Khác', label: 'Khác' }
+        ],
         multiple: true,
       },
     },

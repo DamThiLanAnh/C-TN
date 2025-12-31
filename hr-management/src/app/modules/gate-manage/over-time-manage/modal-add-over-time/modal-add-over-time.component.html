@@ -1,0 +1,86 @@
+<div *nzModalTitle>
+    {{ id ? 'Cập nhật đăng ký tăng ca' : 'Đăng ký tăng ca' }}
+  </div>
+  
+  <div class="modal-content-custom">
+    <form nz-form [formGroup]="formGroup" nzLayout="vertical">
+      <div nz-row [nzGutter]="24">
+        <!-- Mã nhân viên -->
+        <div nz-col [nzSpan]="24">
+          <nz-form-item>
+            <nz-form-label [nzRequired]="true">Mã nhân viên</nz-form-label>
+            <nz-form-control nzErrorTip="Vui lòng nhập mã nhân viên">
+              <input nz-input formControlName="employeeCode" placeholder="Nhập mã nhân viên" />
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+
+        <!-- Ngày đăng ký -->
+        <div nz-col [nzSpan]="24">
+          <nz-form-item>
+            <nz-form-label [nzRequired]="true">Ngày đăng ký</nz-form-label>
+            <nz-form-control nzErrorTip="Vui lòng chọn ngày">
+              <nz-date-picker 
+                formControlName="otDate" 
+                [nzFormat]="'dd/MM/yyyy'" 
+                style="width: 100%"
+                [nzPlaceHolder]="'Chọn ngày'"
+              ></nz-date-picker>
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+  
+        <!-- Giờ bắt đầu -->
+        <div nz-col [nzSpan]="12">
+          <nz-form-item>
+            <nz-form-label [nzRequired]="true">Giờ bắt đầu</nz-form-label>
+            <nz-form-control nzErrorTip="Chọn giờ bắt đầu">
+              <nz-time-picker 
+                formControlName="startTime" 
+                [nzFormat]="'HH:mm'" 
+                [nzPlaceHolder]="'Chọn giờ'"
+                style="width: 100%"
+              ></nz-time-picker>
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+  
+        <!-- Giờ kết thúc -->
+        <div nz-col [nzSpan]="12">
+          <nz-form-item>
+            <nz-form-label [nzRequired]="true">Giờ kết thúc</nz-form-label>
+            <nz-form-control nzErrorTip="Chọn giờ kết thúc">
+              <nz-time-picker 
+                formControlName="endTime" 
+                [nzFormat]="'HH:mm'" 
+                [nzPlaceHolder]="'Chọn giờ'"
+                style="width: 100%"
+              ></nz-time-picker>
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+  
+        <!-- Lý do -->
+        <div nz-col [nzSpan]="24">
+          <nz-form-item>
+            <nz-form-label [nzRequired]="true">Lý do</nz-form-label>
+            <nz-form-control nzErrorTip="Vui lòng nhập lý do">
+              <textarea 
+                nz-input 
+                formControlName="reason" 
+                [nzAutosize]="{ minRows: 3, maxRows: 5 }" 
+                placeholder="Nhập lý do tăng ca..."
+              ></textarea>
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+      </div>
+    </form>
+  </div>
+  
+  <div *nzModalFooter>
+    <button nz-button nzType="default" (click)="onCancel()">Hủy bỏ</button>
+    <button nz-button nzType="primary" (click)="onSave()" [nzLoading]="isLoading">
+      {{ id ? 'Cập nhật' : 'Lưu lại' }}
+    </button>
+  </div>

@@ -164,6 +164,15 @@ export class AuthService {
   }
 
   isManager(): boolean {
+    const user = this.getUser();
+    if (user && Array.isArray(user.roles)) {
+      const roles = user.roles.map((r: any) => r.toString().toUpperCase());
+      if (roles.includes('MANAGER') || roles.includes('ROLE_MANAGER') || roles.some((r: string) => r.includes('MANAGER'))) {
+        console.log('isManager true via roles array');
+        return true;
+      }
+    }
+
     const role = this.getUserRole();
     console.log('isManager check - role:', role);
 

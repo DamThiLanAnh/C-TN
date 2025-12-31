@@ -5,6 +5,7 @@ export interface LeaveManageModel {
   employeeUserName?: string;
   employeeEmail?: string;
   organizationName?: string;
+  departmentName?: string;
   type?: string;
   startDate?: string;
   endDate?: string;
