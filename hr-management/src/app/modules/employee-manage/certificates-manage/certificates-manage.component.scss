@@ -1,0 +1,28 @@
+:host {
+    ::ng-deep {
+        .filter-row {
+            input[nz-input] {
+                border-radius: 6px !important;
+            }
+
+            nz-select {
+                .ant-select-selector {
+                    border-radius: 6px !important;
+                }
+            }
+        }
+        
+        // Add button styles alignment
+        button[nzDanger] {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .action-icon-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+    }
+}
