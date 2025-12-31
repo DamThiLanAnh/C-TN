@@ -4,11 +4,11 @@ import { debounceTime, finalize } from 'rxjs/operators';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import { NzTableQueryParams } from 'ng-zorro-antd/table';
 import { StandardColumnModel, StandardColumnType } from '../../shares/interfaces';
-import { certificatesManageColumns } from './certificates-manage.column';
 import { CertificatesManageService } from './certificates-manage.service';
 import { NzModalService } from 'ng-zorro-antd/modal';
 
 import { AuthService } from '../../../services/auth.service';
+import { certificatesManageColumns } from './certificates-manage.columns';
 
 @Component({
   selector: 'app-certificates-manage',
@@ -18,7 +18,7 @@ import { AuthService } from '../../../services/auth.service';
 export class CertificatesManageComponent implements OnInit {
   listOfData: any[] = [];
   tableName = 'Quản lý chứng chỉ';
-  
+
   certificatesColumns: StandardColumnModel[] = [];
   public StandardColumnType = StandardColumnType;
   public isHR = false;
@@ -52,10 +52,10 @@ export class CertificatesManageComponent implements OnInit {
     console.log('👤 User Role from AuthService:', userRole);
     this.isHR = this.authService.isHROrAdmin();
     console.log('🛡️ isHR evaluated to:', this.isHR);
-    
+
     this.initColumns();
     console.log('📊 Columns initialized:', this.certificatesColumns.map(c => c.name));
-    
+
     this.setupStreamSearch();
     this.fetchDataFromServer();
   }
@@ -82,7 +82,7 @@ export class CertificatesManageComponent implements OnInit {
     this.loadingTable = true;
     const params = {
       page: 0,
-      size: 20 
+      size: 20
     };
 
     this.certificatesManageService.getCertificatesApi(params).pipe(
@@ -90,7 +90,7 @@ export class CertificatesManageComponent implements OnInit {
     ).subscribe(
       (response) => {
         console.log('API Certificates Response:', response);
-        
+
         if (Array.isArray(response)) {
           this.fullDataList = response;
         } else if (response && response.content) {
@@ -158,7 +158,7 @@ export class CertificatesManageComponent implements OnInit {
   private mapData(data: any[]): void {
     this.listOfData = data.map((item, index) => {
       // No status mapping needed for certificates based on current requirements
-      
+
       return {
         ...item,
         index: (this.paging.pageIndex - 1) * this.paging.pageSize + index + 1,
@@ -172,7 +172,7 @@ export class CertificatesManageComponent implements OnInit {
     if (this.paging.pageIndex !== pageIndex || this.paging.pageSize !== pageSize) {
         this.paging.pageIndex = pageIndex;
         this.paging.pageSize = pageSize;
-        this.filterLocalData(); 
+        this.filterLocalData();
     }
   }
 
