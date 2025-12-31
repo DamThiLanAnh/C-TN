@@ -1,0 +1,15 @@
+:host {
+    ::ng-deep {
+        .filter-row {
+            input[nz-input] {
+                border-radius: 6px !important;
+            }
+
+            nz-select {
+                .ant-select-selector {
+                    border-radius: 6px !important;
+                }
+            }
+        }
+    }
+}
