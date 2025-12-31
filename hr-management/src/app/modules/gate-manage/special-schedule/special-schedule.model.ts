@@ -7,31 +7,25 @@ export interface SpecialScheduleDetail {
   departmentName: string;
   startDate: string;
   endDate: string;
-  morningStart: string | null;
-  morningEnd: string | null;
-  afternoonStart: string | null;
-  afternoonEnd: string | null;
+  morningStart: string;
+  morningEnd: string;
+  afternoonStart: string;
+  afternoonEnd: string;
+  projectCode?: string | null;
+  projectName?: string | null;
+  managerCode?: string | null;
+  managerName?: string | null;
   type: string;
   reason: string;
-  status: 'PENDING' | 'APPROVED' | 'REJECTED';
-  approverId: number | null;
-  decidedBy: string | null;
-  decidedAt: string | null;
-  createdAt: string;
-}
-
-export interface SpecialScheduleListItem {
-  id: string | number;
-  index: number;
-  userName: string;
-  fullName: string;
-  scheduleType: string;
-  status: 'PENDING' | 'APPROVED' | 'REJECTED';
-  beginDate: string;
-  endDate: string;
-  checked: boolean;
-  disabled: boolean;
-  isActiveAction: boolean;
+  status: string;
+  approverId?: number;
+  decidedBy?: string | null;
+  decidedAt?: string | null;
+  createdAt?: string;
+  // UI only
+  checked?: boolean;
+  disabled?: boolean;
+  isActiveAction?: boolean;
+  index?: number;
   [key: string]: any;
 }
-

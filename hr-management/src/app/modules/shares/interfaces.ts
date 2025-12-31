@@ -1,5 +1,5 @@
 export enum StandardColumnType {
-  TEXT = 0, // Dùng cho trường hợp không rõ loại hoặc TEXT
+  TEXT = 0,
   INPUT = 1,
   SELECT = 2,
   DATE_RANGE_PICKER = 3,
@@ -7,6 +7,7 @@ export enum StandardColumnType {
   TAG = 5,
   ACTION = 6,
   INPUT_NUMBER = 7,
+  DATE_PICKER = 8,
 }
 
 export interface FilterConfig {

@@ -47,9 +47,37 @@ export class LayoutFullComponent implements OnInit {
       htmlIcon: IconHtml.EMPLOYEE,
       title: 'Nhân viên',
       level: 1,
-      url: '/employee-manage',
+      url: '',
       roles: [],
-      children: []
+      children: [
+        {
+          icon: '',
+          children: [],
+          id: '2',
+          level: 2,
+          title: 'Quản lý nhân viên',
+          url: '/employee/employee-manage',
+          roles: [],
+        },
+        {
+          icon:'',
+          children: [],
+          id: '3',
+          level: 2,
+          title: 'Quản lý phòng ban',
+          url: '/employee/department-manage',
+          roles: [],
+        },
+        {
+          icon: '',
+          children: [],
+          id: '4',
+          level: 2,
+          title: 'Bằng cấp',
+          url: '/employee/certificates-manage',
+          roles: [],
+        },
+      ]
     },
     {
       icon: '',
@@ -308,7 +336,9 @@ export class LayoutFullComponent implements OnInit {
     // Map URLs to titles
     const titleMap: { [key: string]: string } = {
       '/welcome': 'Trang chủ',
-      '/employee-manage': 'Nhân viên',
+      '/employee/employee-manage': 'Quản lý nhân viên',
+      '/employee/department-manage': 'Quản lý phòng ban',
+      '/employee/certificates-manage': 'Bằng cấp',
       '/gate-manage/leave-manage': 'Quản lý vắng mặt',
       '/gate-manage/special-schedule': 'Quản lý lịch đặc thù',
       '/gate-manage/timekeeping-explanation': 'Giải trình công',

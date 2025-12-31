@@ -1,23 +1,25 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { NzModalService } from 'ng-zorro-antd/modal';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import { ModalLeaveComponent } from './modal-leave/modal-leave.component';
 import { ModalAddLeaveComponent } from './modal-add-leave/modal-add-leave.component';
 import { LeaveManagementService } from './leave-manage.service';
 import { leaveManageColumns } from './leave-manage.columns';
-import { StandardColumnModel } from '../../shares/interfaces';
+import { StandardColumnModel, StandardColumnType } from '../../shares/interfaces';
 import { RequestStatus } from '../../shares/enum/options.constants';
 import { LeaveManageModel, LeaveSearchFilters, LeavePaging } from './leave-manage.model';
 import { AuthService } from '../../../services/auth.service';
+import { Subject } from 'rxjs';
+import { debounceTime, takeUntil } from 'rxjs/operators';
 
 @Component({
   selector: 'app-leave-manage',
   templateUrl: './leave-manage.component.html',
   styleUrls: ['./leave-manage.component.scss']
 })
-export class LeaveManageComponent implements OnInit {
+export class LeaveManageComponent implements OnInit, OnDestroy {
   // Constants
-  private readonly LEAVE_TYPE_MAP: Record<string, string> = {
+  LEAVE_TYPE_MAP: Record<string, string> = {
     'ANNUAL': 'Nghỉ phép năm',
     'SICK': 'Nghỉ ốm',
     'UNPAID': 'Nghỉ không lương',
@@ -50,19 +52,7 @@ export class LeaveManageComponent implements OnInit {
   isHROrAdmin = false; // Check if user is HR or Admin
 
   // Search filters for each column
-  searchFilters: LeaveSearchFilters = {
-    employeeUserName: '',
-    employeeName: '',
-    employeeEmail: '',
-    departmentName: '',
-    absenceTypeName: null,
-    startDate: null,
-    endDate: null,
-    timeRegisterStart: '',
-    timeRegisterEnd: '',
-    absenceStatus: null,
-    absenceReason: ''
-  };
+  public searchFilters: { [key: string]: any } = {};
 
   paging: LeavePaging = {
     totalElements: 50,
@@ -70,13 +60,14 @@ export class LeaveManageComponent implements OnInit {
     pageIndex: 1
   };
 
+
   leaveManageColumns: StandardColumnModel[] = leaveManageColumns();
 
   constructor(
     private modal: NzModalService,
-    private leaveService: LeaveManagementService,
-    private message: NzMessageService,
-    private authService: AuthService
+  private message: NzMessageService,
+  private leaveService: LeaveManagementService,
+  private authService: AuthService
   ) {
   }
 
@@ -92,15 +83,19 @@ export class LeaveManageComponent implements OnInit {
   ngOnInit(): void {
     // Check if user is manager
     this.isManager = this.authService.isManager();
-    console.log('User is manager:', this.isManager);
 
     // Check if user is HR (only HR can delete)
     this.isHR = this.authService.isHR();
-    console.log('User is HR:', this.isHR);
 
     // Check if user is HR or Admin
     this.isHROrAdmin = this.authService.isHROrAdmin();
-    console.log('User is HR or Admin:', this.isHROrAdmin);
+
+    // Debounce filter changes
+    this.filterChanged$
+      .pipe(debounceTime(300), takeUntil(this.destroy$))
+      .subscribe(() => {
+        this.onSearch();
+      });
 
     this.loadLeaveData();
   }
@@ -108,35 +103,22 @@ export class LeaveManageComponent implements OnInit {
   loadLeaveData(): void {
     this.loadingTable = true;
     const page = this.paging.pageIndex - 1;
-    const size = this.paging.pageSize;
-
-    console.log('loadLeaveData - isHROrAdmin:', this.isHROrAdmin, 'isManager:', this.isManager, 'page:', page, 'size:', size);
-
-    // Choose API based on user role
     let apiCall;
-
     if (this.isHROrAdmin) {
-      // HR/Admin can see all leave requests with filters
       const filters = this.buildFilterParams();
-      apiCall = this.leaveService.getAllLeaveRequests({ page, size, ...filters });
-      console.log('Calling getAllLeaveRequests API with filters:', filters);
+      apiCall = this.leaveService.getAllLeaveRequests({
+        page,
+        size: this.paging.pageSize,
+        ...filters
+      });
     } else if (this.isManager) {
-      // Manager can see department leave requests
-      apiCall = this.leaveService.getLeaveByDepartment(page, size);
-      console.log('Calling getLeaveByDepartment API');
+      apiCall = this.leaveService.getLeaveByDepartment(page, this.paging.pageSize);
     } else {
-      // Regular employee can only see their own leave requests
-      apiCall = this.leaveService.getLeaveMy(page, size);
-      console.log('Calling getLeaveMy API');
+      apiCall = this.leaveService.getLeaveMy(page, this.paging.pageSize);
     }
-
     apiCall.subscribe(
       (response) => {
-        console.log('Leave data loaded:', response);
-
-        // Handle different response formats
         const content = response?.content || (Array.isArray(response) ? response : []);
-
         if (content.length > 0) {
           this.listOfData = content.map((item: any) => this.mapApiItemToLeaveData(item));
           this.filteredData = [...this.listOfData];
@@ -146,11 +128,9 @@ export class LeaveManageComponent implements OnInit {
           this.filteredData = [];
           this.paging.totalElements = 0;
         }
-
         this.loadingTable = false;
       },
       (error) => {
-        console.error('Error loading leave data:', error);
         this.message.error('Không thể tải dữ liệu nghỉ phép: ' + (error.error || error.message || 'Unknown error'));
         this.loadingTable = false;
         this.listOfData = [];
@@ -160,29 +140,34 @@ export class LeaveManageComponent implements OnInit {
     );
   }
 
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
   private buildFilterParams(): any {
     const filters: any = {};
 
     // Build filter params from search filters for HR/Admin
-    if (this.searchFilters.employeeName) {
-      filters.employeeName = this.searchFilters.employeeName;
+    if (this.searchFilters['employeeName']) {
+      filters.employeeName = this.searchFilters['employeeName'];
     }
 
-    if (this.searchFilters.departmentName) {
-      filters.department = this.searchFilters.departmentName;
+    if (this.searchFilters['departmentName']) {
+      filters.department = this.searchFilters['departmentName'];
     }
 
-    if (this.searchFilters.absenceStatus) {
+    if (this.searchFilters['absenceStatus']) {
       // Map display status to API status
-      const statusEntry = RequestStatus.find(s => s.label === this.searchFilters.absenceStatus);
+      const statusEntry = RequestStatus.find(s => s.label === this.searchFilters['absenceStatus']);
       if (statusEntry) {
         filters.status = statusEntry.value;
       }
     }
 
-    if (this.searchFilters.absenceTypeName) {
+    if (this.searchFilters['absenceTypeName']) {
       // Map display type to API type
-      const typeEntry = Object.entries(this.LEAVE_TYPE_MAP).find(([_, label]) => label === this.searchFilters.absenceTypeName);
+      const typeEntry = Object.entries(this.LEAVE_TYPE_MAP).find(([_, label]) => label === this.searchFilters['absenceTypeName']);
       if (typeEntry) {
         filters.type = typeEntry[0];
       }
@@ -289,20 +274,14 @@ export class LeaveManageComponent implements OnInit {
     let successCount = 0;
     let errorCount = 0;
 
-    console.log('🗑️ Performing delete for leave IDs:', leaveIds);
-    console.log('🔍 Using service:', this.leaveService.constructor.name);
-
     // Delete each selected leave request
     const deleteRequests = leaveIds.map(id => {
-      console.log(`🚀 Calling deleteLeaveRequest for ID: ${id}`);
       return this.leaveService.deleteLeaveRequest(id).toPromise()
         .then(() => {
-          console.log(`✅ Successfully deleted leave ID: ${id}`);
           successCount++;
         })
         .catch((error) => {
-          console.error(`❌ Error deleting leave request ${id}:`, error);
-          console.error(`   URL attempted:`, error.url);
+          console.error(`Error deleting leave request ${id}:`, error);
           errorCount++;
         });
     });
@@ -345,14 +324,6 @@ export class LeaveManageComponent implements OnInit {
       this.dataDeleteChecked = [data];
       this.onReject();
     }
-  }
-
-  exportFile(): void {
-    this.isExporting = true;
-    setTimeout(() => {
-      console.log('Exporting file...');
-      this.isExporting = false;
-    }, 2000);
   }
 
   onTableQueryParamsChange(params: any): void {
@@ -447,70 +418,70 @@ export class LeaveManageComponent implements OnInit {
     // For Manager and Employee, use client-side filtering
     this.filteredData = this.listOfData.filter(item => {
       // Filter by employeeUserName
-      if (this.searchFilters.employeeUserName &&
-        !item.employeeUserName?.toLowerCase().includes(this.searchFilters.employeeUserName.toLowerCase())) {
+      if (this.searchFilters['employeeUserName'] &&
+        !item.employeeUserName?.toLowerCase().includes(this.searchFilters['employeeUserName'].toLowerCase())) {
         return false;
       }
 
       // Filter by employeeName
-      if (this.searchFilters.employeeName &&
-        !item.employeeName?.toLowerCase().includes(this.searchFilters.employeeName.toLowerCase())) {
+      if (this.searchFilters['employeeName'] &&
+        !item.employeeName?.toLowerCase().includes(this.searchFilters['employeeName'].toLowerCase())) {
         return false;
       }
 
       // Filter by employeeEmail
-      if (this.searchFilters.employeeEmail &&
-        !item.employeeEmail?.toLowerCase().includes(this.searchFilters.employeeEmail.toLowerCase())) {
+      if (this.searchFilters['employeeEmail'] &&
+        !item.employeeEmail?.toLowerCase().includes(this.searchFilters['employeeEmail'].toLowerCase())) {
         return false;
       }
 
       // Filter by organizationName
-      if (this.searchFilters.departmentName &&
-        !item.organizationName?.toLowerCase().includes(this.searchFilters.departmentName.toLowerCase())) {
+      if (this.searchFilters['departmentName'] &&
+        !item.organizationName?.toLowerCase().includes(this.searchFilters['departmentName'].toLowerCase())) {
         return false;
       }
 
       // Filter by absenceTypeName
-      if (this.searchFilters.absenceTypeName && item.absenceTypeName !== this.searchFilters.absenceTypeName) {
+      if (this.searchFilters['absenceTypeName'] && item.absenceTypeName !== this.searchFilters['absenceTypeName']) {
         return false;
       }
 
       // Filter by absenceStatus
-      if (this.searchFilters.absenceStatus && item.absenceStatus !== this.searchFilters.absenceStatus) {
+      if (this.searchFilters['absenceStatus'] && item.absenceStatus !== this.searchFilters['absenceStatus']) {
         return false;
       }
 
       // Filter by startDate
-      if (this.searchFilters.startDate) {
-        const filterDate = this.formatDateForComparison(this.searchFilters.startDate);
+      if (this.searchFilters['startDate']) {
+        const filterDate = this.formatDateForComparison(this.searchFilters['startDate']);
         if (item.startDate !== filterDate) {
           return false;
         }
       }
 
       // Filter by endDate
-      if (this.searchFilters.endDate) {
-        const filterDate = this.formatDateForComparison(this.searchFilters.endDate);
+      if (this.searchFilters['endDate']) {
+        const filterDate = this.formatDateForComparison(this.searchFilters['endDate']);
         if (item.endDate !== filterDate) {
           return false;
         }
       }
 
       // Filter by timeRegisterStart
-      if (this.searchFilters.timeRegisterStart &&
-        !item.timeRegisterStart?.toLowerCase().includes(this.searchFilters.timeRegisterStart.toLowerCase())) {
+      if (this.searchFilters['timeRegisterStart'] &&
+        !item.timeRegisterStart?.toLowerCase().includes(this.searchFilters['timeRegisterStart'].toLowerCase())) {
         return false;
       }
 
       // Filter by timeRegisterEnd
-      if (this.searchFilters.timeRegisterEnd &&
-        !item.timeRegisterEnd?.toLowerCase().includes(this.searchFilters.timeRegisterEnd.toLowerCase())) {
+      if (this.searchFilters['timeRegisterEnd'] &&
+        !item.timeRegisterEnd?.toLowerCase().includes(this.searchFilters['timeRegisterEnd'].toLowerCase())) {
         return false;
       }
 
       // Filter by absenceReason
-      if (this.searchFilters.absenceReason &&
-        !item.absenceReason?.toLowerCase().includes(this.searchFilters.absenceReason.toLowerCase())) {
+      if (this.searchFilters['absenceReason'] &&
+        !item.absenceReason?.toLowerCase().includes(this.searchFilters['absenceReason'].toLowerCase())) {
         return false;
       }
 
@@ -568,5 +539,8 @@ export class LeaveManageComponent implements OnInit {
     const minutes = String(date.getMinutes()).padStart(2, '0');
     return `${hours}:${minutes}`;
   }
-}
 
+  public StandardColumnType = StandardColumnType;
+  filterChanged$ = new Subject<void>();
+  private destroy$ = new Subject<void>();
+}

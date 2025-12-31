@@ -1,15 +1,15 @@
 <div>
   <div class="form-employee">
-    <div class="logo text-center mb-4">
-      <nz-upload class="avatar-uploader" nzName="avatar" nzListType="picture-card"
-        [nzShowUploadList]="false" [nzBeforeUpload]="beforeUpload" [nzDisabled]="!canEdit">
-        <ng-container *ngIf="!avatarUrl">
-          <span class="upload-icon" style="margin-right: 5px;" nz-icon [nzType]="loading ? 'loading' : 'plus'"></span>
-          <div class="ant-upload-text">Tải ảnh lên</div>
-        </ng-container>
-        <img *ngIf="avatarUrl" [src]="avatarUrl" style="width: 100%; object-fit:cover;height: 100%;" />
-      </nz-upload>
-    </div>
+<!--    <div class="logo text-center mb-4">-->
+<!--      <nz-upload class="avatar-uploader" nzName="avatar" nzListType="picture-card"-->
+<!--        [nzShowUploadList]="false" [nzBeforeUpload]="beforeUpload" [nzDisabled]="!canEdit">-->
+<!--        <ng-container *ngIf="!avatarUrl">-->
+<!--          <span class="upload-icon" style="margin-right: 5px;" nz-icon [nzType]="loading ? 'loading' : 'plus'"></span>-->
+<!--          <div class="ant-upload-text">Tải ảnh lên</div>-->
+<!--        </ng-container>-->
+<!--        <img *ngIf="avatarUrl" [src]="avatarUrl" style="width: 100%; object-fit:cover;height: 100%;" />-->
+<!--      </nz-upload>-->
+<!--    </div>-->
 
     <form nz-form [formGroup]="formGroup">
       <!-- Row 1: Họ và tên + Ngày sinh -->

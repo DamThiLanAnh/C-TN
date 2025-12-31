@@ -29,7 +29,7 @@ export const routes: Routes = [
         loadChildren: () => import('./modules/gate-manage/gate-manage.module').then(m => m.GateManageModule)
       },
       {
-        path: 'employee-manage',
+        path: 'employee',
         loadChildren: () => import('./modules/employee-manage/employee-manage.module').then(m => m.EmployeeManageModule)
       },
       {

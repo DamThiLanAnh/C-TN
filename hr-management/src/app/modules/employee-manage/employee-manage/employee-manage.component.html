@@ -9,59 +9,72 @@
     </div>
   </div>
 
-  <ng-container>
-    <nz-table #basicTable [nzData]="listOfData" [nzLoading]="loadingTable"
-              [nzScroll]="{ y: 'calc(100vh - 17rem)' }" [nzShowPagination]="false" [nzSize]="'small'"
-              [nzBordered]="true"
-              (nzQueryParams)="onFilterInTable($event)"
+  <ng-container *ngIf="employeeColumns && StandardColumnType">
+    <nz-table
+      #basicTable
+      [nzData]="listOfData"
+      [nzLoading]="loadingTable"
+      [nzScroll]="{ y: 'calc(100vh - 17rem)' }"
+      [nzShowPagination]="false"
+      [nzSize]="'small'"
+      [nzBordered]="true"
+      (nzQueryParams)="onFilterInTable($event)"
     >
       <thead>
       <tr>
-        <th nzWidth="50px">STT</th>
-        <th *ngFor="let col of columns; trackBy: trackByColumnKey" [nzWidth]="col.width" [nzSortOrder]="null"
-            [nzSortFn]="col.sortable ? true : null">
-          {{ col.title }}
+        <th *ngFor="let col of employeeColumns" [nzWidth]="col.width ? col.width : null" [nzSortOrder]="null"
+            [nzSortFn]="col.isSort ? true : null">
+          {{ col.attr }}
         </th>
-        <th nzWidth="100px" [nzRight]="true">Hành động</th>
+      </tr>
+      <tr>
+        <td *ngFor="let col of employeeColumns">
+          <ng-container *ngIf="col.filter">
+            <input *ngIf="col.filter.type === StandardColumnType.INPUT && searchFilters" nz-input
+                   [(ngModel)]="searchFilters[col.name]" (ngModelChange)="searchSubject?.next()"
+                   [placeholder]="'Tìm...'" nzSize="small"/>
+            <nz-select *ngIf="col.filter.type === StandardColumnType.SELECT && searchFilters"
+                       [(ngModel)]="searchFilters[col.name]" (ngModelChange)="searchSubject?.next()"
+                       nzPlaceHolder="Tìm..." nzAllowClear nzSize="small" style="width: 100%">
+              <nz-option *ngFor="let opt of (col.filter.options || [])" [nzValue]="opt.value"
+                         [nzLabel]="opt.label"></nz-option>
+            </nz-select>
+          </ng-container>
+        </td>
       </tr>
       </thead>
       <tbody>
       <tr *ngFor="let data of basicTable.data; trackBy: trackByEmployeeId">
-        <td>{{ data.index }}</td>
-        <td *ngFor="let col of columns; trackBy: trackByColumnKey">
-          <ng-container [ngSwitch]="col.key">
-            <!--            <ng-container *ngSwitchCase="'isActive'">-->
-            <!--              <nz-badge [nzStatus]="data.isActive === 1 ? 'success' : 'error'"-->
-            <!--                        [nzText]="data.isActive === 1 ? 'Hoạt động' : 'Ngừng hoạt động'">-->
-            <!--              </nz-badge>-->
-            <!--            </ng-container>-->
-            <ng-container *ngSwitchDefault>
-              {{ data[col.key] || data[getFallbackKey(col.key)] || '-' }}
+        <td *ngFor="let col of employeeColumns">
+          <ng-container [ngSwitch]="col.type">
+            <ng-container *ngSwitchCase="StandardColumnType.TAG">
+              <nz-tag *ngIf="data[col.name] && getTagColor && getTagLabel"
+                      [nzColor]="getTagColor(data[col.name])">{{ getTagLabel(data[col.name]) }}
+              </nz-tag>
             </ng-container>
-          </ng-container>
-        </td>
-        <td [nzRight]="true">
-          <a (click)="editUser({item: data}, false)">
-            <span nz-icon nzType="eye" nzTheme="outline"></span>
-          </a>
-          <nz-divider nzType="vertical"></nz-divider>
-
-          <ng-container *ngIf="canEdit && data.isEnableEdit">
-            <a (click)="editUser({item: data})">
-              <span nz-icon nzType="edit" nzTheme="outline"></span>
-            </a>
-            <nz-divider nzType="vertical"></nz-divider>
-          </ng-container>
-
-          <ng-container *ngIf="canDelete">
-            <a (click)="showConfirm(data)">
-              <span nz-icon nzType="delete" nzTheme="outline"></span>
-            </a>
-            <nz-divider nzType="vertical"></nz-divider>
-          </ng-container>
-
-          <ng-container *ngIf="canTransferPosition && data.isActive">
-            <a (click)="addStaffPosition(data)" class="text-blue">Chuyển đơn vị</a>
+            <ng-container *ngSwitchCase="StandardColumnType.ACTION">
+              <td *ngIf="col.name === 'action' && handleAction" [ngClass]="col.classes || ''" class="text-center"
+                  (click)="$event.stopPropagation()">
+                <div class="action-buttons d-flex justify-content-center gap-2">
+                  <ng-container *ngFor="let action of col.listAction">
+                    <button
+                      nz-button
+                      nzType="link"
+                      nzSize="small"
+                      nz-tooltip
+                      [nzTooltipTitle]="action.label"
+                      (click)="handleAction(action.key, data)"
+                      [innerHTML]="action.html && (action.html | vssSafeHtml)"
+                      class="action-icon-btn"
+                    >
+                    </button>
+                  </ng-container>
+                </div>
+              </td>
+            </ng-container>
+            <ng-container *ngSwitchDefault>
+              {{ getDisplayValue(data, col.name) }}
+            </ng-container>
           </ng-container>
         </td>
       </tr>

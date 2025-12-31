@@ -5,6 +5,9 @@ import { NzTableQueryParams } from 'ng-zorro-antd/table';
 import { EmployeeAddComponent } from '../employee-add/employee-add.component';
 import { EmployeeManageService } from '../employee-manage.service';
 import { finalize } from 'rxjs/operators';
+import { employeeManageColumns } from '../employee-manage.columns';
+import { StandardColumnType } from '../../shares/interfaces';
+import { Subject } from 'rxjs';
 
 // Simple column model cho nz-table
 interface TableColumn {
@@ -21,6 +24,11 @@ interface TableColumn {
 })
 export class EmployeeManageComponent implements OnInit {
   tableName = 'Danh sách nhân viên';
+  employeeColumns = employeeManageColumns();
+  StandardColumnType = StandardColumnType;
+  searchFilters: { [key: string]: any } = {};
+  searchSubject = new Subject<any>();
+
   columns: TableColumn[] = [
     { title: 'Mã nhân viên', key: 'userName', width: '150px', sortable: true },
     { title: 'Họ và tên', key: 'fullName', width: '200px', sortable: true },
@@ -272,5 +280,46 @@ export class EmployeeManageComponent implements OnInit {
   trackByColumnKey(_index: number, column: TableColumn): string {
     return column.key;
   }
+
+  getTagColor(status: string): string {
+    // Tùy chỉnh màu cho trạng thái
+    switch (status) {
+      case 'ACTIVE': return 'green';
+      case 'INACTIVE': return 'red';
+      default: return 'default';
+    }
+  }
+
+  getTagLabel(status: string): string {
+    // Tùy chỉnh label cho trạng thái
+    switch (status) {
+      case 'ACTIVE': return 'Hoạt động';
+      case 'INACTIVE': return 'Ngừng hoạt động';
+      default: return status;
+    }
+  }
+
+  handleAction(actionKey: string, data: any): void {
+    switch (actionKey) {
+      case 'edit':
+        this.editUser({item: data});
+        break;
+      case 'delete':
+        this.showConfirm(data);
+        break;
+      default:
+        this.messageService.warning('Chức năng chưa hỗ trợ!');
+    }
+  }
+
+  getDisplayValue(data: any, key: string): string {
+    const value = data[key];
+    if (value === null || value === undefined) {
+      return '-';
+    }
+    return value;
+  }
 }
+
+
 

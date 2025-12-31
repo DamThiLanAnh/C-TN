@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ReactiveFormsModule, FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 import { EmployeeManageComponent } from './employee-manage/employee-manage.component';
 import { EmployeeManageRoutingModule } from './employee-manage-routing.module';
@@ -25,6 +25,10 @@ import { NzUploadModule } from 'ng-zorro-antd/upload';
 import { NzStepsModule } from 'ng-zorro-antd/steps';
 import { NzEmptyModule } from 'ng-zorro-antd/empty';
 import { NzGridModule } from 'ng-zorro-antd/grid';
+import { NzTagModule } from 'ng-zorro-antd/tag';
+import { NzToolTipModule } from 'ng-zorro-antd/tooltip';
+import { SharedModule } from '../shares/shared.module';
+import { DepartmentManageComponent } from './department-manage/department-manage.component';
 
 @NgModule({
   imports: [
@@ -50,14 +54,24 @@ import { NzGridModule } from 'ng-zorro-antd/grid';
     NzUploadModule,
     NzStepsModule,
     NzEmptyModule,
-    NzGridModule
+    NzGridModule,
+    NzTagModule,
+    NzSelectModule,
+    NzInputModule,
+    NzTableModule,
+    NzPaginationModule,
+    NzDividerModule,
+    NzToolTipModule,
+    SharedModule,
   ],
   exports: [],
   declarations: [
     EmployeeManageComponent,
-    EmployeeAddComponent
+    EmployeeAddComponent,
+    DepartmentManageComponent
   ]
 })
 
-export class EmployeeManageModule { }
+export class EmployeeManageModule {
+}
 

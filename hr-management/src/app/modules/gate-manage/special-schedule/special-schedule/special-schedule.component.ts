@@ -9,40 +9,10 @@ import { ModalViewDetailSpecialScheduleComponent } from '../modal-view-detail-sp
 import { ModalConfirmationComponent } from '../modal-confirmation/modal-confirmation.component';
 import { SpecialScheduleService } from '../special-schedule.service';
 import { AuthService } from '../../../../services/auth.service';
-
-export interface SpecialScheduleItem {
-  id: string;
-  index: number;
-  userName: string;
-  fullName: string;
-  scheduleType: string;
-  status: 'PENDING' | 'APPROVED' | 'REJECTED';
-  beginDate: string;
-  endDate: string;
-  checked: boolean;
-  disabled: boolean;
-  isActiveAction: boolean;
-  [key: string]: any;
-}
-
-export interface TableColumn {
-  nzTitle: string;
-  nzKey: string;
-  sortFn?: (a: SpecialScheduleItem, b: SpecialScheduleItem) => number;
-  sortOrder?: 'descend' | 'ascend' | null;
-  sortDirections?: Array<'descend' | 'ascend' | null>;
-}
-
-const specialScheduleColumns: TableColumn[] = [
-  { nzTitle: 'STT', nzKey: 'index' },
-  { nzTitle: 'Tài khoản', nzKey: 'userName', sortFn: (a, b) => a.userName.localeCompare(b.userName) },
-  { nzTitle: 'Tên nhân viên', nzKey: 'fullName' },
-  { nzTitle: 'Loại lịch', nzKey: 'scheduleType' },
-  { nzTitle: 'Trạng thái', nzKey: 'status' },
-  { nzTitle: 'Ngày bắt đầu', nzKey: 'beginDate' },
-  { nzTitle: 'Ngày kết thúc', nzKey: 'endDate' },
-];
-
+import { specialScheduleColumns } from '../special-schedule.columns';
+import { StandardColumnModel, StandardColumnType } from '../../../shares/interfaces';
+import { SpecialScheduleDetail } from '../special-schedule.model';
+import { ModalAddSpecialScheduleComponent } from '../modal-add-special-schedule/modal-add-special-schedule.component';
 
 @Component({
   selector: 'app-special-schedule',
@@ -50,14 +20,16 @@ const specialScheduleColumns: TableColumn[] = [
   styleUrls: ['./special-schedule.component.scss'],
 })
 export class SpecialScheduleComponent implements OnInit {
-  listOfData: SpecialScheduleItem[] = [];
+  listOfData: SpecialScheduleDetail[] = [];
   tableName = 'Quản lý lịch làm đặc thù';
-  dataDeleteChecked: SpecialScheduleItem[] = [];
+  dataDeleteChecked: SpecialScheduleDetail[] = [];
   canApprove: boolean = true;
-  columns: TableColumn[] = specialScheduleColumns;
   isEmployee: boolean = false; // Flag to check if user is employee
   isManager: boolean = false; // Flag to check if user is manager
   isApprover: boolean = false; // Flag to check if user is approver
+
+  specialScheduleColumns:StandardColumnModel[] = specialScheduleColumns();
+  public StandardColumnType = StandardColumnType;
 
   // Pagination
   paging = {
@@ -70,11 +42,11 @@ export class SpecialScheduleComponent implements OnInit {
   // Table state
   checked = false;
   indeterminate = false;
-  loadingDataTable = false;
-  isExporting = false;
+  loadingTable = false;
 
   // Search stream
-  private searchSubject = new Subject<any>();
+  public searchFilters: { [key: string]: any } = {};
+  public searchSubject = new Subject<any>();
 
   rejectForm!: FormGroup;
 
@@ -124,7 +96,7 @@ export class SpecialScheduleComponent implements OnInit {
   }
 
   private loadData(): void {
-    this.loadingDataTable = true;
+    this.loadingTable = true;
     let apiCall;
     const params = {
       page: this.paging.pageIndex - 1,
@@ -137,23 +109,16 @@ export class SpecialScheduleComponent implements OnInit {
     } else if (this.isApprover) {
       apiCall = this.specialScheduleService.getMyApprovalsSpecialSchedulesApi(params);
     } else {
-      // Nếu cần, có thể thêm API cho admin hoặc các role khác
       this.listOfData = [];
-      this.loadingDataTable = false;
+      this.loadingTable = false;
       return;
     }
-    apiCall.pipe(finalize(() => this.loadingDataTable = false)).subscribe(
+    apiCall.pipe(finalize(() => this.loadingTable = false)).subscribe(
       (response) => {
         const content = response?.content || [];
         this.listOfData = content.map((item: any, index: number) => ({
           ...item,
           index: (this.paging.pageIndex - 1) * this.paging.pageSize + index + 1,
-          userName: item.employeeCode || item.staff?.userName || '',
-          fullName: item.employeeName || item.staff?.fullName || '',
-          scheduleType: item.type || item.scheduleType?.name || '',
-          status: item.status,
-          beginDate: item.startDate || item.beginDate,
-          endDate: item.endDate,
           checked: false,
           disabled: item.status !== 'PENDING',
           isActiveAction: item.status === 'PENDING',
@@ -171,9 +136,8 @@ export class SpecialScheduleComponent implements OnInit {
   }
 
 
-  // --- CHECKBOX/SELECT METHODS ---
 
-  onItemChecked(item: SpecialScheduleItem, checked: boolean): void {
+  onItemChecked(item: SpecialScheduleDetail, checked: boolean): void {
     item.checked = checked;
     if (checked) {
       this.dataDeleteChecked.push(item);
@@ -243,12 +207,12 @@ export class SpecialScheduleComponent implements OnInit {
     });
   }
 
-  viewDetail(row: SpecialScheduleItem): void {
+  viewDetail(row: SpecialScheduleDetail): void {
     console.log('🔵 Fetching detail for ID:', row.id);
-    this.loadingDataTable = true;
+    this.loadingTable = true;
 
     this.specialScheduleService.findByIdApi(row.id).pipe(
-      finalize(() => this.loadingDataTable = false)
+      finalize(() => this.loadingTable = false)
     ).subscribe(
       (response) => {
         console.log('✅ Detail data received:', response);
@@ -275,7 +239,7 @@ export class SpecialScheduleComponent implements OnInit {
 
 
 
-  onApproveConfirm(data: SpecialScheduleItem, onCloseModal?: () => void): void {
+  onApproveConfirm(data: SpecialScheduleDetail, onCloseModal?: () => void): void {
     const modal: NzModalRef = this.modalService.create({
       nzTitle: undefined,
       nzContent: ModalConfirmationComponent,
@@ -289,10 +253,10 @@ export class SpecialScheduleComponent implements OnInit {
 
     modal.afterClose.subscribe((result) => {
       if (result) {
-        this.loadingDataTable = true;
+        this.loadingTable = true;
         // MOCK - Giả lập approve
         setTimeout(() => {
-          this.loadingDataTable = false;
+          this.loadingTable = false;
           this.messageService.success('Bạn đã phê duyệt thành công (Mock)');
           this.getChangePagination(this.paging.pageIndex);
           if (onCloseModal) onCloseModal();
@@ -301,7 +265,7 @@ export class SpecialScheduleComponent implements OnInit {
     });
   }
 
-  onRejectConfirm(data: SpecialScheduleItem, onCloseModal?: () => void): void {
+  onRejectConfirm(data: SpecialScheduleDetail, onCloseModal?: () => void): void {
     const modal: NzModalRef = this.modalService.create({
       nzTitle: undefined,
       nzContent: ModalConfirmationComponent,
@@ -316,10 +280,10 @@ export class SpecialScheduleComponent implements OnInit {
 
     modal.afterClose.subscribe((result) => {
       if (result) {
-        this.loadingDataTable = true;
+        this.loadingTable = true;
         // MOCK - Giả lập reject
         setTimeout(() => {
-          this.loadingDataTable = false;
+          this.loadingTable = false;
           this.messageService.success('Bạn đã từ chối phê duyệt thành công (Mock)');
           this.getChangePagination(this.paging.pageIndex);
           if (onCloseModal) onCloseModal();
@@ -346,10 +310,10 @@ export class SpecialScheduleComponent implements OnInit {
 
     modal.afterClose.subscribe((result) => {
       if (result) {
-        this.loadingDataTable = true;
+        this.loadingTable = true;
         // MOCK - Giả lập approve list
         setTimeout(() => {
-          this.loadingDataTable = false;
+          this.loadingTable = false;
           this.messageService.success('Bạn đã phê duyệt danh sách thành công (Mock)');
           this.dataDeleteChecked = [];
           this.getChangePagination(this.paging.pageIndex);
@@ -375,10 +339,10 @@ export class SpecialScheduleComponent implements OnInit {
 
     modal.afterClose.subscribe((result) => {
       if (result) {
-        this.loadingDataTable = true;
+        this.loadingTable = true;
         // MOCK - Giả lập reject list
         setTimeout(() => {
-          this.loadingDataTable = false;
+          this.loadingTable = false;
           this.messageService.success('Bạn đã từ chối phê duyệt danh sách thành công (Mock)');
           this.dataDeleteChecked = [];
           this.getChangePagination(this.paging.pageIndex);
@@ -388,16 +352,88 @@ export class SpecialScheduleComponent implements OnInit {
   }
 
   openAddSpecialScheduleModal(): void {
-    const modal = this.modalService.create({
+    const modalRef = this.modalService.create({
       nzTitle: 'Thêm mới lịch đặc thù',
-      nzContent: 'app-modal-add-special-schedule',
+      nzContent: ModalAddSpecialScheduleComponent,
       nzFooter: null,
-      nzWidth: 800
+      nzWidth: 800,
+      nzBodyStyle: { padding: '24px' }
     });
-    modal.afterClose.subscribe(result => {
+    modalRef.afterClose.subscribe((result) => {
       if (result) {
         this.loadData();
       }
     });
+  }
+
+  handleAction(actionKey: string, data: any): void {
+    switch (actionKey) {
+      case 'edit':
+        if (!this.isEmployee) {
+          this.messageService.warning('Chỉ nhân viên mới được sửa lịch đặc thù!');
+          return;
+        }
+        this.modalService.create({
+          nzTitle: 'Cập nhật lịch đặc thù',
+          nzContent: ModalViewDetailSpecialScheduleComponent,
+          nzComponentParams: {
+            item: data,
+            mode: 'edit',
+            onUpdate: () => this.loadData()
+          },
+          nzFooter: null,
+          nzWidth: 800,
+          nzBodyStyle: { padding: '24px' }
+        });
+        break;
+      case 'delete':
+        if (!this.isEmployee) {
+          this.messageService.warning('Chỉ nhân viên mới được xoá lịch đặc thù!');
+          return;
+        }
+        this.confirmDeleteSpecialSchedule(data);
+        break;
+      case 'approve':
+        this.onApproveConfirm(data);
+        break;
+      case 'reject':
+        this.onRejectConfirm(data);
+        break;
+      default:
+        this.messageService.warning('Chức năng chưa hỗ trợ!');
+    }
+  }
+
+  confirmDeleteSpecialSchedule(data: SpecialScheduleDetail): void {
+    const modal: NzModalRef = this.modalService.create({
+      nzTitle: 'Xác nhận xoá',
+      nzContent: ModalConfirmationComponent,
+      nzCentered: true,
+      nzComponentParams: {
+        title: 'Xác nhận xoá',
+        message: 'Bạn có chắc chắn muốn xoá lịch đặc thù này không?',
+        showReasonBox: false,
+      },
+    });
+    modal.afterClose.subscribe((result) => {
+      if (result) {
+        this.deleteSpecialSchedule(data.id);
+      }
+    });
+  }
+
+  deleteSpecialSchedule(id: number | string): void {
+    this.loadingTable = true;
+    this.specialScheduleService.deleteSpecialScheduleApi(id)
+      .pipe(finalize(() => this.loadingTable = false))
+      .subscribe(
+        () => {
+          this.messageService.success('Xoá lịch đặc thù thành công!');
+          this.loadData();
+        },
+        (error) => {
+          this.messageService.error('Xoá lịch đặc thù thất bại: ' + (error.error || error.message || 'Unknown error'));
+        }
+      );
   }
 }

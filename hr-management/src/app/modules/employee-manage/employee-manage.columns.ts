@@ -1,27 +1,67 @@
-import { RequestStatus, StandardColumnModel, StandardColumnType } from '../shares/interfaces';
+import {
+  ActionConfig,
+  RequestStatus,
+  StandardColumnModel,
+  StandardColumnType,
+  StandardFormItemModel
+} from '../shares/interfaces';
+import { IconHtml } from '../shares/enum/icon-html.enum';
 
 
 export const employeeManageColumns = ():StandardColumnModel[] => {
   return [
-    // {
-    //   id: 2,
-    //   name: 'action',
-    //   fixedColumn: true,
-    //   fixedRight: false,
-    //   attr: 'Thao tác',
-    //   type: StandardColumnType.ACTION,
-    //   width: '80px',
-    //   isFilter: false,
-    //   isSort: false,
-    // },
+    {
+      id: 1,
+      name: 'index',
+      fixedColumn: true,
+      fixedRight: false,
+      attr: 'STT',
+      type: StandardColumnType.TEXT,
+      width: '60px',
+      isFilter: false,
+      isSort: false,
+    },
+    {
+      id: 2,
+      name: 'action',
+      fixedColumn: true,
+      fixedRight: false,
+      attr: 'Thao tác',
+      type: StandardColumnType.ACTION,
+      width: '100px',
+      isFilter: false,
+      isSort: false,
+      rulesAction: {
+        isEdit: [''],
+        isRemove: [''],
+      },
+      listAction: [
+        {
+          key: 'edit',
+          icon: 'edit',
+          label: 'Chỉnh sửa',
+          html: IconHtml.UPDATE,
+          rules: [],
+          fieldCheckShow: 'isActiveAction',
+        } as ActionConfig,
+        {
+          key: 'delete',
+          icon: 'delete',
+          label: 'Xóa',
+          html: IconHtml.DELETE,
+          rules: [],
+          fieldCheckShow: 'isActiveAction',
+        } as ActionConfig,
+      ],
+    },
     {
       id: 3,
-      name: 'employeeUserName',
+      name: 'code',
       fixedColumn: true,
       fixedRight: false,
       attr: 'Mã nhân viên',
       type: StandardColumnType.TEXT,
-      width: '130px',
+      width: '100px',
       isFilter: true,
       isSort: true,
       filter: { type: StandardColumnType.INPUT },
@@ -29,7 +69,7 @@ export const employeeManageColumns = ():StandardColumnModel[] => {
     },
     {
       id: 4,
-      name: 'employeeName',
+      name: 'fullName',
       fixedColumn: true,
       fixedRight: false,
       attr: 'Tên nhân viên',
@@ -39,39 +79,39 @@ export const employeeManageColumns = ():StandardColumnModel[] => {
       isSort: true,
       filter: { type: StandardColumnType.INPUT },
     },
-    {
-      id: 5,
-      name: 'absenceStatus',
-      fixedColumn: true,
-      fixedRight: false,
-      attr: 'Trạng thái',
-      type: StandardColumnType.TAG,
-      isFilter: true,
-      width: '130px',
-      filter: {
-        name: 'absenceStatus',
-        type: StandardColumnType.SELECT,
-        options: RequestStatus,
-        multiple: true,
-      },
-      isSort: true,
-      classes: 'tag-left',
-    },
+    // {
+    //   id: 5,
+    //   name: 'absenceStatus',
+    //   fixedColumn: true,
+    //   fixedRight: false,
+    //   attr: 'Trạng thái',
+    //   type: StandardColumnType.TAG,
+    //   isFilter: true,
+    //   width: '130px',
+    //   filter: {
+    //     name: 'absenceStatus',
+    //     type: StandardColumnType.SELECT,
+    //     options: RequestStatus,
+    //     multiple: true,
+    //   },
+    //   isSort: true,
+    //   classes: 'tag-left',
+    // },
     {
       id: 6,
-      name: 'employeeEmail',
+      name: 'email',
       fixedColumn: false,
       fixedRight: false,
       attr: 'Email',
       type: StandardColumnType.TEXT,
-      width: '130px',
+      width: '200px',
       isFilter: true,
       isSort: true,
       filter: { type: StandardColumnType.INPUT },
     },
     {
       id: 7,
-      name: 'organizationName',
+      name: 'departmentName',
       fixedColumn: false,
       fixedRight: false,
       attr: 'Phòng ban',
@@ -91,7 +131,7 @@ export const employeeManageColumns = ():StandardColumnModel[] => {
       fixedColumn: false,
       fixedRight: false,
       attr: 'Chức danh',
-      width: '150px',
+      width: '120px',
       isFilter: true,
       isSort: true,
       filter: {
@@ -102,27 +142,12 @@ export const employeeManageColumns = ():StandardColumnModel[] => {
       type: StandardColumnType.SELECT,
     },
     {
-      id: 9,
-      name: 'staffRole',
-      fixedColumn: false,
-      fixedRight: false,
-      attr: 'Role',
-      width: '150px',
-      isFilter: true,
-      isSort: true,
-      filter: {
-        name: 'roleId',
-        multiple: true,
-      },
-      type: StandardColumnType.SELECT,
-    },
-    {
       id: 10,
-      name: 'workPositionName',
+      name: 'position',
       fixedColumn: false,
       fixedRight: false,
       attr: 'Vị trí công việc',
-      width: '150px',
+      width: '120px',
       isFilter: true,
       isSort: true,
       filter: {
@@ -137,7 +162,7 @@ export const employeeManageColumns = ():StandardColumnModel[] => {
       fixedColumn: false,
       fixedRight: false,
       attr: 'Level',
-      width: '150px',
+      width: '100px',
       isFilter: true,
       isSort: true,
       filter: {
@@ -152,7 +177,7 @@ export const employeeManageColumns = ():StandardColumnModel[] => {
       fixedColumn: false,
       fixedRight: false,
       attr: 'Tình trạng',
-      width: '150px',
+      width: '100px',
       isFilter: true,
       isSort: true,
       filter: {
@@ -162,29 +187,29 @@ export const employeeManageColumns = ():StandardColumnModel[] => {
       },
       type: StandardColumnType.SELECT,
     },
-    {
-      id: 13,
-      name: 'isActive',
-      fixedColumn: false,
-      fixedRight: false,
-      attr: 'Trạng thái',
-      width: '150px',
-      isFilter: true,
-      isSort: true,
-      filter: {
-        name: '',
-        // selectOptionsType: EnumSelectOptionType.organizationProfile, // BỎ
-        multiple: true,
-      },
-      type: StandardColumnType.SELECT,
-    },
+    // {
+    //   id: 13,
+    //   name: 'isActive',
+    //   fixedColumn: false,
+    //   fixedRight: false,
+    //   attr: 'Trạng thái',
+    //   width: '150px',
+    //   isFilter: true,
+    //   isSort: true,
+    //   filter: {
+    //     name: '',
+    //     // selectOptionsType: EnumSelectOptionType.organizationProfile, // BỎ
+    //     multiple: true,
+    //   },
+    //   type: StandardColumnType.SELECT,
+    // },
     {
       id: 13,
       name: 'gender',
       fixedColumn: false,
       fixedRight: false,
       attr: 'Giới tính',
-      width: '150px',
+      width: '50px',
       isFilter: true,
       isSort: true,
       filter: {
@@ -196,11 +221,11 @@ export const employeeManageColumns = ():StandardColumnModel[] => {
     },
     {
       id: 14,
-      name: 'birthDay',
+      name: 'dateOfBirth',
       fixedColumn: false,
       fixedRight: false,
       attr: 'Ngày sinh',
-      width: '150px',
+      width: '100px',
       isFilter: true,
       isSort: true,
       filter: {
@@ -216,7 +241,7 @@ export const employeeManageColumns = ():StandardColumnModel[] => {
       fixedColumn: false,
       fixedRight: false,
       attr: 'SĐT',
-      width: '150px',
+      width: '100px',
       isFilter: true,
       isSort: true,
       filter: {
@@ -228,7 +253,7 @@ export const employeeManageColumns = ():StandardColumnModel[] => {
     },
     {
       id: 17,
-      name: 'entryDate',
+      name: 'createdAt',
       fixedColumn: false,
       fixedRight: false,
       attr: 'Ngày vào làm',
@@ -237,15 +262,8 @@ export const employeeManageColumns = ():StandardColumnModel[] => {
       isSort: true,
       isFilter: true,
     },
-    {
-      id: 18,
-      name: 'createdUser',
-      fixedColumn: false,
-      attr: 'Người tạo',
-      type: StandardColumnType.TEXT,
-      isSort: false,
-      isFilter: true,
-      width: '250px',
-    },
   ];
 };
+export const employeeColumnFilter: StandardFormItemModel[] = [
+
+]

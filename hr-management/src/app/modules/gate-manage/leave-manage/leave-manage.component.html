@@ -78,134 +78,17 @@
     </tr>
     <!-- Filter Row -->
     <tr class="filter-row">
-      <!-- No filter for Checkbox -->
       <th></th>
-      <!-- No filter for STT (Index) -->
-      <th></th>
-      <!-- No filter for Thao tác (Action) -->
-      <th></th>
-      <!-- Filter: Mã nhân viên -->
-      <th>
-        <input
-          type="text"
-          nz-input
-          [(ngModel)]="searchFilters.employeeUserName"
-          (ngModelChange)="onSearch()"
-          placeholder="Tìm..."
-          nzSize="small"
-        />
-      </th>
-      <!-- Filter: Tên nhân viên -->
-      <th>
-        <input
-          type="text"
-          nz-input
-          [(ngModel)]="searchFilters.employeeName"
-          (ngModelChange)="onSearch()"
-          placeholder="Tìm..."
-          nzSize="small"
-        />
-      </th>
-      <!-- Filter: Email -->
-      <th>
-        <input
-          type="text"
-          nz-input
-          [(ngModel)]="searchFilters.employeeEmail"
-          (ngModelChange)="onSearch()"
-          placeholder="Tìm..."
-          nzSize="small"
-        />
-      </th>
-      <!-- Filter: Phòng ban -->
-      <th>
-        <input
-          type="text"
-          nz-input
-          [(ngModel)]="searchFilters.departmentName"
-          (ngModelChange)="onSearch()"
-          placeholder="Tìm..."
-          nzSize="small"
-        />
-      </th>
-      <!-- Filter: Loại -->
-      <th>
-        <nz-select
-          [(ngModel)]="searchFilters.absenceTypeName"
-          (ngModelChange)="onSearch()"
-          nzPlaceHolder="Tìm..."
-          nzAllowClear
-          nzSize="small"
-          style="width: 100%"
-        >
-          <nz-option
-            *ngFor="let type of leaveTypeOptions"
-            [nzValue]="type.label"
-            [nzLabel]="type.label">
-          </nz-option>
-        </nz-select>
-      </th>
-      <!-- Filter: Ngày yêu cầu -->
-      <th>
-        <nz-date-picker
-          [(ngModel)]="searchFilters.startDate"
-          (ngModelChange)="onSearch()"
-          nzFormat="dd/MM/yyyy"
-          nzPlaceHolder="Chọn..."
-          nzSize="small"
-          style="width: 100%"
-        ></nz-date-picker>
-      </th>
-      <!-- Filter: Giờ đăng ký (từ) -->
-      <th>
-        <input
-          type="text"
-          nz-input
-          [(ngModel)]="searchFilters.timeRegisterStart"
-          (ngModelChange)="onSearch()"
-          placeholder="Tìm..."
-          nzSize="small"
-        />
-      </th>
-      <!-- Filter: Giờ đăng ký (đến) -->
-      <th>
-        <input
-          type="text"
-          nz-input
-          [(ngModel)]="searchFilters.timeRegisterEnd"
-          (ngModelChange)="onSearch()"
-          placeholder="Tìm..."
-          nzSize="small"
-        />
-      </th>
-      <!-- Filter: Lý do -->
-      <th>
-        <input
-          type="text"
-          nz-input
-          [(ngModel)]="searchFilters.absenceReason"
-          (ngModelChange)="onSearch()"
-          placeholder="Tìm..."
-          nzSize="small"
-        />
-      </th>
-      <!-- Filter: Trạng thái (fixedRight - cuối cùng) -->
-      <th>
-        <nz-select
-          [(ngModel)]="searchFilters.absenceStatus"
-          (ngModelChange)="onSearch()"
-          nzPlaceHolder="Tìm..."
-          nzAllowClear
-          nzSize="small"
-          style="width: 100%"
-        >
-          <nz-option
-            *ngFor="let status of requestStatusOptions"
-            [nzValue]="status.label"
-            [nzLabel]="status.label">
-          </nz-option>
-        </nz-select>
-      </th>
+      <ng-container *ngFor="let col of leaveManageColumns">
+        <th *ngIf="col.isFilter">
+          <input *ngIf="col.filter?.type === StandardColumnType.INPUT || col.type === StandardColumnType.TEXT" type="text" nz-input [(ngModel)]="searchFilters[col.name]" (ngModelChange)="filterChanged$.next()" [placeholder]="'Tìm...'" nzSize="small" />
+          <nz-select *ngIf="col.filter?.type === StandardColumnType.SELECT || col.type === StandardColumnType.SELECT" [(ngModel)]="searchFilters[col.name]" (ngModelChange)="filterChanged$.next()" nzPlaceHolder="Tìm..." nzAllowClear nzSize="small" style="width: 100%">
+            <nz-option *ngFor="let opt of (col.filter?.options || [])" [nzValue]="opt.label || opt.value" [nzLabel]="opt.label || opt.value"></nz-option>
+          </nz-select>
+          <nz-date-picker *ngIf="col.type === StandardColumnType.DATE_RANGE_PICKER" [(ngModel)]="searchFilters[col.name]" (ngModelChange)="filterChanged$.next()" nzFormat="dd/MM/yyyy" nzPlaceHolder="Chọn..." nzSize="small" style="width: 100%"></nz-date-picker>
+        </th>
+        <th *ngIf="!col.isFilter"></th>
+      </ng-container>
     </tr>
     </thead>
     <tbody>
@@ -254,7 +137,7 @@
     </tbody>
   </nz-table>
 
-  <div class="mt-2 text-right">
+  <div class="mt-2 text-lg-end">
     <nz-pagination
       [nzTotal]="paging.totalElements"
       [nzPageSize]="paging.pageSize"

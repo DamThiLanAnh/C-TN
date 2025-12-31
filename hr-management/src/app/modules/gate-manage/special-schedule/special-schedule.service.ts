@@ -44,4 +44,12 @@ export class SpecialScheduleService {
   createSpecialScheduleApi(body: any): Observable<any> {
     return this.http.post<any>(`${this.baseUrl}`, body);
   }
+
+  updateSpecialScheduleApi(id: number | string, body: any): Observable<any> {
+    return this.http.put<any>(`${this.baseUrl}/${id}`, body);
+  }
+
+  deleteSpecialScheduleApi(id: number | string): Observable<any> {
+    return this.http.delete<any>(`${this.baseUrl}/${id}`);
+  }
 }

@@ -30,10 +30,9 @@
     </button>
   </div>
 
-  <nz-table
-    #basicTable
+  <nz-table #basicTable
     [nzData]="listOfData"
-    [nzLoading]="loadingDataTable"
+    [nzLoading]="loadingTable"
     [nzBordered]="true"
     [nzSize]="'small'"
     [nzScroll]="{ x: '1600px', y: 'calc(100vh - 18rem)' }"
@@ -41,36 +40,48 @@
     (nzQueryParams)="onFilterInTable($event)"
   >
     <thead>
-    <tr>
-      <th nzWidth="50px" [nzChecked]="checked" [nzIndeterminate]="indeterminate"
-          (nzCheckedChange)="onChangeSelectAll($event)"></th>
-      <ng-container *ngFor="let column of columns">
-        <th
-          [nzSortFn]="column.sortFn || null"
-          [nzSortOrder]="column.sortOrder || null"
-          [nzSortDirections]="column.sortDirections || ['ascend', 'descend', null]">
-          {{ column.nzTitle }}
-        </th>
-      </ng-container>
-      <th nzWidth="100px" [nzRight]="true">Hành động</th>
-    </tr>
+      <tr>
+        <th *ngFor="let col of specialScheduleColumns" [nzWidth]="col.width || null">{{ col.attr }}</th>
+      </tr>
+      <tr class="filter-row">
+        <ng-container *ngFor="let col of specialScheduleColumns">
+          <th *ngIf="col.isFilter">
+            <input *ngIf="col.filter?.type === StandardColumnType.INPUT || col.type === StandardColumnType.TEXT" type="text" nz-input [(ngModel)]="searchFilters[col.name]" (ngModelChange)="searchSubject.next()" [placeholder]="'Tìm...'" nzSize="small" />
+            <nz-select *ngIf="col.filter?.type === StandardColumnType.SELECT || col.type === StandardColumnType.SELECT" [(ngModel)]="searchFilters[col.name]" (ngModelChange)="searchSubject.next()" nzPlaceHolder="Tìm..." nzAllowClear nzSize="small" style="width: 100%">
+              <ng-container *ngFor="let opt of (col.filter?.options || [])">
+                <nz-option [nzValue]="opt.value">{{ opt.label }}</nz-option>
+              </ng-container>
+            </nz-select>
+            <nz-date-picker *ngIf="col.type === StandardColumnType.DATE_PICKER" [(ngModel)]="searchFilters[col.name]" (ngModelChange)="searchSubject.next()" nzFormat="dd/MM/yyyy" nzPlaceHolder="Chọn..." nzSize="small" style="width: 100%"></nz-date-picker>
+          </th>
+          <th *ngIf="!col.isFilter"></th>
+        </ng-container>
+      </tr>
     </thead>
     <tbody>
-    <tr *ngFor="let data of basicTable.data">
-      <td [nzChecked]="data.checked" (nzCheckedChange)="onItemChecked(data, $event)" [nzDisabled]="data.disabled"></td>
-      <ng-container *ngFor="let column of columns">
-        <td>{{ data[column.nzKey] }}</td>
-      </ng-container>
-      <td [nzRight]="true">
-        <a (click)="viewDetail(data)">Xem</a>
-        <nz-divider nzType="vertical"></nz-divider>
-        <ng-container *ngIf="data.isActiveAction && canApprove">
-          <a (click)="onApproveConfirm(data)">Duyệt</a>
-          <nz-divider nzType="vertical"></nz-divider>
-          <a (click)="onRejectConfirm(data)">Từ chối</a>
+      <tr *ngFor="let data of basicTable.data; let i = index">
+        <ng-container *ngFor="let col of specialScheduleColumns">
+          <td *ngIf="col.type !== StandardColumnType.ACTION">{{ data[col.name] }}</td>
+          <td *ngIf="col.name === 'action'" [ngClass]="col.classes || ''" class="text-center" (click)="$event.stopPropagation()">
+            <div class="action-buttons d-flex justify-content-center gap-1">
+              <ng-container *ngFor="let action of col.listAction">
+                <button
+                  *ngIf="(action.key !== 'delete') || isEmployee"
+                  nz-button
+                  nzType="link"
+                  nzSize="small"
+                  nz-tooltip
+                  [nzTooltipTitle]="action.label"
+                  (click)="handleAction(action.key, data)"
+                  [innerHTML]="action.html | vssSafeHtml"
+                  class="action-icon-btn"
+                >
+                </button>
+              </ng-container>
+            </div>
+          </td>
         </ng-container>
-      </td>
-    </tr>
+      </tr>
     </tbody>
   </nz-table>
 

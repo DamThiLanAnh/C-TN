@@ -33,7 +33,7 @@ import {
 import {
   ModalAddTimekeepingComponent
 } from './timekeeping-explanation/modal-add-timekeeping/modal-add-timekeeping.component';
-import { SafeHtmlPipe } from '../shares/pipes/safe-html.pipe';
+import { SharedModule } from '../shares/shared.module';
 
 @NgModule(
   {
@@ -62,6 +62,7 @@ import { SafeHtmlPipe } from '../shares/pipes/safe-html.pipe';
       NzInputNumberModule,
       NzToolTipModule,
       SpecialScheduleModule,
+      SharedModule,
     ],
     declarations: [
       GateManageComponent,
@@ -70,8 +71,7 @@ import { SafeHtmlPipe } from '../shares/pipes/safe-html.pipe';
       ModalLeaveComponent,
       ModalAddLeaveComponent,
       ModalAddTimekeepingComponent,
-      ModalTimekeepingDetailComponent,
-      SafeHtmlPipe
+      ModalTimekeepingDetailComponent
     ],
     exports: []
   })

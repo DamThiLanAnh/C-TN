@@ -1,6 +1,69 @@
 <div *nzModalTitle>
-    <div>Xem chi tiết lịch làm đặc thù</div>
+    <div *ngIf="mode === 'view'">Xem chi tiết lịch làm đặc thù</div>
+    <div *ngIf="mode === 'edit'">Cập nhật lịch làm đặc thù</div>
 </div>
+<div *ngIf="mode === 'edit'; else viewDetail">
+  <form [formGroup]="editForm" (ngSubmit)="submitEdit()">
+    <div nz-row nzGutter="16">
+      <div nz-col nzSpan="12">
+        <label>Ngày bắt đầu</label>
+        <input nz-input formControlName="startDate" type="date" />
+        <div *ngIf="editForm.get('startDate')?.invalid && editForm.get('startDate')?.touched" class="error">Bắt buộc</div>
+      </div>
+      <div nz-col nzSpan="12">
+        <label>Ngày kết thúc</label>
+        <input nz-input formControlName="endDate" type="date" />
+        <div *ngIf="editForm.get('endDate')?.invalid && editForm.get('endDate')?.touched" class="error">Bắt buộc</div>
+      </div>
+      <div nz-col nzSpan="12">
+        <label>Bắt đầu sáng</label>
+        <input nz-input formControlName="morningStart" type="time" />
+        <div *ngIf="editForm.get('morningStart')?.invalid && editForm.get('morningStart')?.touched" class="error">Bắt buộc</div>
+      </div>
+      <div nz-col nzSpan="12">
+        <label>Kết thúc sáng</label>
+        <input nz-input formControlName="morningEnd" type="time" />
+        <div *ngIf="editForm.get('morningEnd')?.invalid && editForm.get('morningEnd')?.touched" class="error">Bắt buộc</div>
+      </div>
+      <div nz-col nzSpan="12">
+        <label>Bắt đầu chiều</label>
+        <input nz-input formControlName="afternoonStart" type="time" />
+        <div *ngIf="editForm.get('afternoonStart')?.invalid && editForm.get('afternoonStart')?.touched" class="error">Bắt buộc</div>
+      </div>
+      <div nz-col nzSpan="12">
+        <label>Kết thúc chiều</label>
+        <input nz-input formControlName="afternoonEnd" type="time" />
+        <div *ngIf="editForm.get('afternoonEnd')?.invalid && editForm.get('afternoonEnd')?.touched" class="error">Bắt buộc</div>
+      </div>
+      <div nz-col nzSpan="12">
+        <label>Mã dự án</label>
+        <input nz-input formControlName="projectCode" />
+      </div>
+      <div nz-col nzSpan="12">
+        <label>Tên dự án</label>
+        <input nz-input formControlName="projectName" />
+      </div>
+      <div nz-col nzSpan="12">
+        <label>Mã quản lý</label>
+        <input nz-input formControlName="managerCode" />
+      </div>
+      <div nz-col nzSpan="12">
+        <label>Tên quản lý</label>
+        <input nz-input formControlName="managerName" />
+      </div>
+      <div nz-col nzSpan="24">
+        <label>Lý do</label>
+        <input nz-input formControlName="reason" />
+        <div *ngIf="editForm.get('reason')?.invalid && editForm.get('reason')?.touched" class="error">Bắt buộc</div>
+      </div>
+    </div>
+    <div class="d-flex justify-content-end mt-3">
+      <button nz-button nzType="default" (click)="destroyModal()" type="button" [disabled]="loading">Hủy</button>
+      <button nz-button nzType="primary" class="ms-2" [nzLoading]="loading" type="submit">Cập nhật</button>
+    </div>
+  </form>
+</div>
+<ng-template #viewDetail>
 <div class="detail-grid">
     <div>
         <div>
@@ -80,3 +143,4 @@
         <button nz-button nzType="primary" type="button" (click)="destroyModal()">Đóng</button>
     </ng-template>
 </div>
+</ng-template>
