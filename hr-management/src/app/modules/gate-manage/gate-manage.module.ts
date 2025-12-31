@@ -21,6 +21,7 @@ import { NzInputModule } from 'ng-zorro-antd/input';
 import { NzDatePickerModule } from 'ng-zorro-antd/date-picker';
 import { NzInputNumberModule } from 'ng-zorro-antd/input-number';
 import { NzToolTipModule } from 'ng-zorro-antd/tooltip';
+import { NzTimePickerModule } from 'ng-zorro-antd/time-picker';
 import { TimekeepingExplanationComponent } from './timekeeping-explanation/timekeeping-explanation.component';
 import { GateManageRoutingModule } from './gate-manage-routing.module';
 import { ModalLeaveComponent } from './leave-manage/modal-leave/modal-leave.component';
@@ -34,6 +35,9 @@ import {
   ModalAddTimekeepingComponent
 } from './timekeeping-explanation/modal-add-timekeeping/modal-add-timekeeping.component';
 import { SharedModule } from '../shares/shared.module';
+import { OverTimeManageComponent } from './over-time-manage/over-time-manage.component';
+import { ModalAddOverTimeComponent } from './over-time-manage/modal-add-over-time/modal-add-over-time.component';
+// import { ModalAddOverTimeComponent } from './over-time-manage/modal-add-over-time/modal-add-over-time.component';
 
 @NgModule(
   {
@@ -61,6 +65,7 @@ import { SharedModule } from '../shares/shared.module';
       NzDatePickerModule,
       NzInputNumberModule,
       NzToolTipModule,
+      NzTimePickerModule,
       SpecialScheduleModule,
       SharedModule,
     ],
@@ -71,7 +76,9 @@ import { SharedModule } from '../shares/shared.module';
       ModalLeaveComponent,
       ModalAddLeaveComponent,
       ModalAddTimekeepingComponent,
-      ModalTimekeepingDetailComponent
+      ModalTimekeepingDetailComponent,
+      OverTimeManageComponent,
+      ModalAddOverTimeComponent
     ],
     exports: []
   })

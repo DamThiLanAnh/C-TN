@@ -111,6 +111,14 @@ export class LayoutFullComponent implements OnInit {
           title: 'Giải trình công',
           url: '/gate-manage/timekeeping-explanation',
           roles: [],
+        },
+        {
+          children: [],
+          id: '107',
+          level: 2,
+          title: 'Quản lý tăng ca',
+          url: '/gate-manage/over-time-manage',
+          roles: [],
         }
       ]
     },
@@ -342,6 +350,7 @@ export class LayoutFullComponent implements OnInit {
       '/gate-manage/leave-manage': 'Quản lý vắng mặt',
       '/gate-manage/special-schedule': 'Quản lý lịch đặc thù',
       '/gate-manage/timekeeping-explanation': 'Giải trình công',
+      '/gate-manage/over-time-manage': 'Quản lý tăng ca',
       '/staffs/user-information': 'Thông tin người dùng',
       '/import-vgov/attendance': 'Import dữ liệu công',
       '/import-vgov/leave-absence': 'Import dữ liệu KPI',
