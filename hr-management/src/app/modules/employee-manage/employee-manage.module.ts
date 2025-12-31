@@ -29,6 +29,7 @@ import { NzTagModule } from 'ng-zorro-antd/tag';
 import { NzToolTipModule } from 'ng-zorro-antd/tooltip';
 import { SharedModule } from '../shares/shared.module';
 import { DepartmentManageComponent } from './department-manage/department-manage.component';
+import { ModalAddDepartmentComponent } from './department-manage/modal-add-department/modal-add-department.component';
 
 @NgModule({
   imports: [
@@ -68,7 +69,8 @@ import { DepartmentManageComponent } from './department-manage/department-manage
   declarations: [
     EmployeeManageComponent,
     EmployeeAddComponent,
-    DepartmentManageComponent
+    DepartmentManageComponent,
+    ModalAddDepartmentComponent
   ]
 })
 
