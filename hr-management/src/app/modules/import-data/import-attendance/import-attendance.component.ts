@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import { DatePipe } from '@angular/common';
 import { NzUploadFile } from 'ng-zorro-antd/upload';
-import { ImportAttendanceService } from '../import-data.service';
+import { ImportDataService } from '../import-data.service';
 import { importAttendanceColumns } from './import-attendance.columns';
 
 @Component({
@@ -26,7 +26,7 @@ export class ImportAttendanceComponent implements OnInit {
   fileList: NzUploadFile[] = [];
 
   constructor(
-    private importAttendanceService: ImportAttendanceService,
+    private importAttendanceService: ImportDataService,
     private message: NzMessageService,
     private datePipe: DatePipe
   ) { }
