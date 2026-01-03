@@ -28,7 +28,7 @@ export class SpecialScheduleComponent implements OnInit {
   isManager: boolean = false; // Flag to check if user is manager
   isApprover: boolean = false; // Flag to check if user is approver
 
-  specialScheduleColumns:StandardColumnModel[] = specialScheduleColumns();
+  specialScheduleColumns: StandardColumnModel[] = specialScheduleColumns();
   public StandardColumnType = StandardColumnType;
 
   // Pagination
@@ -57,13 +57,16 @@ export class SpecialScheduleComponent implements OnInit {
     private specialScheduleService: SpecialScheduleService,
     private authService: AuthService
   ) {
+    console.trace('SpecialScheduleComponent instantiated');
     this.rejectForm = this.fb.group({
       reason: ['', Validators.required]
     });
   }
 
   ngOnInit(): void {
+    console.log('SpecialScheduleComponent initialized');
     this.authService.authState$.subscribe(state => {
+      // ...
       if (state && state.token) {
         // Cập nhật lại role dựa trên user hoặc token mới nhất
         const userRole = this.authService.getUserRole();

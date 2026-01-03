@@ -18,11 +18,11 @@ export class ModalAddSpecialScheduleComponent implements OnInit {
     private modalRef: NzModalRef,
     private message: NzMessageService,
     private specialScheduleService: SpecialScheduleService
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     this.addForm = this.fb.group({
-      employeeId: [null, [Validators.required]],
+      employeeCode: [null, [Validators.required]],
       startDate: [null, [Validators.required]],
       endDate: [null, [Validators.required]],
       morningStart: [null, [Validators.required]],
@@ -34,7 +34,7 @@ export class ModalAddSpecialScheduleComponent implements OnInit {
       managerCode: [null, [Validators.required]],
       managerName: [null, [Validators.required]],
       type: [null, [Validators.required]],
-      reason: [null, [Validators.required]]
+      reason: [null]
     });
   }
 

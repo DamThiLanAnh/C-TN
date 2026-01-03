@@ -28,11 +28,13 @@ export class EmployeeAddComponent implements OnInit {
     private modalRef: NzModalRef,
     private message: NzMessageService,
     private employeeManageService: EmployeeManageService
-  ) {}
+  ) { }
 
-  private  loadOptions(): void {
-    this.employeeManageService.getAllDepartments().subscribe(data => {
-      this.departmentOptions = data?.map((d: { name: string, id: number }) => ({
+  private loadOptions(): void {
+    // Fetch a large number of departments for the dropdown
+    this.employeeManageService.getAllDepartments(0, 1000).subscribe(response => {
+      const data = response?.content || [];
+      this.departmentOptions = data.map((d: { name: string, id: number }) => ({
         label: d.name,
         value: d.id
       }));

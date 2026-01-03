@@ -2,89 +2,82 @@
   <div class="d-flex justify-content-between mb-2">
     <h6>{{ tableName }}</h6>
     <div nz-row nzJustify="end" class="d-flex align-items-center">
-      <button nz-button nzType="primary" type="button" nzDanger (click)="addStaff()"
-              *ngIf="canAdd">
+      <button nz-button nzType="primary" type="button" nzDanger (click)="addStaff()" *ngIf="canAdd">
         <span nz-icon nzType="plus-circle" nzTheme="outline" aria-hidden="true"></span>Thêm mới
       </button>
     </div>
   </div>
 
   <ng-container *ngIf="employeeColumns && StandardColumnType">
-    <nz-table
-      #basicTable
-      [nzData]="listOfData"
-      [nzLoading]="loadingTable"
-      [nzScroll]="{ y: 'calc(100vh - 17rem)' }"
-      [nzShowPagination]="false"
-      [nzSize]="'small'"
-      [nzBordered]="true"
-      (nzQueryParams)="onFilterInTable($event)"
-    >
+    <nz-table #basicTable [nzData]="listOfData" [nzLoading]="loadingTable" [nzScroll]="{ y: 'calc(100vh - 17rem)' }"
+      [nzShowPagination]="false" [nzSize]="'small'" [nzBordered]="true" (nzQueryParams)="onFilterInTable($event)">
       <thead>
-      <tr>
-        <th *ngFor="let col of employeeColumns" [nzWidth]="col.width ? col.width : null" [nzSortOrder]="null"
-            [nzSortFn]="col.isSort ? true : null">
-          {{ col.attr }}
-        </th>
-      </tr>
-      <tr>
-        <td *ngFor="let col of employeeColumns">
-          <ng-container *ngIf="col.filter">
-            <input *ngIf="col.filter.type === StandardColumnType.INPUT && searchFilters" nz-input
-                   [(ngModel)]="searchFilters[col.name]" (ngModelChange)="searchSubject?.next()"
-                   [placeholder]="'Tìm...'" nzSize="small"/>
-            <nz-select *ngIf="col.filter.type === StandardColumnType.SELECT && searchFilters"
-                       [(ngModel)]="searchFilters[col.name]" (ngModelChange)="searchSubject?.next()"
-                       nzPlaceHolder="Tìm..." nzAllowClear nzSize="small" style="width: 100%">
-              <nz-option *ngFor="let opt of (col.filter.options || [])" [nzValue]="opt.value"
-                         [nzLabel]="opt.label"></nz-option>
-            </nz-select>
-          </ng-container>
-        </td>
-      </tr>
+        <tr>
+          <th *ngFor="let col of employeeColumns" [nzWidth]="col.width ? col.width : null" [nzSortOrder]="null"
+            [nzSortFn]="col.isSort ? true : null" [ngClass]="col.classes || ''">
+            {{ col.attr }}
+          </th>
+        </tr>
+        <tr class="filter-row">
+          <th *ngFor="let col of employeeColumns">
+            <ng-container *ngIf="col.isFilter">
+              <input *ngIf="col.filter?.type === StandardColumnType.INPUT || col.type === StandardColumnType.TEXT"
+                type="text" nz-input [(ngModel)]="searchFilters[col.name]" (ngModelChange)="searchSubject.next()"
+                [placeholder]="'Tìm...'" nzSize="small" />
+
+              <nz-select
+                *ngIf="col.filter?.type === StandardColumnType.SELECT || col.type === StandardColumnType.SELECT"
+                [(ngModel)]="searchFilters[col.name]" (ngModelChange)="searchSubject.next()"
+                [nzMode]="col.filter?.multiple ? 'multiple' : 'default'" [nzPlaceHolder]="'Chọn ' + col.attr"
+                nzAllowClear [nzShowArrow]="true" style="width: 100%">
+                <nz-option *ngFor="let opt of (col.filter?.options || [])" [nzValue]="opt.value"
+                  [nzLabel]="opt.label"></nz-option>
+              </nz-select>
+
+              <nz-date-picker *ngIf="col.type === StandardColumnType.DATE_RANGE_PICKER"
+                [(ngModel)]="searchFilters[col.name]" (ngModelChange)="searchSubject.next()" nzFormat="dd/MM/yyyy"
+                nzPlaceHolder="Chọn..." nzSize="small" style="width: 100%"></nz-date-picker>
+            </ng-container>
+          </th>
+        </tr>
       </thead>
       <tbody>
-      <tr *ngFor="let data of basicTable.data; trackBy: trackByEmployeeId">
-        <td *ngFor="let col of employeeColumns">
-          <ng-container [ngSwitch]="col.type">
-            <ng-container *ngSwitchCase="StandardColumnType.TAG">
-              <nz-tag *ngIf="data[col.name] && getTagColor && getTagLabel"
-                      [nzColor]="getTagColor(data[col.name])">{{ getTagLabel(data[col.name]) }}
-              </nz-tag>
-            </ng-container>
-            <ng-container *ngSwitchCase="StandardColumnType.ACTION">
-              <td *ngIf="col.name === 'action' && handleAction" [ngClass]="col.classes || ''" class="text-center"
-                  (click)="$event.stopPropagation()">
-                <div class="action-buttons d-flex justify-content-center gap-2">
-                  <ng-container *ngFor="let action of col.listAction">
-                    <button
-                      nz-button
-                      nzType="link"
-                      nzSize="small"
-                      nz-tooltip
-                      [nzTooltipTitle]="action.label"
-                      (click)="handleAction(action.key, data)"
-                      [innerHTML]="action.html && (action.html | vssSafeHtml)"
-                      class="action-icon-btn"
-                    >
-                    </button>
-                  </ng-container>
-                </div>
-              </td>
-            </ng-container>
-            <ng-container *ngSwitchDefault>
-              {{ getDisplayValue(data, col.name) }}
-            </ng-container>
-          </ng-container>
-        </td>
-      </tr>
-      </tbody>
-    </nz-table>
+        <tr *ngFor="let data of basicTable.data; trackBy: trackByEmployeeId">
+          <td *ngFor="let col of employeeColumns" [ngClass]="col.classes || ''"
+            (click)="col.type !== StandardColumnType.ACTION ? editUser({item: data}, false) : null"
+            [style.cursor]="col.type !== StandardColumnType.ACTION ? 'pointer' : 'default'">
+            <ng-container [ngSwitch]="col.type">
+              <ng-container *ngSwitchCase="StandardColumnType.TAG">
+                <nz-tag *ngIf="data[col.name] && getTagColor && getTagLabel" [nzColor]="getTagColor(data[col.name])">{{
+                  getTagLabel(data[col.name]) }}
+                </nz-tag>
+              </ng-container>
+              <ng-container *ngSwitchCase="StandardColumnType.ACTION">
+          <td *ngIf="col.name === 'action' && handleAction" [ngClass]="col.classes || ''" class="text-center"
+            (click)="$event.stopPropagation()">
+            <div class="action-buttons d-flex justify-content-center gap-2">
+              <ng-container *ngFor="let action of col.listAction">
+                <button nz-button nzType="link" nzSize="small" nz-tooltip [nzTooltipTitle]="action.label"
+                  (click)="handleAction(action.key, data)" [innerHTML]="action.html && (action.html | vssSafeHtml)"
+                  class="action-icon-btn">
+                </button>
+              </ng-container>
+            </div>
+          </td>
+  </ng-container>
+  <ng-container *ngSwitchDefault>
+    {{ getDisplayValue(data, col.name) }}
+  </ng-container>
+  </ng-container>
+  </td>
+  </tr>
+  </tbody>
+  </nz-table>
 
-    <div class="d-flex justify-content-end mt-2">
-      <nz-pagination [nzTotal]="paging.totalElements" [nzPageIndex]="paging.pageIndex" [nzPageSize]="paging.pageSize"
-                     [nzShowSizeChanger]="true" (nzPageIndexChange)="onPageIndexChange($event)"
-                     (nzPageSizeChange)="onPageSizeChange($event)"></nz-pagination>
-    </div>
+  <div class="d-flex justify-content-end mt-2">
+    <nz-pagination [nzTotal]="paging.totalElements" [nzPageIndex]="paging.pageIndex" [nzPageSize]="paging.pageSize"
+      [nzShowSizeChanger]="true" (nzPageIndexChange)="onPageIndexChange($event)"
+      (nzPageSizeChange)="onPageSizeChange($event)"></nz-pagination>
+  </div>
   </ng-container>
 </nz-card>

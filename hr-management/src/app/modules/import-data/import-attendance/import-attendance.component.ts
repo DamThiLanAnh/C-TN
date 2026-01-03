@@ -1,123 +1,60 @@
 import { Component, OnInit } from '@angular/core';
-import { importAttendanceColumns } from './import-attendance.column';
+import { NzMessageService } from 'ng-zorro-antd/message';
+import { DatePipe } from '@angular/common';
+import { NzUploadFile } from 'ng-zorro-antd/upload';
+import { ImportAttendanceService } from '../import-data.service';
+import { importAttendanceColumns } from './import-attendance.columns';
 
 @Component({
   selector: 'app-import-attendance',
   templateUrl: './import-attendance.component.html',
-  styleUrls: ['./import-attendance.component.scss']
+  styleUrls: ['./import-attendance.component.scss'],
+  providers: [DatePipe]
 })
 export class ImportAttendanceComponent implements OnInit {
   columns = importAttendanceColumns();
-  data: any[] = [
-    {
-      index: 1,
-      userName: 'NV001',
-      fullName: 'Nguyễn Văn A',
-      month: '12',
-      year: '2025',
-      day: '28'
-    },
-    {
-      index: 2,
-      userName: 'NV002',
-      fullName: 'Trần Thị B',
-      month: '12',
-      year: '2025',
-      day: '27'
-    },
-    {
-      index: 3,
-      userName: 'NV003',
-      fullName: 'Lê Văn C',
-      month: '12',
-      year: '2025',
-      day: '26'
-    },
-    {
-      index: 4,
-      userName: 'NV004',
-      fullName: 'Phạm Thị D',
-      month: '12',
-      year: '2025',
-      day: '25'
-    },
-    {
-      index: 5,
-      userName: 'NV005',
-      fullName: 'Hoàng Văn E',
-      month: '12',
-      year: '2025',
-      day: '24'
-    },
-    {
-      index: 6,
-      userName: 'NV006',
-      fullName: 'Đỗ Thị F',
-      month: '12',
-      year: '2025',
-      day: '23'
-    },
-    {
-      index: 7,
-      userName: 'NV007',
-      fullName: 'Vũ Văn G',
-      month: '12',
-      year: '2025',
-      day: '22'
-    },
-    {
-      index: 8,
-      userName: 'NV008',
-      fullName: 'Ngô Thị H',
-      month: '12',
-      year: '2025',
-      day: '21'
-    },
-    {
-      index: 9,
-      userName: 'NV009',
-      fullName: 'Bùi Văn I',
-      month: '12',
-      year: '2025',
-      day: '20'
-    },
-    {
-      index: 10,
-      userName: 'NV010',
-      fullName: 'Phan Thị K',
-      month: '12',
-      year: '2025',
-      day: '19'
-    },
-    {
-      index: 11,
-      userName: 'NV011',
-      fullName: 'Lý Văn L',
-      month: '12',
-      year: '2025',
-      day: '18'
-    },
-    {
-      index: 12,
-      userName: 'NV012',
-      fullName: 'Tạ Thị M',
-      month: '12',
-      year: '2025',
-      day: '17'
-    }
-  ];
+  data: any[] = [];
   loading = false;
+  isVisible = false;
   pageIndex = 1;
   pageSize = 5;
   total = this.data.length;
   pagedData = this.data.slice(0, this.pageSize);
 
-  constructor() { }
+  selectedMonth: Date | null = new Date();
+  selectedFile: File | null = null;
+  fileList: NzUploadFile[] = [];
+
+  constructor(
+    private importAttendanceService: ImportAttendanceService,
+    private message: NzMessageService,
+    private datePipe: DatePipe
+  ) { }
 
   ngOnInit(): void {
-    this.updatePagedData();
-    console.log('columns:', this.columns);
-    console.log('pagedData:', this.pagedData);
+    this.loadData();
+  }
+
+  loadData() {
+    if (!this.selectedMonth) return;
+    const formattedMonth = this.datePipe.transform(this.selectedMonth, 'yyyy-MM');
+    if (!formattedMonth) return;
+
+    this.loading = true;
+    this.importAttendanceService.getMyAttendanceApi(formattedMonth).subscribe({
+      next: (res) => {
+        this.loading = false;
+        this.data = res?.content || []; // Assuming API returns 'content'
+        this.total = res?.totalElements || 0;
+        this.updatePagedData();
+      },
+      error: (err) => {
+        this.loading = false;
+        this.data = [];
+        this.updatePagedData();
+        // console.error(err);
+      }
+    });
   }
 
   updatePagedData() {
@@ -126,8 +63,54 @@ export class ImportAttendanceComponent implements OnInit {
     this.pagedData = this.data.slice(start, end);
   }
 
+  beforeUpload = (file: NzUploadFile): boolean => {
+    this.selectedFile = file as unknown as File;
+    this.fileList = [file];
+    return false; // Prevent auto upload
+  };
+
+  showModal(): void {
+    this.isVisible = true;
+  }
+
+  handleCancel(): void {
+    this.isVisible = false;
+    this.selectedFile = null;
+    this.fileList = [];
+  }
+
   importFile() {
-    // TODO: Implement import logic
+    if (!this.selectedMonth) {
+      this.message.warning('Vui lòng chọn tháng!');
+      return;
+    }
+    if (!this.selectedFile) {
+      this.message.warning('Vui lòng chọn file!');
+      return;
+    }
+
+    const formattedMonth = this.datePipe.transform(this.selectedMonth, 'yyyy-MM');
+    if (!formattedMonth) {
+      this.message.error('Lỗi định dạng tháng!');
+      return;
+    }
+
+    this.loading = true;
+    this.importAttendanceService.importAttendance(formattedMonth, this.selectedFile).subscribe({
+      next: (response) => {
+        this.message.success('Import dữ liệu công thành công!');
+        this.loading = false;
+        this.isVisible = false;
+        this.selectedFile = null;
+        this.fileList = [];
+        this.loadData(); // Refresh data after import
+        // Optionally refresh data
+      },
+      error: (error) => {
+        this.message.error('Import thất bại: ' + (error.error?.message || 'Lỗi không xác định'));
+        this.loading = false;
+      }
+    });
   }
 
   onPageIndexChange(index: number) {

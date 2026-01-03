@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { environment} from '../../../environments/environment';
+import { environment } from '../../../environments/environment';
 
 
 @Injectable({
@@ -84,9 +84,14 @@ export class EmployeeManageService {
     });
   }
 
-  getAllDepartments(): Observable<any> {
-    return this.http.get(`${this.baseUrl}/api/departments/active`, {
-      headers: this.getHeaders()
+  getAllDepartments(page: number = 0, size: number = 10): Observable<any> {
+    let params = new HttpParams()
+      .set('page', page.toString())
+      .set('size', size.toString());
+
+    return this.http.get(`${this.baseUrl}/api/departments`, {
+      headers: this.getHeaders(),
+      params: params
     });
   }
 }

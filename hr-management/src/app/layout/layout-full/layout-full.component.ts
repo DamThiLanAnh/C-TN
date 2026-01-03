@@ -60,7 +60,7 @@ export class LayoutFullComponent implements OnInit {
           roles: [],
         },
         {
-          icon:'',
+          icon: '',
           children: [],
           id: '3',
           level: 2,
@@ -170,7 +170,7 @@ export class LayoutFullComponent implements OnInit {
         {
           icon: '',
           children: [],
-          id: '123',
+          id: '124',
           level: 2,
           title: 'Import dữ liệu vào ra',
           url: '/import-data/check-in-out',
@@ -216,7 +216,7 @@ export class LayoutFullComponent implements OnInit {
     },
   ];
 
-// Cập nhật kiểu dữ liệu User sang CurrentUser
+  // Cập nhật kiểu dữ liệu User sang CurrentUser
   user: CurrentUser = {
     fullName: 'Administrator',
     userName: 'Admin',
@@ -225,7 +225,7 @@ export class LayoutFullComponent implements OnInit {
     image: ''
   };
 
-// Notification data
+  // Notification data
   totalNewNotify = 5;
   indexSysNotifyActivate = 0;
   indexTabNotifyActive = 0;
@@ -244,8 +244,8 @@ export class LayoutFullComponent implements OnInit {
   ];
 
   tabs = [
-    {name: 'Chưa đọc', textCount: 'totalNewNotify'},
-    {name: 'Tất cả', textCount: 'totalAllNotify'}
+    { name: 'Chưa đọc', textCount: 'totalNewNotify' },
+    { name: 'Tất cả', textCount: 'totalAllNotify' }
   ];
 
   dataNotify: Notification[] = [

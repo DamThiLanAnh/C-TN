@@ -1,48 +1,66 @@
 <nz-card class="d-block mb-3">
   <div class="d-flex justify-content-between mb-2">
     <h6>Danh sách dữ liệu công</h6>
-    <div nz-row nzJustify="end" class="action-table">
-      <button
-        nz-button
-        nzType="primary"
-        type="button"
-        nzShape="round"
-        (click)="importFile()"
-      >
-        <span nz-icon nzType="download" class="me-1"></span> Import
-      </button>
+    <div class="d-flex align-items-center">
+      <div class="me-2">
+        <nz-date-picker nzMode="month" [(ngModel)]="selectedMonth" (ngModelChange)="loadData()"
+          nzPlaceHolder="Chọn tháng"></nz-date-picker>
+      </div>
+      <div nz-row nzJustify="end" class="action-table">
+        <button nz-button nzType="primary" type="button" nzShape="round" (click)="showModal()">
+          <span nz-icon nzType="download" class="me-1"></span> Import
+        </button>
+      </div>
     </div>
   </div>
-  <nz-table
-    [nzData]="pagedData"
-    [nzLoading]="loading"
-    nzBordered
-    [nzScroll]="{ x: '100%' }"
-    *ngIf="columns && columns.length"
-    [nzShowPagination]="false"
-  >
+
+  <nz-modal [(nzVisible)]="isVisible" nzTitle="Tải file lên" (nzOnCancel)="handleCancel()" [nzFooter]="modalFooter">
+    <ng-container *nzModalContent>
+      <div class="clearfix">
+        <nz-upload nzType="drag" [nzMultiple]="false" [nzBeforeUpload]="beforeUpload" [nzShowUploadList]="false"
+          class="upload-drag-container">
+          <p class="ant-upload-drag-icon">
+            <span nz-icon nzType="cloud-upload"></span>
+          </p>
+          <p class="ant-upload-text text-danger" *ngIf="!selectedFile">Tải lên hoặc kéo tài liệu</p>
+          <p class="ant-upload-text text-success" *ngIf="selectedFile">{{ selectedFile.name }}</p>
+          <p class="ant-upload-hint">
+            Hệ thống cho phép tải lên tập tin dạng .xlsx, .xls<br>
+            Số tệp tối đa là 1, kích thước tệp không vượt quá 5 MB.
+          </p>
+          <div class="mt-2">
+            <a href="javascript:void(0)" class="text-primary"><span nz-icon nzType="download"></span> Tải file mẫu</a>
+          </div>
+        </nz-upload>
+      </div>
+    </ng-container>
+    <ng-template #modalFooter>
+      <button nz-button nzType="default" (click)="handleCancel()">Hủy</button>
+      <button nz-button nzType="primary" nzDanger (click)="importFile()" [nzLoading]="loading">Import</button>
+    </ng-template>
+  </nz-modal>
+  <nz-table [nzData]="pagedData" [nzLoading]="loading" nzBordered [nzScroll]="{ x: '100%' }"
+    *ngIf="columns && columns.length" [nzShowPagination]="false">
     <thead>
       <tr>
-        <th *ngFor="let col of columns">{{ col.attr }}</th>
+        <th *ngFor="let col of columns" [nzWidth]="col.width!" [nzLeft]="col.fixedColumn || false"
+          [nzRight]="col.fixedRight || false">
+          {{ col.attr }}
+        </th>
       </tr>
     </thead>
     <tbody>
       <tr *ngFor="let row of pagedData">
-        <td *ngFor="let col of columns">{{ row[col.name] }}</td>
+        <td *ngFor="let col of columns" [nzLeft]="col.fixedColumn || false" [nzRight]="col.fixedRight || false">
+          {{ row[col.name] }}
+        </td>
       </tr>
       <tr *ngIf="!pagedData.length">
         <td [attr.colspan]="columns.length" class="text-center text-muted py-4">
-          Không có dữ liệu
         </td>
       </tr>
     </tbody>
   </nz-table>
-  <nz-pagination
-    [nzPageIndex]="pageIndex"
-    [nzTotal]="total"
-    [nzPageSize]="pageSize"
-    [nzShowSizeChanger]="false"
-    (nzPageIndexChange)="onPageIndexChange($event)"
-    class="mt-3 d-flex justify-content-end"
-  ></nz-pagination>
+  <nz-pagination [nzPageIndex]="pageIndex" [nzTotal]="total" [nzPageSize]="pageSize" [nzShowSizeChanger]="false"
+    (nzPageIndexChange)="onPageIndexChange($event)" class="mt-3 d-flex justify-content-end"></nz-pagination>
 </nz-card>

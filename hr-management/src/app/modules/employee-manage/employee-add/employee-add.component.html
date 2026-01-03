@@ -1,15 +1,15 @@
 <div>
   <div class="form-employee">
-<!--    <div class="logo text-center mb-4">-->
-<!--      <nz-upload class="avatar-uploader" nzName="avatar" nzListType="picture-card"-->
-<!--        [nzShowUploadList]="false" [nzBeforeUpload]="beforeUpload" [nzDisabled]="!canEdit">-->
-<!--        <ng-container *ngIf="!avatarUrl">-->
-<!--          <span class="upload-icon" style="margin-right: 5px;" nz-icon [nzType]="loading ? 'loading' : 'plus'"></span>-->
-<!--          <div class="ant-upload-text">Tải ảnh lên</div>-->
-<!--        </ng-container>-->
-<!--        <img *ngIf="avatarUrl" [src]="avatarUrl" style="width: 100%; object-fit:cover;height: 100%;" />-->
-<!--      </nz-upload>-->
-<!--    </div>-->
+    <!--    <div class="logo text-center mb-4">-->
+    <!--      <nz-upload class="avatar-uploader" nzName="avatar" nzListType="picture-card"-->
+    <!--        [nzShowUploadList]="false" [nzBeforeUpload]="beforeUpload" [nzDisabled]="!canEdit">-->
+    <!--        <ng-container *ngIf="!avatarUrl">-->
+    <!--          <span class="upload-icon" style="margin-right: 5px;" nz-icon [nzType]="loading ? 'loading' : 'plus'"></span>-->
+    <!--          <div class="ant-upload-text">Tải ảnh lên</div>-->
+    <!--        </ng-container>-->
+    <!--        <img *ngIf="avatarUrl" [src]="avatarUrl" style="width: 100%; object-fit:cover;height: 100%;" />-->
+    <!--      </nz-upload>-->
+    <!--    </div>-->
 
     <form nz-form [formGroup]="formGroup">
       <!-- Row 1: Họ và tên + Ngày sinh -->
@@ -27,8 +27,8 @@
           <nz-form-item>
             <nz-form-label [nzSpan]="8">Ngày sinh</nz-form-label>
             <nz-form-control [nzSpan]="16">
-              <nz-date-picker formControlName="dateOfBirth" nzPlaceHolder="Chọn ngày sinh"
-                style="width: 100%;" nzFormat="yyyy-MM-dd"></nz-date-picker>
+              <nz-date-picker formControlName="dateOfBirth" nzPlaceHolder="Chọn ngày sinh" style="width: 100%;"
+                nzFormat="yyyy-MM-dd"></nz-date-picker>
             </nz-form-control>
           </nz-form-item>
         </div>
@@ -70,7 +70,7 @@
           <nz-form-item>
             <nz-form-label [nzSpan]="8" nzRequired>Phòng ban</nz-form-label>
             <nz-form-control [nzSpan]="16" nzErrorTip="Vui lòng chọn phòng ban!">
-              <nz-select nzShowSearch nzAllowClear nzPlaceHolder="Chọn phòng ban"  formControlName="departmentId" >
+              <nz-select nzShowSearch nzAllowClear nzPlaceHolder="Chọn phòng ban" formControlName="departmentId">
                 <nz-option *ngFor="let d  of departmentOptions" [nzLabel]="d.label" [nzValue]="d.value"></nz-option>
               </nz-select>
             </nz-form-control>
@@ -81,16 +81,14 @@
   </div>
 
   <div class="justify-content-center d-flex mt-3">
-    <button nz-button nzType="default" class="me-3" type="button"
-      (click)="canEdit ? destroyModal() : closeModel()">
+    <button nz-button nzType="default" class="me-3" type="button" (click)="canEdit ? destroyModal() : closeModel()">
       <i nz-icon nzType="close-circle" nzTheme="outline" aria-hidden="true"></i>
       Thoát
     </button>
-    <button *ngIf="canEdit" nz-button nzType="primary" class="me-3" type="button"
-      [nzLoading]="submitting" (click)="submitConfirm()">
+    <button *ngIf="canEdit" nz-button nzType="primary" class="me-3" type="button" [nzLoading]="submitting"
+      (click)="submitConfirm()">
       <i nz-icon nzType="check-circle" nzTheme="outline" aria-hidden="true"></i>
       Lưu lại
     </button>
   </div>
 </div>
-

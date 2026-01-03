@@ -10,13 +10,18 @@ import { NzIconModule } from 'ng-zorro-antd/icon';
 import { NzTableModule } from 'ng-zorro-antd/table';
 import { NzPaginationModule } from 'ng-zorro-antd/pagination';
 import { CommonModule } from '@angular/common';
+import { NzDatePickerModule } from 'ng-zorro-antd/date-picker';
+import { NzUploadModule } from 'ng-zorro-antd/upload';
+import { NzMessageModule } from 'ng-zorro-antd/message';
+import { NzModalModule } from 'ng-zorro-antd/modal';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 @NgModule({
-    declarations: [
-      ImportCheckInOutComponent,
-      ImportAttendanceComponent,
-      ImportDataComponent
-    ],
+  declarations: [
+    ImportCheckInOutComponent,
+    ImportAttendanceComponent,
+    ImportDataComponent
+  ],
   imports: [
     ImportDataRoutingModule,
     NzButtonModule,
@@ -25,7 +30,13 @@ import { CommonModule } from '@angular/common';
     NzIconModule,
     NzTableModule,
     NzPaginationModule,
-    CommonModule
-  ]
+    CommonModule,
+    NzDatePickerModule,
+    NzUploadModule,
+    NzMessageModule,
+    NzModalModule,
+    FormsModule,
+    ReactiveFormsModule
+  ],
 })
 export class ImportDataModule { }

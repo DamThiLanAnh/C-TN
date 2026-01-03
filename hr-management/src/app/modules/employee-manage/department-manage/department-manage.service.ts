@@ -20,9 +20,9 @@ export class DepartmentManageService {
         }
       });
     }
-    
+
     // User requested specifically /api/departments/active
-    return this.http.get<any>(`${this.baseUrl}/api/departments/active`, { params: httpParams });
+    return this.http.get<any>(`${this.baseUrl}/api/departments`, { params: httpParams });
   }
 
   createDepartmentApi(body: any): Observable<any> {

@@ -1,10 +1,11 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
+import { formatDate } from '@angular/common';
 import { NzModalService } from 'ng-zorro-antd/modal';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import { NzTableQueryParams } from 'ng-zorro-antd/table';
 import { EmployeeAddComponent } from '../employee-add/employee-add.component';
 import { EmployeeManageService } from '../employee-manage.service';
-import { finalize } from 'rxjs/operators';
+import { finalize, debounceTime, takeUntil } from 'rxjs/operators';
 import { employeeManageColumns } from '../employee-manage.columns';
 import { StandardColumnType } from '../../shares/interfaces';
 import { Subject } from 'rxjs';
@@ -22,24 +23,17 @@ interface TableColumn {
   templateUrl: './employee-manage.component.html',
   styleUrls: ['./employee-manage.component.scss']
 })
-export class EmployeeManageComponent implements OnInit {
+export class EmployeeManageComponent implements OnInit, OnDestroy {
   tableName = 'Danh sách nhân viên';
   employeeColumns = employeeManageColumns();
   StandardColumnType = StandardColumnType;
   searchFilters: { [key: string]: any } = {};
   searchSubject = new Subject<any>();
-
-  columns: TableColumn[] = [
-    { title: 'Mã nhân viên', key: 'userName', width: '150px', sortable: true },
-    { title: 'Họ và tên', key: 'fullName', width: '200px', sortable: true },
-    { title: 'Email', key: 'email', width: '220px', sortable: true },
-    { title: 'Số điện thoại', key: 'phone', width: '140px' },
-    { title: 'Vị trí', key: 'workPositionName', width: '200px' },
-    { title: 'Phòng ban', key: 'departmentName', width: '200px' },
-    // { title: 'Trạng thái', key: 'isActive', width: '150px' }
-  ];
+  filterChanged$ = new Subject<void>();
+  private destroy$ = new Subject<void>();
 
   listOfData: any[] = [];
+  filteredData: any[] = []; // Data for table display after filter/pagination
   loadingTable = false;
 
   // Permissions
@@ -61,19 +55,89 @@ export class EmployeeManageComponent implements OnInit {
     private messageService: NzMessageService,
     private employeeService: EmployeeManageService
 
-) { }
+  ) { }
 
   ngOnInit(): void {
+    this.searchSubject.pipe(
+      debounceTime(300),
+      takeUntil(this.destroy$)
+    ).subscribe(() => {
+      this.paging.pageIndex = 1;
+      this.onSearch();
+    });
+
+    this.loadDepartments();
     this.loadData();
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
+  loadDepartments(): void {
+    this.employeeService.getAllDepartments(0, 1000).subscribe((res: any) => {
+      const content = res.content || res;
+      if (Array.isArray(content)) {
+        const options = content.map((d: any) => ({ label: d.name, value: d.id })); // value is ID as per filter logic usually, or name? Leave manage used name. Service returns ID. Let's use name for filter matching if consistent, or ID if easier.
+        // The data has departmentName (string). If I filter by ID, I need departmentId in data.
+        // The data mapping has departmentName.
+        // `leave-manage` uses `name` as value.
+        // Let's check `getEmployees` response. Step 28: `departmentName: item.departmentName`.
+        // So I should map options to label: name, value: name.
+        const nameOptions = content.map((d: any) => ({ label: d.name, value: d.name }));
+
+        // Update departments filter
+        const deptCol = this.employeeColumns.find(c => c.name === 'departmentName');
+        if (deptCol && deptCol.filter) {
+          deptCol.filter.options = nameOptions;
+        }
+      }
+    });
+
+    // Mock positions options or fetch if API available. For now static or simple mock?
+    // I will leave position options empty or try to extract from data if possible.
+
+    // Status Options
+    const statusCol = this.employeeColumns.find(c => c.name === 'statusName');
+    if (statusCol && statusCol.filter) {
+      statusCol.filter.options = [
+        { label: 'Hoạt động', value: 'ACTIVE' },
+        { label: 'Ngừng hoạt động', value: 'INACTIVE' }
+      ];
+    }
+
+    // Gender Options
+    const genderCol = this.employeeColumns.find(c => c.name === 'gender');
+    if (genderCol && genderCol.filter) {
+      genderCol.filter.options = [
+        { label: 'Nam', value: 'Nam' },
+        { label: 'Nữ', value: 'Nữ' },
+        { label: 'Khác', value: 'Khác' }
+      ];
+    }
+
+    const positionCol = this.employeeColumns.find(c => c.name === 'position');
+    if (positionCol && positionCol.filter) {
+      positionCol.filter.options = [
+        { label: 'TV', value: 'TV' },
+        { label: 'CV', value: 'CV' },
+        { label: 'CVC', value: 'CVC' },
+        { label: 'CVCC', value: 'CVC' },
+        { label: 'TP', value: 'TP' }
+
+
+      ];
+    }
   }
 
   loadData(): void {
     this.loadingTable = true;
 
-    const page = this.paging.pageIndex - 1;
-    const size = this.paging.pageSize;
-
-    this.employeeService.getEmployees(page, size)
+    // Fetch all (large size) for client-side filtering
+    // Note: If real server-side pagination is wanted, we'd use params.
+    // User requested "sửa lại giao diện và phần filter" ref "leave-manage" which does client side.
+    this.employeeService.getEmployees(0, 1000)
       .pipe(finalize(() => this.loadingTable = false))
       .subscribe({
         next: (response: any) => {
@@ -88,23 +152,28 @@ export class EmployeeManageComponent implements OnInit {
 
             this.listOfData = sortedContent.map((item: any, index: number) => ({
               ...item,
-              index: page * size + index + 1,
+              index: index + 1, // Global index?
               userName: item.code,
               fullName: item.fullName,
               email: item.email,
               phone: item.phoneNumber,
+              phoneNumber: item.phoneNumber,
               workPositionName: item.position,
               departmentName: item.departmentName,
+              statusName: item.status,
               isActive: item.status === 'ACTIVE' ? 1 : 0,
-              isEnableEdit: item.status !== 'INACTIVE'
+              isEnableEdit: item.status !== 'INACTIVE',
+              gender: item.gender,
+              dateOfBirth: item.dateOfBirth,
+              createdAt: item.createdAt ? formatDate(item.createdAt, 'dd/MM/yyyy', 'en-US') : '',
+              createdAtOriginal: item.createdAt
             }));
 
-            this.paging.totalElements = response.totalElements || 0;
-            this.paging.totalPages = response.totalPages || 0;
+            this.onSearch(); // Apply filters/pagination
           } else {
             this.listOfData = [];
+            this.filteredData = [];
             this.paging.totalElements = 0;
-            this.paging.totalPages = 0;
             this.messageService.warning('Không có dữ liệu');
           }
         },
@@ -112,8 +181,120 @@ export class EmployeeManageComponent implements OnInit {
           console.error('Error loading employees:', error);
           this.messageService.error('Không thể tải dữ liệu nhân viên. Vui lòng thử lại!');
           this.listOfData = [];
+          this.filteredData = [];
         }
       });
+  }
+
+  onSearch(): void {
+    const matches = this.listOfData.filter(item => {
+      // Code
+      if (this.searchFilters['code'] && !item.userName?.toLowerCase().includes(this.searchFilters['code'].toLowerCase())) {
+        return false;
+      }
+      // FullName
+      if (this.searchFilters['fullName'] && !item.fullName?.toLowerCase().includes(this.searchFilters['fullName'].toLowerCase())) {
+        return false;
+      }
+      // Email
+      if (this.searchFilters['email'] && !item.email?.toLowerCase().includes(this.searchFilters['email'].toLowerCase())) {
+        return false;
+      }
+      // Department
+      if (this.searchFilters['departmentName'] && this.searchFilters['departmentName'].length > 0) {
+        const selectedDepts = this.searchFilters['departmentName'];
+        // Select multiple returns array
+        if (Array.isArray(selectedDepts)) {
+          if (!selectedDepts.includes(item.departmentName)) return false;
+        } else {
+          if (!item.departmentName?.toLowerCase().includes(selectedDepts.toLowerCase())) return false;
+        }
+      }
+      // Position
+      if (this.searchFilters['workPositionName'] && this.searchFilters['workPositionName'].length > 0) {
+        const selected = this.searchFilters['workPositionName'];
+        if (Array.isArray(selected)) {
+          if (!selected.includes(item.workPositionName)) return false;
+        }
+      }
+      // Phone
+      if (this.searchFilters['phoneNumber'] && !item.phoneNumber?.toLowerCase().includes(this.searchFilters['phoneNumber'].toLowerCase())) {
+        return false;
+      }
+      // Level
+      if (this.searchFilters['levelName'] && this.searchFilters['levelName'].length > 0) {
+        const selected = this.searchFilters['levelName'];
+        if (Array.isArray(selected)) {
+          if (!selected.includes(item.levelName)) return false;
+        }
+      }
+      // Status
+      if (this.searchFilters['statusName'] && this.searchFilters['statusName'].length > 0) {
+        const selected = this.searchFilters['statusName'];
+        if (Array.isArray(selected)) {
+          if (selected.includes('ACTIVE') && item.isActive !== 1) return false;
+          if (selected.includes('INACTIVE') && item.isActive === 1) return false;
+          if (!selected.includes(item.statusName) && !selected.includes(item.status)) return false;
+        }
+      }
+      // Gender
+      if (this.searchFilters['gender'] && this.searchFilters['gender'].length > 0) {
+        const selected = this.searchFilters['gender'];
+        if (Array.isArray(selected)) {
+          if (!selected.includes(item.gender)) return false;
+        }
+      }
+      // Date Of Birth
+      if (this.searchFilters['dateOfBirth'] && this.searchFilters['dateOfBirth'].length === 2) {
+        const [start, end] = this.searchFilters['dateOfBirth'];
+        if (start && end) {
+          let dob: Date | null = null;
+          if (item.dateOfBirth) {
+            const d = new Date(item.dateOfBirth);
+            if (!isNaN(d.getTime())) {
+              dob = d;
+            } else {
+              const parts = item.dateOfBirth.split('/');
+              if (parts.length === 3) {
+                dob = new Date(+parts[2], +parts[1] - 1, +parts[0]);
+              }
+            }
+          }
+
+          if (dob) {
+            const startDate = new Date(start); startDate.setHours(0, 0, 0, 0);
+            const endDate = new Date(end); endDate.setHours(23, 59, 59, 999);
+            if (dob < startDate || dob > endDate) return false;
+          } else if (!dob) {
+            return false;
+          }
+        }
+      }
+      // Date Range (Created At)
+      if (this.searchFilters['createdAt'] && this.searchFilters['createdAt'].length === 2) {
+        const [start, end] = this.searchFilters['createdAt'];
+        if (start && end) {
+          // Use createdAtOriginal which is ISO
+          const itemDate = new Date(item.createdAtOriginal);
+          const startDate = new Date(start); startDate.setHours(0, 0, 0, 0);
+          const endDate = new Date(end); endDate.setHours(23, 59, 59, 999);
+
+          if (itemDate < startDate || itemDate > endDate) return false;
+        }
+      }
+
+      return true;
+    });
+
+    this.paging.totalElements = matches.length;
+
+    // Client-side pagination
+    const start = (this.paging.pageIndex - 1) * this.paging.pageSize;
+    const end = start + this.paging.pageSize;
+
+    // Re-index for display if needed? No, keep original index or re-calc.
+    // But we slice the matches
+    this.filteredData = matches.slice(start, end);
   }
 
   addStaff(): void {
@@ -240,13 +421,13 @@ export class EmployeeManageComponent implements OnInit {
 
   onPageIndexChange(pageIndex: number): void {
     this.paging.pageIndex = pageIndex;
-    this.loadData();
+    this.onSearch();
   }
 
   onPageSizeChange(pageSize: number): void {
     this.paging.pageSize = pageSize;
     this.paging.pageIndex = 1;
-    this.loadData();
+    this.onSearch();
   }
 
   onFilterInTable(_params: NzTableQueryParams): void {
@@ -302,7 +483,7 @@ export class EmployeeManageComponent implements OnInit {
   handleAction(actionKey: string, data: any): void {
     switch (actionKey) {
       case 'edit':
-        this.editUser({item: data});
+        this.editUser({ item: data });
         break;
       case 'delete':
         this.showConfirm(data);
