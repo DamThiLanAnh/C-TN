@@ -18,8 +18,8 @@ export class ImportAttendanceComponent implements OnInit {
   isVisible = false;
   pageIndex = 1;
   pageSize = 5;
-  total = this.data.length;
-  pagedData = this.data.slice(0, this.pageSize);
+  total = 0;
+  pagedData: any[] = [];
 
   selectedMonth: Date | null = new Date();
   selectedFile: File | null = null;
@@ -42,13 +42,13 @@ export class ImportAttendanceComponent implements OnInit {
 
     this.loading = true;
     this.importAttendanceService.getMyAttendanceApi(formattedMonth).subscribe({
-      next: (res) => {
+      next: (res: any) => {
         this.loading = false;
         this.data = res?.content || []; // Assuming API returns 'content'
         this.total = res?.totalElements || 0;
         this.updatePagedData();
       },
-      error: (err) => {
+      error: () => {
         this.loading = false;
         this.data = [];
         this.updatePagedData();
@@ -97,16 +97,15 @@ export class ImportAttendanceComponent implements OnInit {
 
     this.loading = true;
     this.importAttendanceService.importAttendance(formattedMonth, this.selectedFile).subscribe({
-      next: (response) => {
+      next: () => {
         this.message.success('Import dữ liệu công thành công!');
         this.loading = false;
         this.isVisible = false;
         this.selectedFile = null;
         this.fileList = [];
         this.loadData(); // Refresh data after import
-        // Optionally refresh data
       },
-      error: (error) => {
+      error: (error: any) => {
         this.message.error('Import thất bại: ' + (error.error?.message || 'Lỗi không xác định'));
         this.loading = false;
       }
