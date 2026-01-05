@@ -1,6 +1,6 @@
 import { RouterModule, Routes } from '@angular/router';
 import { ImportAttendanceComponent } from './import-attendance/import-attendance.component';
-import { ImportCheckInOutComponent } from './import-check-in-out/import-check-in-out.component';
+import { ImportSalaryComponent } from './import-salary/import-salary.component';
 import { NgModule } from '@angular/core';
 
 const routes: Routes = [
@@ -13,8 +13,8 @@ const routes: Routes = [
     }
   },
   {
-    path: 'check-in-out',
-    component: ImportCheckInOutComponent,
+    path: 'salary',
+    component: ImportSalaryComponent,
     // canActivate: [],
     data: {
       roles: []

@@ -63,7 +63,6 @@ export class EmployeeManageComponent implements OnInit, OnDestroy {
       takeUntil(this.destroy$)
     ).subscribe(() => {
       this.paging.pageIndex = 1;
-      this.onSearch();
     });
 
     this.loadDepartments();
@@ -169,7 +168,6 @@ export class EmployeeManageComponent implements OnInit, OnDestroy {
               createdAtOriginal: item.createdAt
             }));
 
-            this.onSearch(); // Apply filters/pagination
           } else {
             this.listOfData = [];
             this.filteredData = [];
@@ -184,117 +182,6 @@ export class EmployeeManageComponent implements OnInit, OnDestroy {
           this.filteredData = [];
         }
       });
-  }
-
-  onSearch(): void {
-    const matches = this.listOfData.filter(item => {
-      // Code
-      if (this.searchFilters['code'] && !item.userName?.toLowerCase().includes(this.searchFilters['code'].toLowerCase())) {
-        return false;
-      }
-      // FullName
-      if (this.searchFilters['fullName'] && !item.fullName?.toLowerCase().includes(this.searchFilters['fullName'].toLowerCase())) {
-        return false;
-      }
-      // Email
-      if (this.searchFilters['email'] && !item.email?.toLowerCase().includes(this.searchFilters['email'].toLowerCase())) {
-        return false;
-      }
-      // Department
-      if (this.searchFilters['departmentName'] && this.searchFilters['departmentName'].length > 0) {
-        const selectedDepts = this.searchFilters['departmentName'];
-        // Select multiple returns array
-        if (Array.isArray(selectedDepts)) {
-          if (!selectedDepts.includes(item.departmentName)) return false;
-        } else {
-          if (!item.departmentName?.toLowerCase().includes(selectedDepts.toLowerCase())) return false;
-        }
-      }
-      // Position
-      if (this.searchFilters['workPositionName'] && this.searchFilters['workPositionName'].length > 0) {
-        const selected = this.searchFilters['workPositionName'];
-        if (Array.isArray(selected)) {
-          if (!selected.includes(item.workPositionName)) return false;
-        }
-      }
-      // Phone
-      if (this.searchFilters['phoneNumber'] && !item.phoneNumber?.toLowerCase().includes(this.searchFilters['phoneNumber'].toLowerCase())) {
-        return false;
-      }
-      // Level
-      if (this.searchFilters['levelName'] && this.searchFilters['levelName'].length > 0) {
-        const selected = this.searchFilters['levelName'];
-        if (Array.isArray(selected)) {
-          if (!selected.includes(item.levelName)) return false;
-        }
-      }
-      // Status
-      if (this.searchFilters['statusName'] && this.searchFilters['statusName'].length > 0) {
-        const selected = this.searchFilters['statusName'];
-        if (Array.isArray(selected)) {
-          if (selected.includes('ACTIVE') && item.isActive !== 1) return false;
-          if (selected.includes('INACTIVE') && item.isActive === 1) return false;
-          if (!selected.includes(item.statusName) && !selected.includes(item.status)) return false;
-        }
-      }
-      // Gender
-      if (this.searchFilters['gender'] && this.searchFilters['gender'].length > 0) {
-        const selected = this.searchFilters['gender'];
-        if (Array.isArray(selected)) {
-          if (!selected.includes(item.gender)) return false;
-        }
-      }
-      // Date Of Birth
-      if (this.searchFilters['dateOfBirth'] && this.searchFilters['dateOfBirth'].length === 2) {
-        const [start, end] = this.searchFilters['dateOfBirth'];
-        if (start && end) {
-          let dob: Date | null = null;
-          if (item.dateOfBirth) {
-            const d = new Date(item.dateOfBirth);
-            if (!isNaN(d.getTime())) {
-              dob = d;
-            } else {
-              const parts = item.dateOfBirth.split('/');
-              if (parts.length === 3) {
-                dob = new Date(+parts[2], +parts[1] - 1, +parts[0]);
-              }
-            }
-          }
-
-          if (dob) {
-            const startDate = new Date(start); startDate.setHours(0, 0, 0, 0);
-            const endDate = new Date(end); endDate.setHours(23, 59, 59, 999);
-            if (dob < startDate || dob > endDate) return false;
-          } else if (!dob) {
-            return false;
-          }
-        }
-      }
-      // Date Range (Created At)
-      if (this.searchFilters['createdAt'] && this.searchFilters['createdAt'].length === 2) {
-        const [start, end] = this.searchFilters['createdAt'];
-        if (start && end) {
-          // Use createdAtOriginal which is ISO
-          const itemDate = new Date(item.createdAtOriginal);
-          const startDate = new Date(start); startDate.setHours(0, 0, 0, 0);
-          const endDate = new Date(end); endDate.setHours(23, 59, 59, 999);
-
-          if (itemDate < startDate || itemDate > endDate) return false;
-        }
-      }
-
-      return true;
-    });
-
-    this.paging.totalElements = matches.length;
-
-    // Client-side pagination
-    const start = (this.paging.pageIndex - 1) * this.paging.pageSize;
-    const end = start + this.paging.pageSize;
-
-    // Re-index for display if needed? No, keep original index or re-calc.
-    // But we slice the matches
-    this.filteredData = matches.slice(start, end);
   }
 
   addStaff(): void {
@@ -421,13 +308,11 @@ export class EmployeeManageComponent implements OnInit, OnDestroy {
 
   onPageIndexChange(pageIndex: number): void {
     this.paging.pageIndex = pageIndex;
-    this.onSearch();
   }
 
   onPageSizeChange(pageSize: number): void {
     this.paging.pageSize = pageSize;
     this.paging.pageIndex = 1;
-    this.onSearch();
   }
 
   onFilterInTable(_params: NzTableQueryParams): void {

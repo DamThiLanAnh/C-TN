@@ -1,11 +1,11 @@
 import { RouterModule, Routes } from '@angular/router';
-import { StaffCalendarComponent } from './staff-calendar/staff-calendar.component';
+import { StaffDetailComponent } from './staff-detail/staff-detail.component';
 import { NgModule } from '@angular/core';
 
 export const STAFFS_ROUTES: Routes = [
   {
-    path: '',
-    component: StaffCalendarComponent
+    path: 'detail',
+    component: StaffDetailComponent
   }
 ];
 

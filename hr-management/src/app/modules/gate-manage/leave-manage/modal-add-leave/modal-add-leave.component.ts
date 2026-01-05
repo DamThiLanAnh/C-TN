@@ -16,10 +16,7 @@ export class ModalAddLeaveComponent implements OnInit {
 
   leaveTypes = [
     { value: 'ANNUAL', label: 'Nghỉ phép năm' },
-    { value: 'SICK', label: 'Nghỉ ốm' },
     { value: 'UNPAID', label: 'Nghỉ không lương' },
-    { value: 'MATERNITY', label: 'Nghỉ thai sản' },
-    { value: 'PATERNITY', label: 'Nghỉ chăm con' },
     { value: 'OTHER', label: 'Khác' }
   ];
 
@@ -28,7 +25,7 @@ export class ModalAddLeaveComponent implements OnInit {
     private modalRef: NzModalRef,
     private leaveService: LeaveManagementService,
     private message: NzMessageService
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     this.initForm();

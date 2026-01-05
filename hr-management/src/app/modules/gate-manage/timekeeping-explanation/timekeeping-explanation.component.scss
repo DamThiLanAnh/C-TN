@@ -1,9 +1,5 @@
 .full-height {
   height: 100%;
-
-  ::ng-deep .ant-card-body {
-    padding: 24px;
-  }
 }
 
 .action-table {
@@ -63,22 +59,22 @@
     font-size: 13px;
   }
 
-  .ant-table-thead > tr > th {
+  .ant-table-thead>tr>th {
     background-color: #fafafa;
     font-weight: 600;
     padding: 8px 8px !important; // Giảm padding
   }
 
   // Giảm khoảng cách giữa header row và filter row
-  .ant-table-thead > tr:first-child > th {
+  .ant-table-thead>tr:first-child>th {
     padding-bottom: 4px !important;
   }
 
-  .ant-table-thead > tr:last-child > th {
+  .ant-table-thead>tr:last-child>th {
     padding-top: 4px !important;
   }
 
-  .ant-table-tbody > tr:hover > td {
+  .ant-table-tbody>tr:hover>td {
     background-color: #f0f7ff;
   }
 
@@ -87,4 +83,3 @@
     justify-content: flex-end;
   }
 }
-

@@ -39,28 +39,54 @@
       <button nz-button nzType="primary" nzDanger (click)="importFile()" [nzLoading]="loading">Import</button>
     </ng-template>
   </nz-modal>
-  <nz-table [nzData]="pagedData" [nzLoading]="loading" nzBordered [nzScroll]="{ x: '100%' }"
-    *ngIf="columns && columns.length" [nzShowPagination]="false">
+
+  <nz-table #table [nzData]="pagedData" [nzLoading]="loading" nzBordered [nzScroll]="{ x: '100%' }"
+    *ngIf="columns && columns.length" [nzShowPagination]="false" [nzNoResult]="noResultTemplate">
     <thead>
       <tr>
         <th *ngFor="let col of columns" [nzWidth]="col.width!" [nzLeft]="col.fixedColumn || false"
-          [nzRight]="col.fixedRight || false">
+          [nzRight]="col.fixedRight || false" [nzAlign]="'center'">
           {{ col.attr }}
         </th>
       </tr>
     </thead>
     <tbody>
-      <tr *ngFor="let row of pagedData">
-        <td *ngFor="let col of columns" [nzLeft]="col.fixedColumn || false" [nzRight]="col.fixedRight || false">
-          {{ row[col.name] }}
-        </td>
-      </tr>
-      <tr *ngIf="!pagedData.length">
-        <td [attr.colspan]="columns.length" class="text-center text-muted py-4">
+      <tr *ngFor="let row of pagedData; let i = index">
+        <td *ngFor="let col of columns" [nzLeft]="col.fixedColumn || false" [nzRight]="col.fixedRight || false"
+          [ngSwitch]="col.name"
+          [nzAlign]="col.name === 'index' || col.name === 'month' || col.name === 'createdDate' ? 'center' : 'left'">
+
+          <ng-container *ngSwitchCase="'index'">
+            {{ (pageIndex - 1) * pageSize + i + 1 }}
+          </ng-container>
+
+          <ng-container *ngSwitchCase="'month'">
+            {{ row[col.name] | date: 'MM/yyyy' }}
+          </ng-container>
+
+          <ng-container *ngSwitchCase="'createdDate'">
+            {{ row[col.name] | date: 'dd/MM/yyyy HH:mm' }}
+          </ng-container>
+
+          <ng-container *ngSwitchCase="'fileAttachment'">
+            <a *ngIf="row[col.name]" [href]="row[col.name]" target="_blank" rel="noopener noreferrer"
+              class="text-primary">
+              <span nz-icon nzType="paper-clip" class="me-1"></span> {{ row[col.name] }}
+            </a>
+            <span *ngIf="!row[col.name]" class="text-muted">-</span>
+          </ng-container>
+
+          <ng-container *ngSwitchDefault>
+            {{ row[col.name] }}
+          </ng-container>
         </td>
       </tr>
     </tbody>
   </nz-table>
+
+  <ng-template #noResultTemplate>
+    <nz-empty nzNotFoundImage="simple" nzNotFoundContent="Không có dữ liệu"></nz-empty>
+  </ng-template>
   <nz-pagination [nzPageIndex]="pageIndex" [nzTotal]="total" [nzPageSize]="pageSize" [nzShowSizeChanger]="false"
     (nzPageIndexChange)="onPageIndexChange($event)" class="mt-3 d-flex justify-content-end"></nz-pagination>
 </nz-card>

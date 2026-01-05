@@ -1,4 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+import { ApproveScheduleConfigService } from '../../approve-schedule-config.service';
+import { finalize } from 'rxjs/operators';
 
 interface DepartmentConfigRow {
   departmentIds: number[];
@@ -17,6 +19,7 @@ interface OptionItem {
 })
 export class ApproveScheduleDepartmentConfigComponent implements OnInit {
   isEditMode = false;
+  isLoading = false;
   rolesCanEdit = ['ADMIN', 'HR'];
 
   configList: DepartmentConfigRow[] = [];
@@ -35,56 +38,55 @@ export class ApproveScheduleDepartmentConfigComponent implements OnInit {
 
   private originalConfigList: DepartmentConfigRow[] = [];
 
-  constructor() { }
+  constructor(
+    private approveScheduleConfigService: ApproveScheduleConfigService,
+    private cdr: ChangeDetectorRef
+  ) { }
 
   ngOnInit(): void {
-    this.loadMockData();
+    this.loadData();
   }
 
-  loadMockData(): void {
-    // Mock department data
-    this.departmentOptions = [
-      { label: 'Phòng IT', value: 1 },
-      { label: 'Phòng Kế toán', value: 2 },
-      { label: 'Phòng Nhân sự', value: 3 },
-      { label: 'Phòng Kinh doanh', value: 4 },
-      { label: 'Phòng Marketing', value: 5 },
-      { label: 'Phòng Hành chính', value: 6 },
-      { label: 'Chi nhánh Hà Nội', value: 7 },
-      { label: 'Chi nhánh TP.HCM', value: 8 },
-      { label: 'Chi nhánh Đà Nẵng', value: 9 }
-    ];
+  loadData(): void {
+    this.isLoading = true;
+    this.approveScheduleConfigService.getDepartmentApprovalConfigs(0, 1000)
+      .pipe(finalize(() => {
+        this.isLoading = false;
+        this.cdr.markForCheck();
+      }))
+      .subscribe(res => {
+        const deptMap = new Map<number, string>();
+        const staffMap = new Map<number, string>();
 
-    // Mock staff data
-    this.staffOptions = [
-      { label: 'Nguyễn Văn Manager A', value: 101 },
-      { label: 'Trần Thị Leader B', value: 102 },
-      { label: 'Lê Văn Director C', value: 103 },
-      { label: 'Phạm Thị Supervisor D', value: 104 },
-      { label: 'Hoàng Văn Admin E', value: 105 },
-      { label: 'Vũ Thị Manager F', value: 106 },
-      { label: 'Đặng Văn Leader G', value: 107 }
-    ];
+        this.configList = [];
 
-    // Mock config data
-    this.configList = [
-      {
-        departmentIds: [1, 2],
-        approveStaffIds: [101, 102]
-      },
-      {
-        departmentIds: [3, 4],
-        approveStaffIds: [103]
-      },
-      {
-        departmentIds: [7, 8],
-        approveStaffIds: [104, 105]
-      }
-    ];
+        if (res.content) {
+          res.content.forEach(item => {
+            deptMap.set(item.departmentId, item.departmentName);
 
-    this.originalConfigList = JSON.parse(JSON.stringify(this.configList));
-    this.initFilteredOptions();
+            // Handle potential null approver
+            const approverIds: number[] = [];
+            if (item.approverId) {
+              staffMap.set(item.approverId, item.approverName || '');
+              approverIds.push(item.approverId);
+            }
+
+            this.configList.push({
+              departmentIds: [item.departmentId],
+              approveStaffIds: approverIds
+            });
+          });
+        }
+
+        this.departmentOptions = Array.from(deptMap.entries()).map(([value, label]) => ({ value, label }));
+        this.staffOptions = Array.from(staffMap.entries()).map(([value, label]) => ({ value, label }));
+
+        this.originalConfigList = JSON.parse(JSON.stringify(this.configList));
+        this.initFilteredOptions();
+      });
   }
+
+  /* loadMockData removed */
 
   initFilteredOptions(): void {
     this.filteredOptions['departmentIds'] = [...this.departmentOptions];
@@ -105,7 +107,7 @@ export class ApproveScheduleDepartmentConfigComponent implements OnInit {
 
   onSaveEdit(): void {
     this.isEditMode = false;
-    // TODO: Call API to save changes
+    // TODO: Call API to save changes if needed
     console.log('Saving department config changes...', this.configList);
     this.originalConfigList = JSON.parse(JSON.stringify(this.configList));
   }

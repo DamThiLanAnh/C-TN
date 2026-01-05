@@ -1,4 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+import { ApproveScheduleConfigService } from '../../approve-schedule-config.service';
+import { finalize } from 'rxjs/operators';
 
 interface ConfigRow {
   staffIds: number[];
@@ -18,6 +20,7 @@ interface OptionItem {
 export class ApproveScheduleConfigComponent implements OnInit {
   selectedTabIndex = 0;
   isEditMode = false;
+  isLoading = false;
   personalRoles = ['ADMIN', 'MANAGER'];
   businessRoles = ['ADMIN', 'HR'];
 
@@ -37,49 +40,51 @@ export class ApproveScheduleConfigComponent implements OnInit {
 
   private originalConfigList: ConfigRow[] = [];
 
-  constructor() { }
+  constructor(
+    private approveScheduleConfigService: ApproveScheduleConfigService,
+    private cdr: ChangeDetectorRef
+  ) { }
 
   ngOnInit(): void {
-    this.loadMockData();
+    this.loadData();
   }
 
-  loadMockData(): void {
-    // Mock staff data
-    this.staffOptions = [
-      { label: 'Nguyễn Văn A', value: 1 },
-      { label: 'Trần Thị B', value: 2 },
-      { label: 'Lê Văn C', value: 3 },
-      { label: 'Phạm Thị D', value: 4 },
-      { label: 'Hoàng Văn E', value: 5 },
-      { label: 'Vũ Thị F', value: 6 },
-      { label: 'Đặng Văn G', value: 7 },
-      { label: 'Mai Thị H', value: 8 }
-    ];
+  loadData(): void {
+    this.isLoading = true;
+    this.approveScheduleConfigService.getPersonalApprovalConfigs(0, 1000)
+      .pipe(finalize(() => {
+        this.isLoading = false;
+        this.cdr.markForCheck();
+      }))
+      .subscribe(res => {
+        // Collect all options first
+        const staffMap = new Map<number, string>();
+        const approverMap = new Map<number, string>();
 
-    // Mock approver data
-    this.approverOptions = [
-      { label: 'Nguyễn Văn Manager', value: 101 },
-      { label: 'Trần Thị Leader', value: 102 },
-      { label: 'Lê Văn Director', value: 103 },
-      { label: 'Phạm Thị Supervisor', value: 104 },
-      { label: 'Hoàng Văn Admin', value: 105 }
-    ];
+        this.configList = [];
 
-    // Mock config data
-    this.configList = [
-      {
-        staffIds: [1, 2],
-        approverIds: [101]
-      },
-      {
-        staffIds: [3, 4, 5],
-        approverIds: [102, 103]
-      }
-    ];
+        if (res.content) {
+          res.content.forEach(item => {
+            staffMap.set(item.employeeId, item.employeeName);
+            approverMap.set(item.approverId, item.approverName);
 
-    this.originalConfigList = JSON.parse(JSON.stringify(this.configList));
-    this.initFilteredOptions();
+            this.configList.push({
+              staffIds: [item.employeeId],
+              approverIds: [item.approverId]
+            });
+          });
+        }
+
+        // Convert maps to options
+        this.staffOptions = Array.from(staffMap.entries()).map(([value, label]) => ({ value, label }));
+        this.approverOptions = Array.from(approverMap.entries()).map(([value, label]) => ({ value, label }));
+
+        this.originalConfigList = JSON.parse(JSON.stringify(this.configList));
+        this.initFilteredOptions();
+      });
   }
+
+  /* loadMockData removed */
 
   initFilteredOptions(): void {
     this.filteredOptions['staffIds'] = [...this.staffOptions];
@@ -105,7 +110,7 @@ export class ApproveScheduleConfigComponent implements OnInit {
 
   onSaveEdit(): void {
     this.isEditMode = false;
-    // TODO: Call API to save changes
+    // TODO: Call API to save changes if needed
     console.log('Saving changes...', this.configList);
     this.originalConfigList = JSON.parse(JSON.stringify(this.configList));
   }

@@ -128,7 +128,7 @@ export class LayoutFullComponent implements OnInit {
       id: '11',
       level: 1,
       title: 'Thông tin người dùng',
-      url: '/staffs/user-information',
+      url: '/staffs/detail',
       // roles: ['ROLE_INFOR_BY_SELF']
     },
     {
@@ -172,8 +172,8 @@ export class LayoutFullComponent implements OnInit {
           children: [],
           id: '124',
           level: 2,
-          title: 'Import dữ liệu vào ra',
-          url: '/import-data/check-in-out',
+          title: 'Import dữ liệu lương',
+          url: '/import-data/salary',
           roles: [],
         },
       ]
@@ -351,7 +351,7 @@ export class LayoutFullComponent implements OnInit {
       '/gate-manage/special-schedule': 'Quản lý lịch đặc thù',
       '/gate-manage/timekeeping-explanation': 'Giải trình công',
       '/gate-manage/over-time-manage': 'Quản lý tăng ca',
-      '/staffs/user-information': 'Thông tin người dùng',
+      '/staffs/detail': 'Thông tin người dùng',
       '/import-vgov/attendance': 'Import dữ liệu công',
       '/import-vgov/leave-absence': 'Import dữ liệu KPI',
       '/setting/user-account': 'Quản lý người dùng',
@@ -359,7 +359,7 @@ export class LayoutFullComponent implements OnInit {
       '/setting/activity-log': 'Lịch sử log',
       '/staff-cost': 'Chi phí',
       '/import-data/attendance': 'Import dữ liệu công',
-      '/import-data/check-in-out': 'Import dữ liệu vào ra',
+      '/import-data/salary': 'Import dữ liệu lương',
     };
 
     return titleMap[url] || 'Tab mới';

@@ -26,7 +26,7 @@ export interface LeaveQueryParams {
 export class LeaveManagementService {
   private baseUrl = environment.apiUrl;
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   // HR/Admin get all leave requests with optional filters
   getAllLeaveRequests(params: LeaveQueryParams = {}): Observable<any> {
@@ -103,6 +103,6 @@ export class LeaveManagementService {
   // Get active departments for dropdown
   getActiveDepartments(): Observable<any> {
     console.log('LeaveManagementService.getActiveDepartments called');
-    return this.http.get(`${this.baseUrl}/api/departments/active`); // Fixed: departments (plural)
+    return this.http.get(`${this.baseUrl}/api/departments`); // Fixed: departments (plural)
   }
 }

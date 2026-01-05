@@ -1,10 +1,10 @@
 <div class="staff-detail" *ngIf="dataDetail">
   <nz-card class="rounded mb-3">
 
-    <nz-radio-group  nzSize="large" [ngModel]='select' (ngModelChange)="change($event)">
-      <label nz-radio-button nzValue="Thông tin người dùng">Thông tin người dùng</label>
-      <label nz-radio-button nzValue="Kỹ năng chuyên môn">Kỹ năng chuyên môn</label>
-      <label nz-radio-button nzValue="Lịch sử Review">Lịch sử Review</label>
+    <nz-radio-group nzSize="large" [ngModel]='select' (ngModelChange)="change($event)">
+      <!-- <label nz-radio-button nzValue="Thông tin người dùng">Thông tin người dùng</label> -->
+      <!-- <label nz-radio-button nzValue="Kỹ năng chuyên môn">Kỹ năng chuyên môn</label>
+      <label nz-radio-button nzValue="Lịch sử Review">Lịch sử Review</label> -->
     </nz-radio-group>
 
     <!-- <nz-tabset nzType="card" [(nzSelectedIndex)]="index" style="position: relative;">
@@ -23,7 +23,7 @@
                 </div>
               </div>
               <button nz-button nzType="default" *ngIf="isUser" (click)="startEditInfor()"
-                      class="text-blue action-icon d-inline-flex align-items-center" nz-tooltip title="Sửa">
+                class="text-blue action-icon d-inline-flex align-items-center" nz-tooltip title="Sửa">
                 <i nzTheme="outline" nz-icon nzType="edit" aria-hidden="true"></i>
               </button>
             </div>
@@ -32,7 +32,7 @@
             <div class="row info">
               <div class="col-12 mb-3" nz-tooltip="Ngày sinh">
                 <img src="../../../../assets/icons/calendar.svg" alt=""> <span>{{dataDetail.dob | date
-                :'dd/MM/yyyy'}}</span>
+                  :'dd/MM/yyyy'}}</span>
               </div>
               <div class="col-12 mb-3" nz-tooltip="Giới tính">
                 <ng-container *ngIf="dataDetail?.gender; else woman">
@@ -50,11 +50,11 @@
               </div>
               <div class="col-12 mb-3" nz-tooltip="Trạng thái làm việc">
                 <img src="../../../../assets/icons/status.svg" alt=""><span>
-                      {{getNameStatus(dataDetail.status)}}</span>
+                  {{getNameStatus(dataDetail.status)}}</span>
               </div>
               <div class="col-12 mb-3" nz-tooltip="Ngày vào công ty">
                 <img src="../../../../assets/icons/entry-date.svg" alt=""><span> {{dataDetail.entryDate | date
-                :'dd/MM/yyyy'}}</span>
+                  :'dd/MM/yyyy'}}</span>
               </div>
               <div *ngIf="dataDetail?.siteName" class="col-12">
                 <img src="../../../../assets/icons/location.svg" alt=""><span>{{dataDetail.siteName}}</span>
@@ -70,8 +70,9 @@
                   <nz-timeline-item [nzDot]="dotTemplate">
                     <div class="info">
                       <p class="fw-500 mb-2">{{dataDetail?.universityName}}</p>
-                      <p class="small mb-2"><img src="../../../../assets/icons/teacher.svg" alt=""> <span>Chuyên ngành: {{dataDetail?.majorEduName}}</span></p>
-                      <p  class="small ms-4">Trình độ: {{dataDetail?.eduLevelName}}</p>
+                      <p class="small mb-2"><img src="../../../../assets/icons/teacher.svg" alt=""> <span>Chuyên ngành:
+                          {{dataDetail?.majorEduName}}</span></p>
+                      <p class="small ms-4">Trình độ: {{dataDetail?.eduLevelName}}</p>
 
                     </div>
                   </nz-timeline-item>
@@ -104,12 +105,7 @@
 
         <div class="col-md-3 d-flex">
           <nz-input-group [nzSuffix]="suffix" class="inp-search">
-            <input
-              nz-input
-              placeholder="Tìm kiếm kỹ năng"
-              [(ngModel)]="keyword"
-              (ngModelChange)="searchSkills()"
-            />
+            <input nz-input placeholder="Tìm kiếm kỹ năng" [(ngModel)]="keyword" (ngModelChange)="searchSkills()" />
           </nz-input-group>
 
           <ng-template #suffix>
@@ -122,10 +118,8 @@
         <div class="col-md-9 mb-2">
           <nz-list *ngIf="!isEdit">
             <nz-list-item *ngFor="let skill of listSkillFilter">
-              <nz-list-item-meta
-                [nzTitle]="skill.skillName"
-                nzAvatar="<span nz-icon nzType='star'></span>"
-              ></nz-list-item-meta>
+              <nz-list-item-meta [nzTitle]="skill.skillName"
+                nzAvatar="<span nz-icon nzType='star'></span>"></nz-list-item-meta>
 
               <nz-tag nzColor="blue">Level: {{ skill.level }}</nz-tag>
             </nz-list-item>
@@ -153,33 +147,22 @@
       <div class="d-flex justify-content-between mb-3 mt-1">
         <div class="fz-18 col-md-9">Lịch sử review</div>
 
-        <nz-date-picker
-          nzFormat="yyyy"
-          nzMode="year"
-          [(ngModel)]="dateHistoryReview"
-          (ngModelChange)="onChangeDate($event)"
-        ></nz-date-picker>
+        <nz-date-picker nzFormat="yyyy" nzMode="year" [(ngModel)]="dateHistoryReview"
+          (ngModelChange)="onChangeDate($event)"></nz-date-picker>
       </div>
 
-      <nz-table
-        [nzData]="listOfData"
-        [nzScroll]="{ y: 'calc(100vh - 21rem)' }"
-        (nzCurrentPageDataChange)="onFilterInTable($event)"
-      >
+      <nz-table [nzData]="listOfData" [nzScroll]="{ y: 'calc(100vh - 21rem)' }"
+        (nzCurrentPageDataChange)="onFilterInTable($event)">
         <thead>
-        <tr>
-          <th *ngFor="let c of col2">{{ c.title }}</th>
-        </tr>
+          <tr>
+            <th *ngFor="let c of col2">{{ c.title }}</th>
+          </tr>
         </thead>
 
         <tbody>
-        <tr
-          *ngFor="let row of listOfData"
-          (click)="onSelectLinkItem(row)"
-          style="cursor: pointer"
-        >
-<!--          <td *ngFor="let c of col2">{{ row[c.key] }}</td>-->
-        </tr>
+          <tr *ngFor="let row of listOfData" (click)="onSelectLinkItem(row)" style="cursor: pointer">
+            <!--          <td *ngFor="let c of col2">{{ row[c.key] }}</td>-->
+          </tr>
         </tbody>
       </nz-table>
     </div>

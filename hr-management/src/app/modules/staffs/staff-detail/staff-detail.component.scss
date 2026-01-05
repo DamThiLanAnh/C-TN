@@ -1,9 +1,11 @@
 .staff-detail {
   height: calc(100vh - 3rem);
   overflow: auto;
-  & > nz-card.rounded.ant-card.ant-card-bordered > .ant-card-body {
+
+  &>nz-card.rounded.ant-card.ant-card-bordered>.ant-card-body {
     padding-bottom: 0;
   }
+
   .update-skill-container {
     height: calc(100vh - 16rem);
   }
@@ -33,41 +35,51 @@
   .col-md-9.mb-2 {
     border-right: 1px solid #b5b6bb;
   }
+
   .d-flex.col-md-3 {
     padding-left: 1rem;
   }
+
   .tab-custom {
     .tab-item {
       cursor: pointer;
       font-weight: 500;
       color: gray;
+
       &:hover {
         color: #ee0033;
       }
+
       &.active {
         color: #ee0033;
         border-bottom: 3px solid #ee0033;
       }
     }
+
     .tab-content {
       height: 284px;
       overflow: auto;
+
       ::ng-deep .ant-timeline {
         margin-top: 24px;
+
         .ant-timeline-item-head,
         .ant-timeline-item-tail,
         .ant-timeline-item-head,
         .ant-timeline-item-content {
           left: 24px !important;
         }
+
         .ant-timeline-item-content {
           width: calc(100% - 68px);
           left: 40px !important;
         }
+
         .ant-timeline-item-head {
           margin-top: 24px;
         }
       }
+
       .custom-dot {
         padding: 12px;
         background-color: #e6f7ff;
@@ -75,39 +87,47 @@
       }
     }
   }
+
   .staff-info {
     .content {
       margin-left: 16px;
+
       .name {
         font-size: 20px;
         font-weight: 500;
       }
     }
   }
+
   .inp-search {
     max-width: 500px;
   }
+
   .info {
     img {
       width: 16px;
       margin-right: 8px;
     }
+
     .custom-tag {
       border-radius: 10px;
       border-width: 0;
     }
   }
+
   .custom-card {
     box-shadow: 0px 0px 8px 2px #efefef;
     border-radius: 6px;
     max-height: 600px;
     overflow: auto;
   }
+
   .avatar-user {
     background: #ffe2e5;
     color: #f90037;
     font-size: 24px;
   }
+
   .text-blue.action-icon.d-inline-flex.align-items-center {
     margin-left: 1rem;
     border: none;
@@ -128,27 +148,34 @@
   height: 100%;
   display: flex;
 }
-::ng-deep .ant-checkbox + span {
+
+::ng-deep .ant-checkbox+span {
   max-width: 8rem;
 }
+
 ::ng-deep li.ant-dropdown-menu-item:first-child {
   padding: 14px 10px;
   background-color: #ebedf3;
   font-weight: 500;
 }
+
 ::ng-deep .ant-dropdown {
   width: 26rem;
 }
+
 .ant-dropdown-menu {
   padding-top: 0;
 }
+
 ::ng-deep .ant-table-row-expand-icon:focus,
 .ant-table-row-expand-icon:hover {
   color: #ff003b;
 }
-::ng-deep .ant-table-thead > tr > th {
+
+::ng-deep .ant-table-thead>tr>th {
   background: #ebedf3 !important;
 }
+
 ::ng-deep .ant-table.ant-table-middle tr {
   td {
     background: #f6f7f8 !important;
@@ -167,6 +194,7 @@
 
     &:not(.ant-radio-button-wrapper-disabled):hover {
       background-color: #fbf1de;
+
       span {
         color: #ffc107;
         border-color: #ffc107;
@@ -174,29 +202,25 @@
       }
     }
   }
-  ::ng-deep
-  .ant-radio-button-wrapper-checked:not(
-        .ant-radio-button-wrapper-disabled
-      )::before,
+
+  ::ng-deep .ant-radio-button-wrapper-checked:not(.ant-radio-button-wrapper-disabled)::before,
   ::ng-deep .ant-radio-button-wrapper:not(:first-child)::before {
     background: none !important;
+
     &:hover {
       background: none !important;
     }
   }
 
-  ::ng-deep
-  .ant-radio-button-wrapper-checked:not(
-        [class*=" ant-radio-button-wrapper-disabled"]
-      ).ant-radio-button-wrapper:first-child,
-  ::ng-deep
-  .ant-radio-group-solid
-  .ant-radio-button-wrapper-checked:not(.ant-radio-button-wrapper-disabled) {
+  ::ng-deep .ant-radio-button-wrapper-checked:not([class*=" ant-radio-button-wrapper-disabled"]).ant-radio-button-wrapper:first-child,
+  ::ng-deep .ant-radio-group-solid .ant-radio-button-wrapper-checked:not(.ant-radio-button-wrapper-disabled) {
     border-color: #ffc107 !important;
     color: #fff;
     background: #ffc107;
+
     &:hover {
       background: #ffc107 !important;
+
       span {
         color: white !important;
         background: #ffc107 !important;
@@ -208,19 +232,23 @@
 ::ng-deep .ant-dropdown-menu-item:hover {
   background: white;
 }
+
 ::ng-deep .ant-checkbox-wrapper {
   font-weight: 500;
   width: 20rem;
   white-space: nowrap;
   overflow: hidden;
 }
+
 ::ng-deep .skill-update {
+
   nz-input-group,
-  .ant-input-affix-wrapper > input.ant-input,
+  .ant-input-affix-wrapper>input.ant-input,
   ::ng-deep .ant-select-selector {
     background: #ecedf2;
     border: none;
   }
+
   ::ng-deep nz-select-item {
     background: white;
     color: black;

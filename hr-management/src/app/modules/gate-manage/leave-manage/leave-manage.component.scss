@@ -1,10 +1,5 @@
-
 .full-height {
   height: 100%;
-
-  ::ng-deep .ant-card-body {
-    padding: 24px;
-  }
 }
 
 .action-table {
@@ -44,8 +39,9 @@
 
 // Filter row inside table
 ::ng-deep {
+
   // Remove border from first header row (between header and filter row)
-  .ant-table-thead > tr:first-child > th {
+  .ant-table-thead>tr:first-child>th {
     border-bottom: none !important;
     padding-bottom: 4px !important;
   }
@@ -93,23 +89,23 @@
         border-color: #40a9ff;
       }
 
-      .ant-picker-input > input {
+      .ant-picker-input>input {
         font-size: 13px;
       }
     }
   }
 
   // Remove all borders between filter row and data rows
-  .ant-table-thead > tr.filter-row > th {
+  .ant-table-thead>tr.filter-row>th {
     border-bottom: none !important;
     border-top: none !important;
   }
 
-  .ant-table-thead > tr.filter-row + tr > th {
+  .ant-table-thead>tr.filter-row+tr>th {
     border-top: none !important;
   }
 
-  .ant-table-tbody > tr:first-child > td {
+  .ant-table-tbody>tr:first-child>td {
     border-top: none !important;
   }
 
@@ -124,17 +120,17 @@
 
   // Ensure no border after filter row
   tr.filter-row {
-    & + tbody tr:first-child td {
+    &+tbody tr:first-child td {
       border-top: none !important;
     }
   }
 
   // Remove any extra borders from table
-  .ant-table-thead > tr > th {
+  .ant-table-thead>tr>th {
     border-bottom: none !important;
   }
 
-  .ant-table-thead > tr:last-child > th {
+  .ant-table-thead>tr:last-child>th {
     border-bottom: none !important;
   }
 }
@@ -149,4 +145,3 @@ button[nz-button] {
     align-items: center;
   }
 }
-
