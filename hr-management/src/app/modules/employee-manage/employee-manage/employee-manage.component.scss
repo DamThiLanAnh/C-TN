@@ -30,8 +30,62 @@ button[nz-button] {
     border-radius: 8px;
   }
 
+
   .ant-btn-default {
     border-radius: 8px;
+  }
+}
+
+
+// Filter row styling to match leave-manage
+::ng-deep {
+  .filter-row {
+    background: #fafafa !important;
+
+    th {
+      padding: 4px 8px !important;
+      background: #fafafa !important;
+      border-bottom: none !important;
+      border-top: none !important;
+    }
+
+    .ant-input-sm {
+      border-radius: 6px;
+      font-size: 13px;
+    }
+
+    .ant-select-sm {
+      .ant-select-selector {
+        border-radius: 6px !important;
+        font-size: 13px;
+        height: 24px !important;
+        overflow: hidden;
+        display: flex;
+        flex-wrap: nowrap;
+        align-items: center;
+      }
+      
+      .ant-select-selection-item {
+        max-width: 100%;
+      }
+    }
+
+    .ant-picker-small {
+      border-radius: 6px;
+      font-size: 13px;
+      
+      .ant-picker-input > input {
+        font-size: 13px;
+      }
+    }
+  }
+
+  // Ensure global override for inputs in this component also have 6px radius if not in filter row, just in case
+  .ant-input,
+  .ant-input-number,
+  .ant-select-selector,
+  .ant-picker {
+    border-radius: 6px !important;
   }
 }
 

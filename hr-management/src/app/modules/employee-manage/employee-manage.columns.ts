@@ -102,7 +102,7 @@ export const employeeManageColumns = (): StandardColumnModel[] => {
       isFilter: true,
       isSort: true,
       filter: {
-        name: 'organizationId',
+        name: 'departmentName',
         multiple: true,
         options: [] // Will be populated in component
       },
@@ -118,8 +118,9 @@ export const employeeManageColumns = (): StandardColumnModel[] => {
       isFilter: true,
       isSort: true,
       filter: {
-        name: 'jobPositionId',
+        name: 'position',
         multiple: true,
+        options: []
       },
       type: StandardColumnType.SELECT,
     },
@@ -133,9 +134,9 @@ export const employeeManageColumns = (): StandardColumnModel[] => {
       isFilter: true,
       isSort: true,
       filter: {
-        name: '',
-        // selectOptionsType: EnumSelectOptionType.organizationProfile, // BỎ
+        name: 'statusName',
         multiple: true,
+        options: []
       },
       type: StandardColumnType.TAG,
     },
@@ -149,9 +150,9 @@ export const employeeManageColumns = (): StandardColumnModel[] => {
       isFilter: true,
       isSort: true,
       filter: {
-        name: '',
-        // selectOptionsType: EnumSelectOptionType.organizationProfile, // BỎ
+        name: 'gender',
         multiple: true,
+        options: []
       },
       type: StandardColumnType.SELECT,
     },
@@ -165,7 +166,7 @@ export const employeeManageColumns = (): StandardColumnModel[] => {
       isFilter: true,
       isSort: true,
       filter: {
-        name: '',
+        name: 'dateOfBirth',
         type: StandardColumnType.DATE_RANGE_PICKER
       },
       type: StandardColumnType.DATE_RANGE_PICKER,
@@ -194,6 +195,10 @@ export const employeeManageColumns = (): StandardColumnModel[] => {
       width: '140px',
       isSort: true,
       isFilter: true,
+      filter: {
+         name: 'createdAt',
+         type: StandardColumnType.DATE_RANGE_PICKER
+      }
     },
   ];
 };

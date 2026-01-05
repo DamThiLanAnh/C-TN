@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { StaffsService } from '../staffs.service';
 
 interface CheckInOutData {
   time_date: string;
@@ -36,67 +37,67 @@ export class StaffCalendarComponent implements OnInit {
   attendanceData: Map<string, AttendanceStatus> = new Map();
   specialSchedules: SpecialSchedule[] = [];
 
+  constructor(private staffsService: StaffsService) { }
+
   ngOnInit() {
-    this.loadMockData();
-    this.calculateTotalActualDays();
+    this.loadAttendanceData();
   }
 
-  loadMockData() {
-    // Mock data cho check in/out
-    const currentMonth = this.selectedDate.getMonth();
-    const currentYear = this.selectedDate.getFullYear();
+  loadAttendanceData() {
+    // Gọi API lấy dữ liệu chấm công
+    this.staffsService.getMyAttendance(this.selectedDate).subscribe((res: any) => {
+      // API trả về data trong res.days theo cấu trúc user cung cấp
+      const data = res.days || res.data || [];
+      
+      this.dataCheckInOut = [];
+      this.attendanceData.clear();
+      this.specialSchedules = [];
 
-    // Tạo dữ liệu chấm công cho 20 ngày đầu tháng
-    for (let day = 1; day <= 20; day++) {
-      const dateStr = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+      if (Array.isArray(data)) {
+        data.forEach((item: any) => {
+          // Map API data -> CheckInOutData
+          // JSON User cung cấp:
+          // date: "2025-12-01"
+          // checkIn: "08:00:00"
+          // checkOut: "17:00:00"
+          // display: "p:8" -> status code
+          // color: null
 
-      // Random check in/out times
-      if (day % 7 !== 0) { // Không có dữ liệu cho chủ nhật
-        this.dataCheckInOut.push({
-          time_date: dateStr,
-          in_time: this.getRandomTime(8, 9),
-          out_time: this.getRandomTime(17, 18)
+          const dateStr = item.date;
+          if (dateStr) {
+             // Chỉ push vào dataCheckInOut nếu có checkIn hoặc checkOut để hiển thị giờ
+             if (item.checkIn || item.checkOut) {
+                 this.dataCheckInOut.push({
+                   time_date: dateStr,
+                   in_time: item.checkIn ? item.checkIn.slice(0, 5) : null, // Cắt giây nếu cần format HH:mm
+                   out_time: item.checkOut ? item.checkOut.slice(0, 5) : null
+                 });
+             }
+
+             // Map status
+             if (item.display) {
+               const upperDisplay = item.display.toUpperCase();
+               this.attendanceData.set(dateStr, { 
+                 statusCode: upperDisplay, 
+                 color: item.color || this.getColorByStatus(upperDisplay) 
+               });
+             }
+          }
         });
-
-        // Xác định trạng thái
-        const hour = parseInt(this.getRandomTime(8, 9).split(':')[0]);
-        if (hour <= 8) {
-          this.attendanceData.set(dateStr, { statusCode: 'X', color: '#52c41a' }); // Đủ công
-        } else if (hour <= 9) {
-          this.attendanceData.set(dateStr, { statusCode: 'X', color: '#faad14' }); // Đi muộn
-        }
       }
-    }
+      
+      this.calculateTotalActualDays();
+    }, (err) => {
+      console.error('Error fetching attendance data:', err);
+    });
+  }
 
-    // Thêm một số trường hợp đặc biệt
-    const date15 = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-15`;
-    this.attendanceData.set(date15, { statusCode: 'P', color: '#1890ff' }); // Nghỉ phép
-
-    const date16 = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-16`;
-    this.attendanceData.set(date16, { statusCode: 'Xon', color: '#722ed1' }); // Làm online
-
-    const date22 = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-22`;
-    this.attendanceData.set(date22, { statusCode: 'CT', color: '#13c2c2' }); // Công tác
-
-    // Mock special schedules
-    this.specialSchedules = [
-      {
-        displayBeginDate: new Date(currentYear, currentMonth, 1),
-        displayEndDate: new Date(currentYear, currentMonth, 15),
-        morningStart: '08:00',
-        morningEnd: '12:00',
-        afternoonStart: '13:30',
-        afternoonEnd: '17:30'
-      },
-      {
-        displayBeginDate: new Date(currentYear, currentMonth, 16),
-        displayEndDate: new Date(currentYear, currentMonth + 1, 0),
-        morningStart: '08:30',
-        morningEnd: '12:00',
-        afternoonStart: '13:00',
-        afternoonEnd: '17:00'
-      }
-    ];
+  getColorByStatus(status: string): string {
+    if (status.startsWith('X')) return '#52c41a'; // Green
+    if (status.startsWith('M')) return '#faad14'; // Orange (Muộn)
+    if (status.startsWith('P')) return '#1890ff'; // Blue (Phép)
+    if (status.startsWith('L')) return '#ff4d4f'; // Red (Lễ)
+    return '#d9d9d9'; // Gray
   }
 
   getRandomTime(startHour: number, endHour: number): string {
@@ -106,9 +107,16 @@ export class StaffCalendarComponent implements OnInit {
   }
 
   calculateTotalActualDays() {
-    this.totalActualDays = this.dataCheckInOut.filter(d =>
-      this.attendanceData.get(d.time_date)?.statusCode === 'X'
-    ).length;
+    // Cập nhật logic tính tổng công dựa trên dữ liệu thật
+    // Giả sử status 'X' hoặc 'X/2' etc.
+    // Tạm thời đếm số lượng record có status chứa 'X'
+    let count = 0;
+    this.attendanceData.forEach((val) => {
+       if(val.statusCode && val.statusCode.includes('X')) {
+         count++; // Cần logic chính xác hơn tùy business rule
+       }
+    });
+    this.totalActualDays = count;
   }
 
   viewPreMonth() {
@@ -132,10 +140,7 @@ export class StaffCalendarComponent implements OnInit {
   }
 
   refreshData() {
-    this.dataCheckInOut = [];
-    this.attendanceData.clear();
-    this.loadMockData();
-    this.calculateTotalActualDays();
+    this.loadAttendanceData();
   }
 
   getAttendanceStatusForDate(date: Date): AttendanceStatus | null {

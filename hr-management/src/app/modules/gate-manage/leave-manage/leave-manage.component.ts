@@ -105,7 +105,7 @@ export class LeaveManageComponent implements OnInit, OnDestroy {
 
   loadDepartments(): void {
       this.leaveService.getActiveDepartments().subscribe((res: any) => {
-          const content = res.data || res;
+          const content = res.data || res.content || res;
           console.log('API Departments:', content);
           if (Array.isArray(content)) {
               const options = content.map((d: any) => ({ label: d.name, value: d.name }));

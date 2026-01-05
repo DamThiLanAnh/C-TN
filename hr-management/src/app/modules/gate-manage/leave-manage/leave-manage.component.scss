@@ -74,10 +74,15 @@
       .ant-select-selector {
         border-radius: 6px !important;
         font-size: 13px;
+        height: 24px !important;
+        overflow: hidden;
+        display: flex;
+        flex-wrap: nowrap;
+        align-items: center;
+      }
 
-        &:hover {
-          border-color: #40a9ff;
-        }
+      .ant-select-selection-item {
+        max-width: 100%;
       }
     }
 

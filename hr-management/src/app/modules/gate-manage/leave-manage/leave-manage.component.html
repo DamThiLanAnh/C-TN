@@ -89,6 +89,8 @@
                      [nzPlaceHolder]="'Chọn ' + col.attr"
                      nzAllowClear
                      [nzShowArrow]="true"
+                     nzSize="small"
+                     [nzMaxTagCount]="1"
                      style="width: 100%">
             <nz-option *ngFor="let opt of (col.filter?.options || [])" [nzValue]="opt.value" [nzLabel]="opt.label"></nz-option>
           </nz-select>

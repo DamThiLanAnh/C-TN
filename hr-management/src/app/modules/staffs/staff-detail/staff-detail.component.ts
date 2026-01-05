@@ -1,4 +1,6 @@
 import { Component, OnInit } from '@angular/core';
+import { StaffsService } from '../staffs.service';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-staff-detail',
@@ -18,21 +20,21 @@ export class StaffDetailComponent implements OnInit {
   avatarText = 'NVA';
   avatarUrl = '';
 
-  dataDetail = {
-    full_name: 'Nguyễn Văn A',
-    user_name: 'nguyenvana',
-    position_name: 'Senior Developer',
-    organization_name: 'Phòng Phát triển Phần mềm',
-    dob: new Date('1990-05-15'),
-    gender: true, // true = Nam, false = Nữ
-    phone: '0123456789',
-    email: 'nguyenvana@company.com',
-    status: 1, // 1 = Đang làm việc
-    entryDate: new Date('2020-01-15'),
-    siteName: 'Hà Nội',
-    universityName: 'Đại học Bách Khoa Hà Nội',
-    majorEduName: 'Công nghệ thông tin',
-    eduLevelName: 'Đại học'
+  dataDetail: any = {
+    full_name: '',
+    user_name: '',
+    position_name: '',
+    organization_name: '',
+    dob: null,
+    gender: true,
+    phone: '',
+    email: '',
+    status: 1,
+    entryDate: null,
+    siteName: '',
+    universityName: '',
+    majorEduName: '',
+    eduLevelName: ''
   };
 
   listSkillFilter = [
@@ -102,8 +104,58 @@ export class StaffDetailComponent implements OnInit {
   ];
 
 
+  constructor(
+    private staffsService: StaffsService,
+    private route: ActivatedRoute
+  ) {}
+
   ngOnInit(): void {
-    // Load data nếu cần
+    this.route.params.subscribe(params => {
+        const id = params['id'] || 2; // Default to 2 if no ID provided, as per user request
+        this.loadEmployeeDetail(id);
+    });
+  }
+
+  loadEmployeeDetail(id: number) {
+      this.isLoading = true;
+      this.staffsService.getEmployeeDetail(id).subscribe((res: any) => {
+          this.isLoading = false;
+          // Map API response to dataDetail
+          // Adjust field names based on actual API response
+          const data = res.data || res;
+          if (data) {
+              this.dataDetail = {
+                  full_name: data.fullName || data.name || data.full_name,
+                  user_name: data.username || data.user_name,
+                  position_name: data.positionName || data.position?.name || data.position_name,
+                  organization_name: data.departmentName || data.organization?.name || data.organization_name,
+                  dob: data.dateOfBirth ? new Date(data.dateOfBirth) : null,
+                  gender: data.gender === 'Nam' || data.gender === true || data.gender === 1,
+                  phone: data.phoneNumber || data.phone,
+                  email: data.email,
+                  status: data.status,
+                  entryDate: data.createdAt ? new Date(data.createdAt) : null,
+                  siteName: data.siteName || data.address, // Mapping guess
+                  universityName: data.universityName,
+                  majorEduName: data.majorEduName,
+                  eduLevelName: data.eduLevelName
+              };
+              
+              // Update avatar text
+              if (this.dataDetail.full_name) {
+                  const names = this.dataDetail.full_name.split(' ');
+                  if (names.length > 0) {
+                      this.avatarText = names[names.length - 1][0].toUpperCase();
+                      if (names.length > 1) {
+                          this.avatarText = names[0][0].toUpperCase() + this.avatarText;
+                      }
+                  }
+              }
+          }
+      }, (err) => {
+          this.isLoading = false;
+          console.error('Error loading employee detail:', err);
+      });
   }
 
   change(value: string): void {

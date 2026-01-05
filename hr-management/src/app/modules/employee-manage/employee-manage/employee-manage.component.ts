@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ElementRef } from '@angular/core';
 import { formatDate } from '@angular/common';
 import { NzModalService } from 'ng-zorro-antd/modal';
 import { NzMessageService } from 'ng-zorro-antd/message';
@@ -53,9 +53,15 @@ export class EmployeeManageComponent implements OnInit, OnDestroy {
   constructor(
     private modalService: NzModalService,
     private messageService: NzMessageService,
-    private employeeService: EmployeeManageService
+    private employeeService: EmployeeManageService,
+    private elementRef: ElementRef
 
   ) { }
+
+  renderContainer = (): HTMLElement => {
+    return this.elementRef.nativeElement;
+  }
+
 
   ngOnInit(): void {
     this.searchSubject.pipe(
@@ -63,6 +69,7 @@ export class EmployeeManageComponent implements OnInit, OnDestroy {
       takeUntil(this.destroy$)
     ).subscribe(() => {
       this.paging.pageIndex = 1;
+      this.onSearch();
     });
 
     this.loadDepartments();
@@ -111,8 +118,7 @@ export class EmployeeManageComponent implements OnInit, OnDestroy {
     if (genderCol && genderCol.filter) {
       genderCol.filter.options = [
         { label: 'Nam', value: 'Nam' },
-        { label: 'Nữ', value: 'Nữ' },
-        { label: 'Khác', value: 'Khác' }
+        { label: 'Nữ', value: 'Nữ' }
       ];
     }
 
@@ -152,7 +158,7 @@ export class EmployeeManageComponent implements OnInit, OnDestroy {
             this.listOfData = sortedContent.map((item: any, index: number) => ({
               ...item,
               index: index + 1, // Global index?
-              userName: item.code,
+              userName: item.code, // Assuming code is used as userName
               fullName: item.fullName,
               email: item.email,
               phone: item.phoneNumber,
@@ -167,6 +173,9 @@ export class EmployeeManageComponent implements OnInit, OnDestroy {
               createdAt: item.createdAt ? formatDate(item.createdAt, 'dd/MM/yyyy', 'en-US') : '',
               createdAtOriginal: item.createdAt
             }));
+
+            // Apply filters initially
+            this.onSearch();
 
           } else {
             this.listOfData = [];
@@ -183,6 +192,101 @@ export class EmployeeManageComponent implements OnInit, OnDestroy {
         }
       });
   }
+
+  onSearch(): void {
+    const matches = this.listOfData.filter(item => {
+      // Filter by Code (Mã nhân viên)
+      if (this.searchFilters['code'] &&
+        !item.userName?.toLowerCase().includes(this.searchFilters['code'].toLowerCase())) {
+        return false;
+      }
+
+      // Filter by FullName
+      if (this.searchFilters['fullName'] &&
+        !item.fullName?.toLowerCase().includes(this.searchFilters['fullName'].toLowerCase())) {
+        return false;
+      }
+
+      // Filter by Email
+      if (this.searchFilters['email'] &&
+        !item.email?.toLowerCase().includes(this.searchFilters['email'].toLowerCase())) {
+        return false;
+      }
+
+      // Filter by Phone
+      if (this.searchFilters['phoneNumber'] &&
+        !item.phoneNumber?.toLowerCase().includes(this.searchFilters['phoneNumber'].toLowerCase())) {
+        return false;
+      }
+
+      // Filter by Department (Select Multiple)
+      if (this.searchFilters['departmentName'] && this.searchFilters['departmentName'].length > 0) {
+        if (!this.searchFilters['departmentName'].includes(item.departmentName)) {
+          return false;
+        }
+      }
+
+      // Filter by Position (Select Multiple)
+      if (this.searchFilters['position'] && this.searchFilters['position'].length > 0) {
+        if (!this.searchFilters['position'].includes(item.position)) {
+          return false;
+        }
+      }
+
+      // Filter by Status (Select Multiple)
+      if (this.searchFilters['statusName'] && this.searchFilters['statusName'].length > 0) {
+        if (!this.searchFilters['statusName'].includes(item.statusName)) {
+          return false;
+        }
+      }
+
+      // Filter by Gender (Select Multiple)
+      if (this.searchFilters['gender'] && this.searchFilters['gender'].length > 0) {
+        if (!this.searchFilters['gender'].includes(item.gender)) {
+          return false;
+        }
+      }
+
+      // Filter by Date of Birth
+      if (this.searchFilters['dateOfBirth'] && this.searchFilters['dateOfBirth'].length === 2 && this.searchFilters['dateOfBirth'][0]) {
+        if (!this.checkDateInRange(item.dateOfBirth, this.searchFilters['dateOfBirth'][0], this.searchFilters['dateOfBirth'][1])) {
+          return false;
+        }
+      }
+
+      // Filter by Created At (Ngày vào làm)
+      if (this.searchFilters['createdAt'] && this.searchFilters['createdAt'].length === 2 && this.searchFilters['createdAt'][0]) {
+        if (!this.checkDateInRange(item.createdAtOriginal, this.searchFilters['createdAt'][0], this.searchFilters['createdAt'][1])) {
+          return false;
+        }
+      }
+
+      return true;
+    });
+
+    this.paging.totalElements = matches.length;
+    
+    // Pagination Slicing
+    const start = (this.paging.pageIndex - 1) * this.paging.pageSize;
+    const end = start + this.paging.pageSize;
+    this.filteredData = matches.slice(start, end);
+  }
+
+  checkDateInRange(dateValue: string | Date, fromDate: Date, toDate: Date): boolean {
+      if (!dateValue || !fromDate) return false; // Basic check
+      const date = new Date(dateValue);
+      if (isNaN(date.getTime())) return false;
+      
+      const start = new Date(fromDate);
+      start.setHours(0, 0, 0, 0);
+      
+      const end = toDate ? new Date(toDate) : new Date(start); // If toDate null, assume single day? Or usually range picker enforces both.
+      if (toDate) end.setHours(23, 59, 59, 999);
+      
+      return date >= start && date <= end;
+  }
+
+
 
   addStaff(): void {
     const modal = this.modalService.create({
@@ -308,15 +412,17 @@ export class EmployeeManageComponent implements OnInit, OnDestroy {
 
   onPageIndexChange(pageIndex: number): void {
     this.paging.pageIndex = pageIndex;
+    this.onSearch();
   }
 
   onPageSizeChange(pageSize: number): void {
     this.paging.pageSize = pageSize;
     this.paging.pageIndex = 1;
+    this.onSearch();
   }
 
   onFilterInTable(_params: NzTableQueryParams): void {
-    // Handle table filtering/sorting here if needed
+    // Client-side filtering handled by onSearch.
   }
 
   /**

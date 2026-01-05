@@ -9,7 +9,7 @@
   </div>
 
   <ng-container *ngIf="employeeColumns && StandardColumnType">
-    <nz-table #basicTable [nzData]="listOfData" [nzLoading]="loadingTable" [nzScroll]="{ y: 'calc(100vh - 17rem)' }"
+    <nz-table #basicTable [nzData]="filteredData" [nzLoading]="loadingTable" [nzScroll]="{ y: 'calc(100vh - 17rem)' }"
       [nzShowPagination]="false" [nzSize]="'small'" [nzBordered]="true" (nzQueryParams)="onFilterInTable($event)">
       <thead>
         <tr>
@@ -29,7 +29,7 @@
                 *ngIf="col.filter?.type === StandardColumnType.SELECT || col.type === StandardColumnType.SELECT"
                 [(ngModel)]="searchFilters[col.name]" (ngModelChange)="searchSubject.next()"
                 [nzMode]="col.filter?.multiple ? 'multiple' : 'default'" [nzPlaceHolder]="'Chọn ' + col.attr"
-                nzAllowClear [nzShowArrow]="true" style="width: 100%">
+                nzAllowClear [nzShowArrow]="true" style="width: 100%" nzSize="small" [nzMaxTagCount]="1">
                 <nz-option *ngFor="let opt of (col.filter?.options || [])" [nzValue]="opt.value"
                   [nzLabel]="opt.label"></nz-option>
               </nz-select>
