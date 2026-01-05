@@ -1,1 +1,78 @@
-<p>activity-log works!</p>
+<nz-card class="full-height">
+  <div class="d-flex justify-content-between mb-2">
+    <h6>Nhật ký hoạt động</h6>
+  </div>
+
+  <nz-table #basicTable
+            [nzData]="displayData"
+            [nzBordered]="true"
+            [nzSize]="'middle'"
+            [nzShowPagination]="false"
+            [nzScroll]="{ x: '1000px', y: 'calc(100vh - 20rem)' }"
+            [nzLoading]="loading">
+    <thead>
+      <tr>
+        <th *ngFor="let col of columns" 
+            [nzWidth]="col.width || null"
+            [nzShowSort]="col.isSort"
+            [nzSortOrder]="col.name === sortKey ? sortValue : null"
+            [class]="col.classes || ''"
+            (nzSortOrderChange)="onSortChange($event, col.name)">
+            {{ col.attr }}
+        </th>
+      </tr>
+      <tr class="filter-row">
+        <th *ngFor="let col of columns">
+          <ng-container *ngIf="col.isFilter">
+            <input *ngIf="col.filter?.type === 1 || !col.filter?.type" 
+                   type="text" nz-input placeholder="Tìm..." nzSize="small"
+                   [(ngModel)]="filters[col.name]" 
+                   (ngModelChange)="onSearch(filters[col.name], col.name)" />
+            
+            <nz-date-picker *ngIf="col.filter?.type === 8"
+                            [(ngModel)]="filters[col.name]" 
+                            (ngModelChange)="onDateFilterChange($event, col.name)"
+                            nzFormat="dd/MM/yyyy" 
+                            nzPlaceHolder="Chọn ngày" 
+                            nzSize="small" 
+                            style="width: 100%">
+            </nz-date-picker>
+
+            <nz-time-picker *ngIf="col.filter?.type === 4"
+                            [(ngModel)]="filters[col.name]"
+                            (ngModelChange)="onTimeFilterChange($event, col.name)"
+                            nzFormat="HH:mm"
+                            nzPlaceHolder="Chọn giờ"
+                            nzSize="small"
+                            style="width: 100%">
+            </nz-time-picker>
+          </ng-container>
+        </th>
+      </tr>
+    </thead>
+    <tbody>
+    <tr *ngFor="let data of basicTable.data">
+      <!-- Mapping columns manually since we need specific pipes. 
+           In a fully dynamic table, we'd loop tds too, but date formatting logic 
+           is specific here. If 'columns' define formatting logic, we could dynamic loop.
+           For now, I'll stick to fixed tds matching the columns order. -->
+      <td class="text-center">{{ data.userId }}</td>
+      <td>{{ data.action }}</td>
+      <td>{{ data.details }}</td>
+      <td>{{ data.createdAt | date: 'dd/MM/yyyy' }}</td>
+      <td>{{ data.createdAt | date: 'HH:mm:ss' }}</td>
+    </tr>
+    </tbody>
+  </nz-table>
+  
+  <div class="mt-2 text-lg-end">
+    <nz-pagination
+      [nzTotal]="total"
+      [nzPageSize]="pageSize"
+      [nzPageIndex]="pageIndex"
+      [nzShowSizeChanger]="true"
+      (nzPageIndexChange)="onPageIndexChange($event)"
+      (nzPageSizeChange)="onPageSizeChange($event)"
+    ></nz-pagination>
+  </div>
+</nz-card>

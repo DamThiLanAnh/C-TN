@@ -230,3 +230,56 @@
     </div>
   </div>
 </ng-template>
+
+<nz-modal
+  [(nzVisible)]="isVisibleChangePassword"
+  nzTitle="Đổi mật khẩu"
+  (nzOnCancel)="handleCancelChangePassword()"
+  (nzOnOk)="submitChangePassword()"
+  [nzOkLoading]="isLoadingChangePassword"
+>
+  <ng-container *nzModalContent>
+    <form [formGroup]="changePasswordForm" nz-form nzLayout="vertical">
+      <nz-form-item>
+        <nz-form-label nzRequired>Mật khẩu cũ</nz-form-label>
+        <nz-form-control [nzErrorTip]="oldPassErrorTpl">
+          <nz-input-group [nzSuffix]="suffixTemplate">
+            <input
+              [type]="passwordVisible ? 'text' : 'password'"
+              nz-input
+              formControlName="oldPassword"
+              placeholder="Nhập mật khẩu cũ"
+            />
+          </nz-input-group>
+          <ng-template #suffixTemplate>
+            <i nz-icon [nzType]="passwordVisible ? 'eye-invisible' : 'eye'" (click)="passwordVisible = !passwordVisible"></i>
+          </ng-template>
+          <ng-template #oldPassErrorTpl let-control>
+            <ng-container *ngIf="control.hasError('required')">Vui lòng nhập mật khẩu cũ!</ng-container>
+          </ng-template>
+        </nz-form-control>
+      </nz-form-item>
+
+      <nz-form-item>
+        <nz-form-label nzRequired>Mật khẩu mới</nz-form-label>
+        <nz-form-control [nzErrorTip]="newPassErrorTpl">
+          <nz-input-group [nzSuffix]="suffixNewTemplate">
+            <input
+              [type]="newPasswordVisible ? 'text' : 'password'"
+              nz-input
+              formControlName="newPassword"
+              placeholder="Nhập mật khẩu mới"
+            />
+          </nz-input-group>
+          <ng-template #suffixNewTemplate>
+            <i nz-icon [nzType]="newPasswordVisible ? 'eye-invisible' : 'eye'" (click)="newPasswordVisible = !newPasswordVisible"></i>
+          </ng-template>
+          <ng-template #newPassErrorTpl let-control>
+            <ng-container *ngIf="control.hasError('required')">Vui lòng nhập mật khẩu mới!</ng-container>
+            <ng-container *ngIf="control.hasError('minlength')">Mật khẩu phải có ít nhất 6 ký tự!</ng-container>
+          </ng-template>
+        </nz-form-control>
+      </nz-form-item>
+    </form>
+  </ng-container>
+</nz-modal>

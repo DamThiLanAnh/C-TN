@@ -1,0 +1,124 @@
+.search-box {
+  padding: 8px;
+}
+
+.search-box input {
+  width: 188px;
+  margin-bottom: 8px;
+  display: block;
+}
+
+.search-box button {
+  width: 90px;
+}
+
+.search-button {
+  margin-right: 8px;
+}
+
+.text-center {
+  text-align: center;
+}
+
+// Filter row inside table
+::ng-deep {
+
+  // Remove border from first header row (between header and filter row)
+  .ant-table-thead>tr:first-child>th {
+    border-bottom: none !important;
+    padding-bottom: 4px !important;
+  }
+
+  .filter-row {
+    background: #fafafa !important;
+
+    th {
+      padding: 4px 8px !important;
+      background: #fafafa !important;
+      border-bottom: none !important;
+      border-top: none !important;
+    }
+
+    .ant-input-sm {
+      border-radius: 6px;
+      font-size: 13px;
+
+      &:hover {
+        border-color: #40a9ff;
+      }
+
+      &:focus {
+        border-color: #40a9ff;
+        box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.1);
+      }
+    }
+
+    .ant-select-sm {
+      .ant-select-selector {
+        border-radius: 6px !important;
+        font-size: 13px;
+        height: 24px !important;
+        overflow: hidden;
+        display: flex;
+        flex-wrap: nowrap;
+        align-items: center;
+      }
+
+      .ant-select-selection-item {
+        max-width: 100%;
+      }
+    }
+
+    .ant-picker-small {
+      border-radius: 6px;
+      font-size: 13px;
+
+      &:hover {
+        border-color: #40a9ff;
+      }
+
+      .ant-picker-input>input {
+        font-size: 13px;
+      }
+    }
+  }
+
+  // Remove all borders between filter row and data rows
+  .ant-table-thead>tr.filter-row>th {
+    border-bottom: none !important;
+    border-top: none !important;
+  }
+
+  .ant-table-thead>tr.filter-row+tr>th {
+    border-top: none !important;
+  }
+
+  .ant-table-tbody>tr:first-child>td {
+    border-top: none !important;
+  }
+
+  // Remove border from entire thead after filter row
+  .ant-table-thead {
+    th {
+      &::after {
+        display: none !important;
+      }
+    }
+  }
+
+  // Ensure no border after filter row
+  tr.filter-row {
+    &+tbody tr:first-child td {
+      border-top: none !important;
+    }
+  }
+
+  // Remove any extra borders from table
+  .ant-table-thead>tr>th {
+    border-bottom: none !important;
+  }
+
+  .ant-table-thead>tr:last-child>th {
+    border-bottom: none !important;
+  }
+}

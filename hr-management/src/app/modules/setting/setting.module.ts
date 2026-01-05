@@ -8,6 +8,12 @@ import { NzTableModule } from 'ng-zorro-antd/table';
 import { NzTabsModule } from 'ng-zorro-antd/tabs';
 import { NzIconModule } from 'ng-zorro-antd/icon';
 import { NzButtonModule } from 'ng-zorro-antd/button';
+import { NzDropDownModule } from 'ng-zorro-antd/dropdown';
+import { NzInputModule } from 'ng-zorro-antd/input';
+import { FormsModule } from '@angular/forms';
+import { NzDatePickerModule } from 'ng-zorro-antd/date-picker';
+import { NzTimePickerModule } from 'ng-zorro-antd/time-picker';
+import { NzPaginationModule } from 'ng-zorro-antd/pagination';
 import { ActivityLogComponent } from './activity-log/activity-log.component';
 
 @NgModule({
@@ -18,7 +24,13 @@ import { ActivityLogComponent } from './activity-log/activity-log.component';
     NzTableModule,
     NzTabsModule,
     NzIconModule,
-    NzButtonModule
+    NzButtonModule,
+    NzDropDownModule,
+    NzInputModule,
+    FormsModule,
+    NzDatePickerModule,
+    NzTimePickerModule,
+    NzPaginationModule
   ],
   declarations: [
     SettingComponent,

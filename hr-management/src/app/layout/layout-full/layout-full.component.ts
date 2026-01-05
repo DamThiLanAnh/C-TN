@@ -3,6 +3,9 @@ import { Router, NavigationEnd } from '@angular/router';
 import { CurrentUser, UiNavModel } from '../menu/menu.component';
 import { IconHtml } from '../../modules/shares/enum/icon-html.enum';
 import { filter } from 'rxjs/operators';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { AuthService } from '../../services/auth.service';
+import { NzNotificationService } from 'ng-zorro-antd/notification';
 
 interface Notification {
   id: string;
@@ -28,6 +31,12 @@ export class LayoutFullComponent implements OnInit {
   isCollapsed = false;
   nzPopoverVisible = false;
   nzPopoverUserVisible = false;
+
+  isVisibleChangePassword = false;
+  changePasswordForm!: FormGroup;
+  passwordVisible = false;
+  newPasswordVisible = false;
+  isLoadingChangePassword = false;
 
   // Dynamic Tabs management
   dynamicTabs: Tab[] = [];
@@ -268,7 +277,10 @@ export class LayoutFullComponent implements OnInit {
   ];
 
   constructor(
-    private router: Router
+    private router: Router,
+    private fb: FormBuilder,
+    private authService: AuthService,
+    private notification: NzNotificationService
   ) {
   }
 
@@ -421,7 +433,48 @@ export class LayoutFullComponent implements OnInit {
 
   handleChangePassword(): void {
     this.nzPopoverUserVisible = false;
-    // Implement change password logic
+    this.isVisibleChangePassword = true;
+    this.initChangePasswordForm();
+  }
+
+  initChangePasswordForm(): void {
+    this.changePasswordForm = this.fb.group({
+      oldPassword: ['', [Validators.required]],
+      newPassword: ['', [Validators.required, Validators.minLength(6)]]
+    });
+  }
+
+  handleCancelChangePassword(): void {
+    this.isVisibleChangePassword = false;
+    this.changePasswordForm.reset();
+  }
+
+  submitChangePassword(): void {
+    if (this.changePasswordForm.invalid) {
+      Object.values(this.changePasswordForm.controls).forEach(control => {
+        if (control.invalid) {
+          control.markAsDirty();
+          control.updateValueAndValidity({ onlySelf: true });
+        }
+      });
+      return;
+    }
+
+    this.isLoadingChangePassword = true;
+    const { oldPassword, newPassword } = this.changePasswordForm.value;
+
+    this.authService.changePassword(oldPassword, newPassword).subscribe(
+      () => {
+        this.isLoadingChangePassword = false;
+        this.isVisibleChangePassword = false;
+        this.notification.success('Thành công', 'Đổi mật khẩu thành công');
+        this.changePasswordForm.reset();
+      },
+      (error) => {
+        this.isLoadingChangePassword = false;
+        this.notification.error('Thất bại', error.error?.message || 'Đổi mật khẩu thất bại, vui lòng thử lại sau');
+      }
+    );
   }
 
   popoverNotifyOnChangeShow(visible: boolean): void {

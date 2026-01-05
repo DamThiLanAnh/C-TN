@@ -120,8 +120,6 @@ export class StaffDetailComponent implements OnInit {
       this.isLoading = true;
       this.staffsService.getEmployeeDetail(id).subscribe((res: any) => {
           this.isLoading = false;
-          // Map API response to dataDetail
-          // Adjust field names based on actual API response
           const data = res.data || res;
           if (data) {
               this.dataDetail = {
@@ -135,13 +133,12 @@ export class StaffDetailComponent implements OnInit {
                   email: data.email,
                   status: data.status,
                   entryDate: data.createdAt ? new Date(data.createdAt) : null,
-                  siteName: data.siteName || data.address, // Mapping guess
+                  siteName: data.siteName || data.address,
                   universityName: data.universityName,
                   majorEduName: data.majorEduName,
                   eduLevelName: data.eduLevelName
               };
               
-              // Update avatar text
               if (this.dataDetail.full_name) {
                   const names = this.dataDetail.full_name.split(' ');
                   if (names.length > 0) {
@@ -154,7 +151,6 @@ export class StaffDetailComponent implements OnInit {
           }
       }, (err) => {
           this.isLoading = false;
-          console.error('Error loading employee detail:', err);
       });
   }
 

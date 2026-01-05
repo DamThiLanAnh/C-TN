@@ -13,6 +13,11 @@ import { MenuComponent } from './menu/menu.component';
 import { NzMenuModule } from 'ng-zorro-antd/menu';
 import { NzButtonModule } from 'ng-zorro-antd/button';
 import { RouterModule } from '@angular/router';
+import { NzModalModule } from 'ng-zorro-antd/modal';
+import { ReactiveFormsModule, FormsModule } from '@angular/forms';
+import { NzInputModule } from 'ng-zorro-antd/input';
+import { NzFormModule } from 'ng-zorro-antd/form';
+import { NzNotificationModule } from 'ng-zorro-antd/notification';
 
 @NgModule({
   declarations: [
@@ -31,7 +36,13 @@ import { RouterModule } from '@angular/router';
     OverlayModule,
     NzIconModule,
     NzMenuModule,
-    NzButtonModule
+    NzButtonModule,
+    NzModalModule,
+    ReactiveFormsModule,
+    FormsModule,
+    NzInputModule,
+    NzFormModule,
+    NzNotificationModule
   ],
   providers: [],
   exports: []

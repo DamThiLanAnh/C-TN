@@ -44,9 +44,7 @@ export class StaffCalendarComponent implements OnInit {
   }
 
   loadAttendanceData() {
-    // Gọi API lấy dữ liệu chấm công
     this.staffsService.getMyAttendance(this.selectedDate).subscribe((res: any) => {
-      // API trả về data trong res.days theo cấu trúc user cung cấp
       const data = res.days || res.data || [];
       
       this.dataCheckInOut = [];
@@ -55,26 +53,16 @@ export class StaffCalendarComponent implements OnInit {
 
       if (Array.isArray(data)) {
         data.forEach((item: any) => {
-          // Map API data -> CheckInOutData
-          // JSON User cung cấp:
-          // date: "2025-12-01"
-          // checkIn: "08:00:00"
-          // checkOut: "17:00:00"
-          // display: "p:8" -> status code
-          // color: null
-
           const dateStr = item.date;
           if (dateStr) {
-             // Chỉ push vào dataCheckInOut nếu có checkIn hoặc checkOut để hiển thị giờ
              if (item.checkIn || item.checkOut) {
                  this.dataCheckInOut.push({
                    time_date: dateStr,
-                   in_time: item.checkIn ? item.checkIn.slice(0, 5) : null, // Cắt giây nếu cần format HH:mm
+                   in_time: item.checkIn ? item.checkIn.slice(0, 5) : null, 
                    out_time: item.checkOut ? item.checkOut.slice(0, 5) : null
                  });
              }
 
-             // Map status
              if (item.display) {
                const upperDisplay = item.display.toUpperCase();
                this.attendanceData.set(dateStr, { 
@@ -88,7 +76,6 @@ export class StaffCalendarComponent implements OnInit {
       
       this.calculateTotalActualDays();
     }, (err) => {
-      console.error('Error fetching attendance data:', err);
     });
   }
 
@@ -107,13 +94,10 @@ export class StaffCalendarComponent implements OnInit {
   }
 
   calculateTotalActualDays() {
-    // Cập nhật logic tính tổng công dựa trên dữ liệu thật
-    // Giả sử status 'X' hoặc 'X/2' etc.
-    // Tạm thời đếm số lượng record có status chứa 'X'
     let count = 0;
     this.attendanceData.forEach((val) => {
        if(val.statusCode && val.statusCode.includes('X')) {
-         count++; // Cần logic chính xác hơn tùy business rule
+         count++;
        }
     });
     this.totalActualDays = count;
