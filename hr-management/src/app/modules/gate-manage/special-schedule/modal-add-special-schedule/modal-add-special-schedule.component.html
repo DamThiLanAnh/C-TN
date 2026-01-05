@@ -17,27 +17,15 @@
       <div *ngIf="addForm.get('endDate')?.invalid && addForm.get('endDate')?.touched" class="error">Bắt buộc</div>
     </div>
     <div nz-col nzSpan="12">
-      <label>Bắt đầu sáng</label>
+      <label>Giờ đăng ký (từ)</label>
       <input nz-input formControlName="morningStart" type="time" />
       <div *ngIf="addForm.get('morningStart')?.invalid && addForm.get('morningStart')?.touched" class="error">Bắt buộc
       </div>
     </div>
     <div nz-col nzSpan="12">
-      <label>Kết thúc sáng</label>
+      <label>Giờ đăng ký (đến)</label>
       <input nz-input formControlName="morningEnd" type="time" />
       <div *ngIf="addForm.get('morningEnd')?.invalid && addForm.get('morningEnd')?.touched" class="error">Bắt buộc</div>
-    </div>
-    <div nz-col nzSpan="12">
-      <label>Bắt đầu chiều</label>
-      <input nz-input formControlName="afternoonStart" type="time" />
-      <div *ngIf="addForm.get('afternoonStart')?.invalid && addForm.get('afternoonStart')?.touched" class="error">Bắt
-        buộc</div>
-    </div>
-    <div nz-col nzSpan="12">
-      <label>Kết thúc chiều</label>
-      <input nz-input formControlName="afternoonEnd" type="time" />
-      <div *ngIf="addForm.get('afternoonEnd')?.invalid && addForm.get('afternoonEnd')?.touched" class="error">Bắt buộc
-      </div>
     </div>
     <div nz-col nzSpan="12">
       <label>Mã dự án</label>
