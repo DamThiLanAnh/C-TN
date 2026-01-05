@@ -287,6 +287,9 @@ export class LayoutFullComponent implements OnInit {
   ngOnInit(): void {
     console.log('🔍 [LayoutFull] ngOnInit called');
 
+    // Load user info from localStorage after login
+    this.loadUserInfo();
+
     // Initialize with current route
     this.addTabFromCurrentRoute();
     console.log('🔍 [LayoutFull] Initial tabs:', this.dynamicTabs);
@@ -300,6 +303,21 @@ export class LayoutFullComponent implements OnInit {
       this.addOrSelectTab(navEvent.urlAfterRedirects);
       console.log('🔍 [LayoutFull] Tabs after route change:', this.dynamicTabs);
     });
+  }
+
+  private loadUserInfo(): void {
+    // Get user info from AuthService
+    const userInfo = this.authService.getUser();
+    if (userInfo) {
+      this.user = {
+        fullName: userInfo.fullName || userInfo.username || 'User',
+        userName: userInfo.username || 'User',
+        email: userInfo.email || '',
+        gender: userInfo.gender !== undefined ? userInfo.gender : true,
+        image: userInfo.image || ''
+      };
+      console.log('✅ [LayoutFull] User info loaded:', this.user);
+    }
   }
 
   private addTabFromCurrentRoute(): void {
@@ -419,6 +437,22 @@ export class LayoutFullComponent implements OnInit {
 
   getUserInitials(userName: string | undefined): string {
     if (!userName) return 'U';
+
+    // Nếu username là một từ (ví dụ: "benv", "admin")
+    // Lấy 2 ký tự đầu tiên
+    if (!userName.includes(' ')) {
+      return userName.slice(0, 2).toUpperCase();
+    }
+
+    // Nếu username có nhiều từ (ví dụ: "Nguyen Van A")
+    // Lấy chữ cái đầu của mỗi từ, tối đa 2 chữ cái
+    const words = userName.trim().split(/\s+/);
+    if (words.length >= 2) {
+      // Lấy chữ cái đầu của từ đầu tiên và từ cuối cùng
+      return (words[0][0] + words[words.length - 1][0]).toUpperCase();
+    }
+
+    // Fallback: lấy 2 ký tự đầu
     return userName.slice(0, 2).toUpperCase();
   }
 

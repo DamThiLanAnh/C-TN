@@ -46,7 +46,7 @@ export class StaffCalendarComponent implements OnInit {
   loadAttendanceData() {
     this.staffsService.getMyAttendance(this.selectedDate).subscribe((res: any) => {
       const data = res.days || res.data || [];
-      
+
       this.dataCheckInOut = [];
       this.attendanceData.clear();
       this.specialSchedules = [];
@@ -58,22 +58,22 @@ export class StaffCalendarComponent implements OnInit {
              if (item.checkIn || item.checkOut) {
                  this.dataCheckInOut.push({
                    time_date: dateStr,
-                   in_time: item.checkIn ? item.checkIn.slice(0, 5) : null, 
+                   in_time: item.checkIn ? item.checkIn.slice(0, 5) : null,
                    out_time: item.checkOut ? item.checkOut.slice(0, 5) : null
                  });
              }
 
              if (item.display) {
                const upperDisplay = item.display.toUpperCase();
-               this.attendanceData.set(dateStr, { 
-                 statusCode: upperDisplay, 
-                 color: item.color || this.getColorByStatus(upperDisplay) 
+               this.attendanceData.set(dateStr, {
+                 statusCode: upperDisplay,
+                 color: item.color || this.getColorByStatus(upperDisplay)
                });
              }
           }
         });
       }
-      
+
       this.calculateTotalActualDays();
     }, (err) => {
     });
@@ -85,12 +85,6 @@ export class StaffCalendarComponent implements OnInit {
     if (status.startsWith('P')) return '#1890ff'; // Blue (Phép)
     if (status.startsWith('L')) return '#ff4d4f'; // Red (Lễ)
     return '#d9d9d9'; // Gray
-  }
-
-  getRandomTime(startHour: number, endHour: number): string {
-    const hour = Math.floor(Math.random() * (endHour - startHour + 1)) + startHour;
-    const minute = Math.floor(Math.random() * 60);
-    return `${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}`;
   }
 
   calculateTotalActualDays() {
@@ -173,19 +167,4 @@ export class StaffCalendarComponent implements OnInit {
   showSpecialSchedule(visible: boolean) {
     this.isShowSpecialSchedulePopover = visible;
   }
-
-  // exportTimekeepingData() {
-  //   this.isTimekeepingDateExporting = true;
-  //
-  //   // Simulate export
-  //   setTimeout(() => {
-  //     console.log('Exporting timekeeping data...', {
-  //       month: this.selectedDate,
-  //       totalDays: this.totalActualDays,
-  //       data: this.dataCheckInOut
-  //     });
-  //     this.isTimekeepingDateExporting = false;
-  //     alert('Dữ liệu đã được export thành công!');
-  //   }, 2000);
-  // }
 }

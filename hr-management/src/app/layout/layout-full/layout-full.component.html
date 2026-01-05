@@ -11,9 +11,7 @@
   <nz-layout>
     <div class="content">
       <nz-content>
-        <!-- Header với thông tin user ở góc phải -->
         <div class="content-header d-flex justify-content-between align-items-center mt-2 mb-1">
-          <!-- Dynamic Tabs -->
           <div class="tabs-container flex-grow-1" *ngIf="dynamicTabs.length > 0">
             <nz-tabset
               [(nzSelectedIndex)]="selectedTabIndex"
@@ -66,7 +64,6 @@
           <ng-container [ngTemplateOutlet]="userInforWrapper"></ng-container>
         </div>
 
-        <!-- Router outlet để hiển thị nội dung của các màn hình -->
         <div class="content-body">
           <router-outlet></router-outlet>
         </div>
@@ -111,7 +108,6 @@
 <ng-template #InfoUser>
   <div class="info-user">
     <div class="border-bottom d-flex flex-row" style="padding: 12px 16px">
-      <!-- vss-ui-avatar-text thay thế bằng nz-avatar -->
       <nz-avatar *ngIf="user?.userName || 'user name'" [nzSize]="32"
                  [nzText]="getUserInitials(user?.userName)"></nz-avatar>
 
