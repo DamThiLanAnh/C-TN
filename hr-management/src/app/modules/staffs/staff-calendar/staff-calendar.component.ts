@@ -1,25 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { StaffsService } from '../staffs.service';
-
-interface CheckInOutData {
-  time_date: string;
-  in_time: string | null;
-  out_time: string | null;
-}
-
-interface AttendanceStatus {
-  statusCode: string;
-  color: string;
-}
-
-interface SpecialSchedule {
-  displayBeginDate: Date;
-  displayEndDate: Date;
-  morningStart: string;
-  morningEnd: string;
-  afternoonStart: string;
-  afternoonEnd: string;
-}
+import { CheckInOutData, AttendanceStatus, SpecialSchedule } from '../staffs-model';
 
 @Component({
   selector: 'app-staff-calendar',
@@ -27,6 +8,7 @@ interface SpecialSchedule {
   styleUrls: ['./staff-calendar.component.scss']
 })
 export class StaffCalendarComponent implements OnInit {
+  loading = false;
   selectedDate: Date = new Date();
   isHideDatePicker = true;
   isTimekeepingDateExporting = false;
@@ -44,6 +26,7 @@ export class StaffCalendarComponent implements OnInit {
   }
 
   loadAttendanceData() {
+    this.loading = true;
     this.staffsService.getMyAttendance(this.selectedDate).subscribe((res: any) => {
       const data = res.days || res.data || [];
 
@@ -75,7 +58,9 @@ export class StaffCalendarComponent implements OnInit {
       }
 
       this.calculateTotalActualDays();
+      this.loading = false;
     }, (err) => {
+      this.loading = false;
     });
   }
 
@@ -89,12 +74,33 @@ export class StaffCalendarComponent implements OnInit {
 
   calculateTotalActualDays() {
     let count = 0;
-    this.attendanceData.forEach((val) => {
-       if(val.statusCode && val.statusCode.includes('X')) {
-         count++;
-       }
+
+    this.dataCheckInOut.forEach((record) => {
+      if (record.in_time && record.out_time) {
+        const workedHours = this.calculateWorkedHours(record.in_time, record.out_time);
+
+        if (workedHours >= 8) {
+          count += 1;
+        } else if (workedHours >= 4) {
+          count += 0.5;
+        }
+      }
     });
+
     this.totalActualDays = count;
+  }
+
+  calculateWorkedHours(checkIn: string, checkOut: string): number {
+    const [inHour, inMinute] = checkIn.split(':').map(Number);
+    const [outHour, outMinute] = checkOut.split(':').map(Number);
+
+    const inTotalMinutes = inHour * 60 + inMinute;
+    const outTotalMinutes = outHour * 60 + outMinute;
+
+    const workedMinutes = outTotalMinutes - inTotalMinutes;
+    const workedHours = workedMinutes / 60;
+
+    return workedHours;
   }
 
   viewPreMonth() {
@@ -157,11 +163,9 @@ export class StaffCalendarComponent implements OnInit {
   }
 
   onDateHover(date: Date, event: MouseEvent) {
-    // Handle hover event if needed
   }
 
   onDateLeave() {
-    // Handle leave event if needed
   }
 
   showSpecialSchedule(visible: boolean) {

@@ -38,7 +38,6 @@ export class LayoutFullComponent implements OnInit {
   newPasswordVisible = false;
   isLoadingChangePassword = false;
 
-  // Dynamic Tabs management
   dynamicTabs: Tab[] = [];
   selectedTabIndex = 0;
 
@@ -285,28 +284,20 @@ export class LayoutFullComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    console.log('🔍 [LayoutFull] ngOnInit called');
 
-    // Load user info from localStorage after login
     this.loadUserInfo();
 
-    // Initialize with current route
     this.addTabFromCurrentRoute();
-    console.log('🔍 [LayoutFull] Initial tabs:', this.dynamicTabs);
 
-    // Listen to route changes and add/switch tabs
     this.router.events.pipe(
       filter(event => event instanceof NavigationEnd)
     ).subscribe((event) => {
       const navEvent = event as NavigationEnd;
-      console.log('🔍 [LayoutFull] Route changed to:', navEvent.urlAfterRedirects);
       this.addOrSelectTab(navEvent.urlAfterRedirects);
-      console.log('🔍 [LayoutFull] Tabs after route change:', this.dynamicTabs);
     });
   }
 
   private loadUserInfo(): void {
-    // Get user info from AuthService
     const userInfo = this.authService.getUser();
     if (userInfo) {
       this.user = {
@@ -326,24 +317,14 @@ export class LayoutFullComponent implements OnInit {
   }
 
   private addOrSelectTab(url: string): void {
-    console.log('🔍 [addOrSelectTab] URL:', url);
-
-    // Skip login or other non-content routes
     if (url === '/login' || url === '/') {
-      console.log('⏭️ [addOrSelectTab] Skipped (login or root)');
       return;
     }
 
-    // Get menu title for this URL
     const menuTitle = this.getMenuTitleFromUrl(url);
-    console.log('🔍 [addOrSelectTab] Title:', menuTitle);
-
-    // Check if tab already exists
     const existingTabIndex = this.dynamicTabs.findIndex(tab => tab.url === url);
 
     if (existingTabIndex !== -1) {
-      // Tab exists, just select it
-      console.log('✅ [addOrSelectTab] Tab exists at index:', existingTabIndex);
       this.selectedTabIndex = existingTabIndex;
       this.dynamicTabs[existingTabIndex].active = true;
       this.dynamicTabs.forEach((tab, index) => {
@@ -352,26 +333,20 @@ export class LayoutFullComponent implements OnInit {
         }
       });
     } else {
-      // Create new tab
-      console.log('➕ [addOrSelectTab] Creating new tab');
       const newTab: Tab = {
         title: menuTitle,
         url: url,
         active: true
       };
 
-      // Deactivate all dynamicTabs
       this.dynamicTabs.forEach(tab => tab.active = false);
 
-      // Add new tab
       this.dynamicTabs.push(newTab);
       this.selectedTabIndex = this.dynamicTabs.length - 1;
-      console.log('✅ [addOrSelectTab] New tab added. Total tabs:', this.dynamicTabs.length);
     }
   }
 
   private getMenuTitleFromUrl(url: string): string {
-    // Map URLs to titles
     const titleMap: { [key: string]: string } = {
       '/welcome': 'Trang chủ',
       '/employee/employee-manage': 'Quản lý nhân viên',
@@ -396,63 +371,39 @@ export class LayoutFullComponent implements OnInit {
   }
 
   onTabChange(event: any): void {
-    console.log('🔄 [onTabChange] Event:', event);
     const index = typeof event === 'number' ? event : event.index;
-    console.log('🔄 [onTabChange] Tab index:', index);
-
     if (index >= 0 && index < this.dynamicTabs.length) {
       const tab = this.dynamicTabs[index];
-      console.log('🔄 [onTabChange] Navigating to:', tab.url);
       this.router.navigateByUrl(tab.url);
     }
   }
 
   closeTab(index: number, event: Event): void {
-    console.log('❌ [closeTab] Closing tab at index:', index, 'Total tabs:', this.dynamicTabs.length);
     event.stopPropagation();
 
-    // Don't close if it's the only tab
     if (this.dynamicTabs.length === 1) {
-      console.log('⚠️ [closeTab] Cannot close - only 1 tab left');
       return;
     }
 
-    // Remove the tab
     this.dynamicTabs.splice(index, 1);
-    console.log('✅ [closeTab] Tab removed. Remaining tabs:', this.dynamicTabs.length);
-
-    // Adjust selected index
     if (index === this.selectedTabIndex) {
-      // If closing the active tab, navigate to the previous or next tab
       const newIndex = index > 0 ? index - 1 : 0;
       this.selectedTabIndex = newIndex;
-      console.log('🔄 [closeTab] Navigating to tab at index:', newIndex);
       this.router.navigateByUrl(this.dynamicTabs[newIndex].url);
     } else if (index < this.selectedTabIndex) {
-      // If closing a tab before the active one, adjust index
       this.selectedTabIndex--;
-      console.log('🔄 [closeTab] Adjusted selected index to:', this.selectedTabIndex);
     }
   }
 
   getUserInitials(userName: string | undefined): string {
     if (!userName) return 'U';
-
-    // Nếu username là một từ (ví dụ: "benv", "admin")
-    // Lấy 2 ký tự đầu tiên
     if (!userName.includes(' ')) {
       return userName.slice(0, 2).toUpperCase();
     }
-
-    // Nếu username có nhiều từ (ví dụ: "Nguyen Van A")
-    // Lấy chữ cái đầu của mỗi từ, tối đa 2 chữ cái
     const words = userName.trim().split(/\s+/);
     if (words.length >= 2) {
-      // Lấy chữ cái đầu của từ đầu tiên và từ cuối cùng
       return (words[0][0] + words[words.length - 1][0]).toUpperCase();
     }
-
-    // Fallback: lấy 2 ký tự đầu
     return userName.slice(0, 2).toUpperCase();
   }
 

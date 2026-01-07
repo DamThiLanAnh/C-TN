@@ -15,14 +15,17 @@ export class StaffsService {
         const month = String(date.getMonth() + 1).padStart(2, '0');
         const year = date.getFullYear();
         const formattedDate = `${year}-${month}`;
-        
+
         const params = new HttpParams().set('month', formattedDate);
         const headers = new HttpHeaders({ 'Accept': '*/*' });
         return this.http.get(`${this.apiUrl}/attendance/my`, { params, headers });
     }
 
-    getEmployeeDetail(id: number): Observable<any> {
+    getEmployeeDetail(id?: number): Observable<any> {
         const headers = new HttpHeaders({ 'Accept': '*/*' });
-        return this.http.get(`${this.apiUrl}/employees/${id}`, { headers });
+        if (id) {
+            return this.http.get(`${this.apiUrl}/employees/${id}`, { headers });
+        }
+        return this.http.get(`${this.apiUrl}/employees/me`, { headers });
     }
 }

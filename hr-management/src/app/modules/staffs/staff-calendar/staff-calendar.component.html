@@ -1,6 +1,7 @@
 <div class="d-flex calendar">
-  <div class="custom-calendar">
-    <div class="custom-select-date">
+  <div class="custom-calendar" style="position: relative;">
+    <nz-spin [nzSpinning]="loading" nzSize="large">
+      <div class="custom-select-date">
       <div class="fz-18">Thông tin chấm công</div>
       <div class="d-inline-flex align-items-center">
 <!--        <button-->
@@ -112,6 +113,7 @@
         <span>Không có dữ liệu công</span>
       </div>
     </div>
+    </nz-spin>
   </div>
   <div class="note ms-3">
     <nz-card>

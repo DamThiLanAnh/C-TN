@@ -3,6 +3,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { NzModalRef, NzModalService } from 'ng-zorro-antd/modal';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import { EmployeeManageService } from '../employee-manage.service';
+import { GenderOptions, PositionOptions, Status } from '../../shares/enum/options.constants';
 
 @Component({
   selector: 'app-employee-add',
@@ -21,6 +22,10 @@ export class EmployeeAddComponent implements OnInit {
   loading: boolean = false;
   avatarUrl?: any;
   departmentOptions: any[] = [];
+
+  readonly GenderOptions = GenderOptions;
+  readonly PositionOptions = PositionOptions;
+  readonly StatusOptions = Status;
 
   constructor(
     private formBuilder: FormBuilder,
@@ -45,25 +50,36 @@ export class EmployeeAddComponent implements OnInit {
     this.initForm();
     this.loadOptions();
 
-    // Auto-generate email when fullName changes
-    this.formGroup.get('fullName')?.valueChanges.subscribe((fullName: string) => {
-      if (fullName && !this.item) { // Only auto-gen for new employees
-        const generatedEmail = this.generateEmailFromFullName(fullName);
-        // Use patchValue to update disabled control
-        this.formGroup.patchValue({
-          email: generatedEmail
-        });
-      }
-    });
-
     if (this.item) {
+      // Map position "Trưởng phòng" to "TP" if needed, or if item.position is already "Trưởng phòng" and not in options.
+      // Actually the Select value should match the Option value.
+      // If JSON has "Trưởng phòng" but options are "TP", it won't select unless mapped.
+      // Assuming "Trưởng phòng" corresponds to "TP" in our PositionOptions.
+      // But let's check if the response is label or value.
+      // JSON: "position": "Trưởng phòng". Constant: label "TP", value "TP".
+      // Wait, "Trưởng phòng" maps to "TP" usually.
+      // Let's try to find value by label 'Trưởng phòng'?? No, PositionOptions only has "TP" label.
+      // Maybe the JSON "position" is the LABEL, and we want VALUE to bind.
+      // Or maybe for "Trưởng phòng", let's assume it maps to "TP" value for now if exact match fails.
+      // Actually, looking at PositionOptions: { label: 'TP', value: 'TP' }. 'TP' stands for Truong Phong.
+      // If API returns "Trưởng phòng", we might need to map it manually or standardise.
+      // For now, I will start binding what's there.
+
+      let pos = this.item.position || this.item.workPositionName;
+      if (pos === 'Trưởng phòng') pos = 'TP';
+
       this.formGroup.patchValue({
-        fullName: this.item.fullName,
+        code: this.item.code || this.item.username,
+        fullName: this.item.fullName || this.item.name,
         dateOfBirth: this.item.dateOfBirth,
-        position: this.item.position || this.item.workPositionName,
-        departmentId: this.item.departmentId || this.item.department,
+        gender: this.item.gender, // If null, stays null
+        citizenId: this.item.citizenId,
+        phoneNumber: this.item.phoneNumber || this.item.phone,
         email: this.item.email,
-        phoneNumber: this.item.phoneNumber || this.item.phone
+        address: this.item.address || this.item.siteName,
+        position: pos,
+        departmentId: this.item.departmentId || this.item.department, // departmentId is 4. Options use ID.
+        status: this.item.status // 'ACTIVE'
       });
 
       this.avatarUrl = 'https://via.placeholder.com/150';
@@ -72,13 +88,25 @@ export class EmployeeAddComponent implements OnInit {
 
   initForm(): void {
     this.formGroup = this.formBuilder.group({
+      code: [null, [Validators.required]],
       fullName: [null, [Validators.required]],
-      dateOfBirth: [null],  // API field name (optional)
-      position: [null, [Validators.required]],  // API field name
-      departmentId: [null, [Validators.required]],  // API field name - changed from department to departmentId
-      email: [{ value: null, disabled: true }],  // Disabled - auto-generated from fullName
-      phoneNumber: [null, [Validators.required]]  // API field name
+      dateOfBirth: [null],
+      gender: [null],
+      citizenId: [null],
+      phoneNumber: [null, [Validators.required]],
+      email: [null, [Validators.required, Validators.email]],
+      address: [null],
+      position: [null, [Validators.required]],
+      departmentId: [null, [Validators.required]],
+      status: ['ACTIVE'] // Default or bound
     });
+
+    // If viewing (not editing), disable is handled below, but maybe disable specific if needed.
+    // User JSON: email is "teolv...".
+    // Form init previously had email disabled. I'll keep it enabled for editing unless rule says otherwise.
+    // Previous code: email: [{ value: null, disabled: true }] (auto-generated?)
+    // If it's auto-generated, usually we don't edit it. But for "view", it should receive value.
+    // I will set it as normal control but maybe disable if logic requires. For now, normal to show value.
 
     if (!this.canEdit) {
       this.formGroup.disable();
@@ -144,36 +172,10 @@ export class EmployeeAddComponent implements OnInit {
     return false;
   };
 
-  /**
-   * Generate email from Vietnamese full name
-   * Example: "Phạm Mai Phương" -> "phuongpm"
-   * Format: firstName + first letters of middle and last names (lowercase, no accents)
-   */
-  private generateEmailFromFullName(fullName: string): string {
-    if (!fullName || !fullName.trim()) {
-      return '';
-    }
 
-    // Remove extra spaces and split into words
-    const words = fullName.trim().split(/\s+/);
-
-    if (words.length === 0) {
-      return '';
-    }
-
-    // Last word is the first name (tên)
-    const firstName = words[words.length - 1];
-
-    // Other words are middle and last names (họ đệm)
-    const middleAndLastNames = words.slice(0, -1);
-
-    // Get first letter of each middle/last name
-    const initials = middleAndLastNames.map(word => word.charAt(0)).join('');
-
-    // Combine: firstName + initials (all lowercase, no accents)
-    const email = this.removeVietnameseAccents(firstName + initials).toLowerCase();
-
-    return email;
+  onEdit(): void {
+    this.canEdit = true;
+    this.formGroup.enable();
   }
 
   /**
@@ -204,5 +206,7 @@ export class EmployeeAddComponent implements OnInit {
 
     return str;
   }
+
+
 }
 

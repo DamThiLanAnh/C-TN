@@ -4,8 +4,8 @@ import {
   StandardColumnModel,
   StandardColumnType,
   StandardFormItemModel
-} from '../shares/interfaces';
-import { IconHtml } from '../shares/enum/icon-html.enum';
+} from '../../shares/interfaces';
+import { IconHtml } from '../../shares/enum/icon-html.enum';
 
 
 export const employeeManageColumns = (): StandardColumnModel[] => {
@@ -98,13 +98,13 @@ export const employeeManageColumns = (): StandardColumnModel[] => {
       fixedColumn: false,
       fixedRight: false,
       attr: 'Phòng ban',
-      width: '180px',
+      width: '160px',
       isFilter: true,
       isSort: true,
       filter: {
         name: 'departmentName',
         multiple: true,
-        options: [] // Will be populated in component
+        options: []
       },
       type: StandardColumnType.SELECT,
     },
@@ -146,7 +146,7 @@ export const employeeManageColumns = (): StandardColumnModel[] => {
       fixedColumn: false,
       fixedRight: false,
       attr: 'Giới tính',
-      width: '80px',
+      width: '100px',
       isFilter: true,
       isSort: true,
       filter: {
@@ -196,8 +196,8 @@ export const employeeManageColumns = (): StandardColumnModel[] => {
       isSort: true,
       isFilter: true,
       filter: {
-         name: 'createdAt',
-         type: StandardColumnType.DATE_RANGE_PICKER
+        name: 'createdAt',
+        type: StandardColumnType.DATE_RANGE_PICKER
       }
     },
   ];

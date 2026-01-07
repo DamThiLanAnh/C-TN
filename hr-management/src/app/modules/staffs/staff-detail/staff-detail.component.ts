@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { StaffsService } from '../staffs.service';
 import { ActivatedRoute } from '@angular/router';
+import { AuthService } from '../../../services/auth.service';
+import { EmployeeDetail, EmployeeSkill, EmployeeReview } from '../staffs-model';
 
 @Component({
   selector: 'app-staff-detail',
@@ -20,7 +22,7 @@ export class StaffDetailComponent implements OnInit {
   avatarText = 'NVA';
   avatarUrl = '';
 
-  dataDetail: any = {
+  dataDetail: EmployeeDetail = {
     full_name: '',
     user_name: '',
     position_name: '',
@@ -37,7 +39,7 @@ export class StaffDetailComponent implements OnInit {
     eduLevelName: ''
   };
 
-  listSkillFilter = [
+  listSkillFilter: EmployeeSkill[] = [
     {
       id: 1,
       skillName: 'Angular',
@@ -76,7 +78,7 @@ export class StaffDetailComponent implements OnInit {
   ];
 
 
-  listOfData = [
+  listOfData: EmployeeReview[] = [
     {
       id: 1,
       reviewDate: new Date('2023-06-30'),
@@ -96,62 +98,71 @@ export class StaffDetailComponent implements OnInit {
   ];
 
   col2 = [
-    {title: 'Kỳ đánh giá', key: 'period'},
-    {title: 'Ngày đánh giá', key: 'reviewDate'},
-    {title: 'Người đánh giá', key: 'reviewer'},
-    {title: 'Điểm', key: 'rating'},
-    {title: 'Nhận xét', key: 'comment'}
+    { title: 'Kỳ đánh giá', key: 'period' },
+    { title: 'Ngày đánh giá', key: 'reviewDate' },
+    { title: 'Người đánh giá', key: 'reviewer' },
+    { title: 'Điểm', key: 'rating' },
+    { title: 'Nhận xét', key: 'comment' }
   ];
 
 
   constructor(
     private staffsService: StaffsService,
-    private route: ActivatedRoute
-  ) {}
+    private route: ActivatedRoute,
+    private authService: AuthService
+  ) { }
 
   ngOnInit(): void {
     this.route.params.subscribe(params => {
-        const id = params['id'] || 2; // Default to 2 if no ID provided, as per user request
-        this.loadEmployeeDetail(id);
+      let id = params['id'];
+
+      if (!id) {
+        const user = this.authService.getUser();
+        id = user?.employeeId || user?.id;
+      }
+
+      this.loadEmployeeDetail(id);
     });
   }
 
-  loadEmployeeDetail(id: number) {
-      this.isLoading = true;
-      this.staffsService.getEmployeeDetail(id).subscribe((res: any) => {
-          this.isLoading = false;
-          const data = res.data || res;
-          if (data) {
-              this.dataDetail = {
-                  full_name: data.fullName || data.name || data.full_name,
-                  user_name: data.username || data.user_name,
-                  position_name: data.positionName || data.position?.name || data.position_name,
-                  organization_name: data.departmentName || data.organization?.name || data.organization_name,
-                  dob: data.dateOfBirth ? new Date(data.dateOfBirth) : null,
-                  gender: data.gender === 'Nam' || data.gender === true || data.gender === 1,
-                  phone: data.phoneNumber || data.phone,
-                  email: data.email,
-                  status: data.status,
-                  entryDate: data.createdAt ? new Date(data.createdAt) : null,
-                  siteName: data.siteName || data.address,
-                  universityName: data.universityName,
-                  majorEduName: data.majorEduName,
-                  eduLevelName: data.eduLevelName
-              };
-              
-              if (this.dataDetail.full_name) {
-                  const names = this.dataDetail.full_name.split(' ');
-                  if (names.length > 0) {
-                      this.avatarText = names[names.length - 1][0].toUpperCase();
-                      if (names.length > 1) {
-                          this.avatarText = names[0][0].toUpperCase() + this.avatarText;
-                      }
-                  }
-              }
+  loadEmployeeDetail(id?: number) {
+    this.isLoading = true;
+    this.staffsService.getEmployeeDetail(id).subscribe((res: any) => {
+      this.isLoading = false;
+      const data = res.data || res;
+      if (data) {
+        this.dataDetail = {
+          full_name: data.fullName || data.name || data.full_name,
+          user_name: data.code || data.username || data.user_name,
+          position_name: data.position || data.positionName || data.position_name,
+          organization_name: data.departmentName || data.organization?.name || data.organization_name,
+          dob: data.dateOfBirth ? new Date(data.dateOfBirth) : null,
+          gender: data.gender === 'Nam' || data.gender === true || data.gender === 1,
+          phone: data.phoneNumber || data.phone,
+          email: data.email,
+          status: data.status === 'ACTIVE' ? 1 : (data.status === 'INACTIVE' ? 2 : data.status),
+          entryDate: data.createdAt ? new Date(data.createdAt) : null,
+          siteName: data.siteName || data.address,
+          universityName: data.universityName,
+          majorEduName: data.majorEduName,
+          eduLevelName: data.eduLevelName
+        };
+
+        if (this.dataDetail.full_name) {
+          const names = this.dataDetail.full_name.trim().split(' ');
+          if (names.length > 0) {
+            // Take the first letter of each word
+            this.avatarText = names.map(n => n.charAt(0)).join('').toUpperCase();
+
+            if (this.avatarText.length > 3) {
+              this.avatarText = this.avatarText.substring(0, 3);
+            }
           }
-      }, (err) => {
-          this.isLoading = false;
-      });
+        }
+      }
+    }, (err) => {
+      this.isLoading = false;
+    });
   }
 
   change(value: string): void {
@@ -159,7 +170,6 @@ export class StaffDetailComponent implements OnInit {
   }
 
   startEditInfor(): void {
-    console.log('Edit thông tin cá nhân');
   }
 
   startEdit(): void {
@@ -188,14 +198,11 @@ export class StaffDetailComponent implements OnInit {
 
   onChangeDate(date: Date): void {
     this.dateHistoryReview = date;
-    // Load lại data theo năm
   }
 
   onFilterInTable(event: any): void {
-    console.log('Filter:', event);
   }
 
   onSelectLinkItem(event: any): void {
-    console.log('Select item:', event);
   }
 }

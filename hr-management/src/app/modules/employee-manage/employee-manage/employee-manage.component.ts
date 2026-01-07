@@ -6,9 +6,10 @@ import { NzTableQueryParams } from 'ng-zorro-antd/table';
 import { EmployeeAddComponent } from '../employee-add/employee-add.component';
 import { EmployeeManageService } from '../employee-manage.service';
 import { finalize, debounceTime, takeUntil } from 'rxjs/operators';
-import { employeeManageColumns } from '../employee-manage.columns';
+import { employeeManageColumns } from './employee-manage.columns';
 import { StandardColumnType } from '../../shares/interfaces';
 import { Subject } from 'rxjs';
+import { GenderOptions, PositionOptions, Status } from '../../shares/enum/options.constants';
 
 // Simple column model cho nz-table
 interface TableColumn {
@@ -107,32 +108,18 @@ export class EmployeeManageComponent implements OnInit, OnDestroy {
     // Status Options
     const statusCol = this.employeeColumns.find(c => c.name === 'statusName');
     if (statusCol && statusCol.filter) {
-      statusCol.filter.options = [
-        { label: 'Hoạt động', value: 'ACTIVE' },
-        { label: 'Ngừng hoạt động', value: 'INACTIVE' }
-      ];
+      statusCol.filter.options = Status;
     }
 
     // Gender Options
     const genderCol = this.employeeColumns.find(c => c.name === 'gender');
     if (genderCol && genderCol.filter) {
-      genderCol.filter.options = [
-        { label: 'Nam', value: 'Nam' },
-        { label: 'Nữ', value: 'Nữ' }
-      ];
+      genderCol.filter.options = GenderOptions;
     }
 
     const positionCol = this.employeeColumns.find(c => c.name === 'position');
     if (positionCol && positionCol.filter) {
-      positionCol.filter.options = [
-        { label: 'TV', value: 'TV' },
-        { label: 'CV', value: 'CV' },
-        { label: 'CVC', value: 'CVC' },
-        { label: 'CVCC', value: 'CVC' },
-        { label: 'TP', value: 'TP' }
-
-
-      ];
+      positionCol.filter.options = PositionOptions;
     }
   }
 
@@ -265,7 +252,7 @@ export class EmployeeManageComponent implements OnInit, OnDestroy {
     });
 
     this.paging.totalElements = matches.length;
-    
+
     // Pagination Slicing
     const start = (this.paging.pageIndex - 1) * this.paging.pageSize;
     const end = start + this.paging.pageSize;
@@ -273,17 +260,17 @@ export class EmployeeManageComponent implements OnInit, OnDestroy {
   }
 
   checkDateInRange(dateValue: string | Date, fromDate: Date, toDate: Date): boolean {
-      if (!dateValue || !fromDate) return false; // Basic check
-      const date = new Date(dateValue);
-      if (isNaN(date.getTime())) return false;
-      
-      const start = new Date(fromDate);
-      start.setHours(0, 0, 0, 0);
-      
-      const end = toDate ? new Date(toDate) : new Date(start); // If toDate null, assume single day? Or usually range picker enforces both.
-      if (toDate) end.setHours(23, 59, 59, 999);
-      
-      return date >= start && date <= end;
+    if (!dateValue || !fromDate) return false; // Basic check
+    const date = new Date(dateValue);
+    if (isNaN(date.getTime())) return false;
+
+    const start = new Date(fromDate);
+    start.setHours(0, 0, 0, 0);
+
+    const end = toDate ? new Date(toDate) : new Date(start); // If toDate null, assume single day? Or usually range picker enforces both.
+    if (toDate) end.setHours(23, 59, 59, 999);
+
+    return date >= start && date <= end;
   }
 
 
@@ -353,7 +340,7 @@ export class EmployeeManageComponent implements OnInit, OnDestroy {
     });
 
     modal.afterClose.subscribe((result) => {
-      if (result?.success && isEdit) {
+      if (result?.success) {
         this.loadingTable = true;
 
         this.employeeService.updateEmployee(itemData.id, result.data)
@@ -404,10 +391,6 @@ export class EmployeeManageComponent implements OnInit, OnDestroy {
         this.deleteStaff(data);
       }
     });
-  }
-
-  addStaffPosition(_data: any): void {
-    this.messageService.info('Chức năng chuyển đơn vị đang được phát triển (Mock)');
   }
 
   onPageIndexChange(pageIndex: number): void {

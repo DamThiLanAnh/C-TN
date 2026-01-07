@@ -423,3 +423,22 @@ export const ConfirmDepartment: OptionModel[] = [
     value: 2,
   }
 ]
+
+export const GenderOptions: OptionModel[] = [
+  {
+    label: 'Nam',
+    value: 'MALE',
+  },
+  {
+    label: 'Nữ',
+    value: 'FEMALE',
+  }
+];
+
+export const PositionOptions: OptionModel[] = [
+  { label: 'TV', value: 'TV' },
+  { label: 'CV', value: 'CV' },
+  { label: 'CVC', value: 'CVC' },
+  { label: 'CVCC', value: 'CVCC' },
+  { label: 'TP', value: 'TP' }
+];

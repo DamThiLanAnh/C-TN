@@ -100,16 +100,15 @@ export class AuthService {
 
     if (token) {
       localStorage.setItem('token', token);
-      console.log('Access token saved');
     }
 
     if (refreshToken) {
       localStorage.setItem('refreshToken', refreshToken);
-      console.log('Refresh token saved');
     }
 
-    // Save user info - either from response.user or construct from response
     const userInfo = response.user || {
+      id: response['id'] || response['employeeId'] || response['userId'],
+      employeeId: response['employeeId'] || response['id'],
       username: response['username'],
       roles: response['roles'],
       status: response['status'],
@@ -118,9 +117,7 @@ export class AuthService {
 
     if (userInfo) {
       localStorage.setItem('user', JSON.stringify(userInfo));
-      console.log('User info saved:', userInfo);
     }
-    // Cập nhật trạng thái đăng nhập cho toàn app
     this._authState$.next({ user: userInfo, token: token ?? null });
   }
 
@@ -212,10 +209,8 @@ export class AuthService {
 
   isHROrAdmin(): boolean {
     const role = this.getUserRole();
-    console.log('isHROrAdmin check - role:', role);
 
     if (!role) {
-      console.log('isHROrAdmin - no role found');
       return false;
     }
 
@@ -226,7 +221,6 @@ export class AuthService {
            role.toUpperCase().includes('HR') ||
            role.toUpperCase().includes('ADMIN');
 
-    console.log('isHROrAdmin result:', isHROrAdminRole);
     return isHROrAdminRole;
   }
 }
