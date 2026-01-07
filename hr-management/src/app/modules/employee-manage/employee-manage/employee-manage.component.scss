@@ -11,6 +11,11 @@ button[nz-button] {
 }
 
 ::ng-deep {
+  .ant-table-body {
+    height: 450px;
+    overflow-y: auto;
+  }
+
   .ant-modal-content {
     border-radius: 12px;
     overflow: hidden;
