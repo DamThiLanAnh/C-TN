@@ -2,117 +2,87 @@
   <div class="custom-calendar" style="position: relative;">
     <nz-spin [nzSpinning]="loading" nzSize="large">
       <div class="custom-select-date">
-      <div class="fz-18">Thông tin chấm công</div>
-      <div class="d-inline-flex align-items-center">
-<!--        <button-->
-<!--          nz-button-->
-<!--          class="me-2 d-flex align-items-center"-->
-<!--          nzType="primary"-->
-<!--          type="button"-->
-<!--          [disabled]="isTimekeepingDateExporting"-->
-<!--          [nzLoading]="isTimekeepingDateExporting"-->
-<!--          (click)="exportTimekeepingData()">-->
-<!--          <span nz-icon nzType="download" nzTheme="outline"></span>-->
-<!--          <span class="fz-16">Export</span>-->
-<!--        </button>-->
-        <div class="select-date border rounded"
-             (blur)="isHideDatePicker = true"
-             tabindex="1">
-        <span nz-icon
-              nzType="left"
-              nzTheme="outline"
-              class="cursor-pointer px-4 py-1 custom-icon"
+        <div class="fz-18">Thông tin chấm công</div>
+        <div class="d-inline-flex align-items-center">
+          <!--        <button-->
+          <!--          nz-button-->
+          <!--          class="me-2 d-flex align-items-center"-->
+          <!--          nzType="primary"-->
+          <!--          type="button"-->
+          <!--          [disabled]="isTimekeepingDateExporting"-->
+          <!--          [nzLoading]="isTimekeepingDateExporting"-->
+          <!--          (click)="exportTimekeepingData()">-->
+          <!--          <span nz-icon nzType="download" nzTheme="outline"></span>-->
+          <!--          <span class="fz-16">Export</span>-->
+          <!--        </button>-->
+          <div class="select-date border rounded" (blur)="isHideDatePicker = true" tabindex="1">
+            <span nz-icon nzType="left" nzTheme="outline" class="cursor-pointer px-4 py-1 custom-icon"
               (click)="viewPreMonth()"></span>
-          <span class="px-2 py-1 fz-16"
-                (click)="isHideDatePicker = false">
-          Tháng {{ selectedDate | date: 'MM, yyyy' }}
-        </span>
-          <span
-            nz-icon
-            nzType="right"
-            nzTheme="outline"
-            class="cursor-pointer px-4 py-1 custom-icon4"
-            (click)="viewNextMonth()">
-        </span>
-          <nz-date-picker
-            nzInline
-            nzMode="month"
-            [(ngModel)]="selectedDate"
-            (ngModelChange)="selectChange($event)"
-            class="date-inline"
-            [hidden]="isHideDatePicker">
-          </nz-date-picker>
+            <span class="px-2 py-1 fz-16" (click)="isHideDatePicker = false">
+              Tháng {{ selectedDate | date: 'MM, yyyy' }}
+            </span>
+            <span nz-icon nzType="right" nzTheme="outline" class="cursor-pointer px-4 py-1 custom-icon4"
+              (click)="viewNextMonth()">
+            </span>
+            <nz-date-picker nzInline nzMode="month" [(ngModel)]="selectedDate" (ngModelChange)="selectChange($event)"
+              class="date-inline" [hidden]="isHideDatePicker">
+            </nz-date-picker>
+          </div>
         </div>
       </div>
-    </div>
-    <div>
-      <span>
-        Tổng số công thực tế:
-        <span [ngStyle]="{ color: 'red' }">{{ totalActualDays }}
-      </span>
-        <span
-          class="ms-1">
-          <img src="./assets/icons/icon-infor.svg"
-               alt="icon-show-special-schedule"
-               class="cursor-pointer"
-               style="position: relative; top: -2px"
-               nz-popover
-               nzPopoverTitle="Lịch làm đặc thù"
-               [nzPopoverContent]="specialScheduleContent"
-               nzPopoverTrigger="hover"
-               nzPopoverPlacement="rightTop"
-               [nzPopoverVisible]="isShowSpecialSchedulePopover"
-               (nzPopoverVisibleChange)="showSpecialSchedule($event)">
+      <div>
+        <span>
+          Tổng số công thực tế:
+          <span [ngStyle]="{ color: 'red' }">{{ totalActualDays }}
+          </span>
+          <span class="ms-1">
+            <img src="./assets/icons/icon-infor.svg" alt="icon-show-special-schedule" class="cursor-pointer"
+              style="position: relative; top: -2px" nz-popover nzPopoverTitle="Lịch làm đặc thù"
+              [nzPopoverContent]="specialScheduleContent" nzPopoverTrigger="hover" nzPopoverPlacement="rightTop"
+              [nzPopoverVisible]="isShowSpecialSchedulePopover" (nzPopoverVisibleChange)="showSpecialSchedule($event)">
+          </span>
         </span>
-      </span>
-    </div>
-    <nz-calendar
-      class="calendar-cell"
-      [(ngModel)]="selectedDate">
-      <div *nzDateCell="let date"
-           (mouseenter)="onDateHover(date, $event)"
-           (mouseleave)="onDateLeave()">
+      </div>
+      <nz-calendar class="calendar-cell" [(ngModel)]="selectedDate">
+        <div *nzDateCell="let date" (mouseenter)="onDateHover(date, $event)" (mouseleave)="onDateLeave()">
 
-        <div
-          *ngIf="getAttendanceStatusForDate(date) as statusData"
-          class="dotFull"
-          [ngStyle]="{ 'background-color': getDotColor(date) }">
-          {{ date.getDate() }}
-        </div>
+          <div *ngIf="getAttendanceStatusForDate(date) as statusData" class="dotFull"
+            [ngStyle]="{ 'background-color': getDotColor(date) }">
+            {{ date.getDate() }}
+          </div>
 
-        <ng-container *ngFor="let data of dataCheckInOut; let i = index">
-          <div *ngIf="checkDate(date, data.time_date)" class="status-display">
-            <span class="status status--soft">
-              {{ getAttendanceStatusForDate(date)?.statusCode }}<br>
+          <ng-container *ngFor="let data of dataCheckInOut; let i = index">
+            <div *ngIf="checkDate(date, data.time_date)" class="status-display">
+              <span class="status status--soft">
+                {{ getAttendanceStatusForDate(date)?.statusCode }}<br>
               </span>
-            <span class="time-display">
+              <span class="time-display">
                 {{ formatTimeDisplay(data.in_time) }} - {{ formatTimeDisplay(data.out_time) }}
               </span>
-          </div>
-        </ng-container>
+            </div>
+          </ng-container>
 
-        <div
-          *ngIf="!hasCheckInOutData(date) && getAttendanceStatusForDate(date) as statusData"
-          class="status-display">
-          <span class="status status--soft">{{ statusData.statusCode }}
-      </span>
+          <div *ngIf="!hasCheckInOutData(date) && getAttendanceStatusForDate(date) as statusData"
+            class="status-display">
+            <span class="status status--soft">{{ statusData.statusCode }}
+            </span>
+          </div>
+        </div>
+      </nz-calendar>
+      <div class="calendar-legend d-flex align-items-center gap-4 mt-3">
+        <div class="legend-item d-flex align-items-center gap-2">
+          <span class="legend-dot full-day"></span>
+          <span>Đủ ngày công</span>
+        </div>
+        <div class="legend-item d-flex align-items-center gap-2">
+          <span class="legend-dot half-day"></span>
+          <span>Nửa ngày công</span>
+        </div>
+        <div class="legend-item d-flex align-items-center gap-2">
+          <span class="legend-dot off-day"></span>
+          <span>Không có dữ liệu công</span>
         </div>
       </div>
-    </nz-calendar>
-    <div class="calendar-legend d-flex align-items-center gap-4 mt-3">
-      <div class="legend-item d-flex align-items-center gap-2">
-        <span class="legend-dot full-day"></span>
-        <span>Đủ ngày công</span>
-      </div>
-      <div class="legend-item d-flex align-items-center gap-2">
-        <span class="legend-dot half-day"></span>
-        <span>Nửa ngày công</span>
-      </div>
-      <div class="legend-item d-flex align-items-center gap-2">
-        <span class="legend-dot off-day"></span>
-        <span>Không có dữ liệu công</span>
-      </div>
-    </div>
     </nz-spin>
   </div>
   <div class="note ms-3">
@@ -137,17 +107,6 @@
       </div>
       <div class="d-flex mb-2">
         <span>
-          <strong>Xon</strong>
-          - Làm việc online/tại nhà</span>
-      </div>
-<!--      <div class="d-flex mb-2">-->
-<!--        <span>-->
-<!--          <strong>CT</strong>-->
-<!--          - Công đi công tác, đi onsite không chấm công tại VTIT-->
-<!--        </span>-->
-<!--      </div>-->
-      <div class="d-flex mb-2">
-        <span>
           <strong>L</strong>
           - Nghỉ lễ</span>
       </div>
@@ -155,11 +114,6 @@
         <span>
           <strong>P</strong>
           - Nghỉ phép</span>
-      </div>
-      <div class="d-flex">
-        <span>
-          <strong>DL</strong>
-          - Nghỉ dưỡng hàng năm</span>
       </div>
     </nz-card>
   </div>
@@ -174,7 +128,8 @@
             <div class="schedule-row mb-1">
               <b>Giai đoạn:</b>
               <span class="value ms-2">
-                {{ schedule.displayBeginDate | date: 'dd/MM/yyyy' }} - {{ schedule.displayEndDate | date: 'dd/MM/yyyy' }}
+                {{ schedule.displayBeginDate | date: 'dd/MM/yyyy' }} - {{ schedule.displayEndDate | date: 'dd/MM/yyyy'
+                }}
               </span>
             </div>
             <div class="schedule-row mb-1">
@@ -219,9 +174,7 @@
 
     <ng-template #noData>
       <div class="text-center py-3">
-        <nz-empty
-          nzNotFoundImage="simple"
-          nzNotFoundContent="Không có dữ liệu lịch làm đặc thù trong tháng này">
+        <nz-empty nzNotFoundImage="simple" nzNotFoundContent="Không có dữ liệu lịch làm đặc thù trong tháng này">
         </nz-empty>
       </div>
     </ng-template>

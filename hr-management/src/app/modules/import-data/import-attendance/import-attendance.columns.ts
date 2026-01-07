@@ -14,6 +14,7 @@ export const importAttendanceColumns = (): StandardColumnModel[] => {
       isFilter: false,
       isSort: false,
       indexColumn: true,
+      classes: 'text-center',
     },
     {
       id: 2,
@@ -26,10 +27,11 @@ export const importAttendanceColumns = (): StandardColumnModel[] => {
       isRequire: true,
       filter: { type: 14, options: [] },
       isSort: true,
+      classes: 'text-center',
     },
     {
       id: 3,
-      name: 'fileAttachment',
+      name: 'fileName',
       fixedColumn: false,
       fixedRight: false,
       attr: 'File đính kèm',
@@ -38,10 +40,11 @@ export const importAttendanceColumns = (): StandardColumnModel[] => {
       isRequire: true,
       filter: { type: 0, options: [] },
       isSort: true,
+      classes: 'text-center',
     },
     {
       id: 4,
-      name: 'creator',
+      name: 'createdByName',
       fixedColumn: false,
       fixedRight: false,
       attr: 'Người tạo',
@@ -50,10 +53,11 @@ export const importAttendanceColumns = (): StandardColumnModel[] => {
       isRequire: true,
       filter: { type: 8, options: [] },
       isSort: true,
+      classes: 'text-center',
     },
     {
       id: 5,
-      name: 'createdDate',
+      name: 'createdAt',
       fixedColumn: false,
       fixedRight: false,
       attr: 'Ngày tạo',
@@ -62,6 +66,7 @@ export const importAttendanceColumns = (): StandardColumnModel[] => {
       isRequire: true,
       filter: { type: 8, options: [] },
       isSort: true,
+      classes: 'text-center',
     },
   ];
 }

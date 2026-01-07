@@ -41,27 +41,25 @@ export class ImportAttendanceComponent implements OnInit {
     if (!formattedMonth) return;
 
     this.loading = true;
-    this.importAttendanceService.getMyAttendanceApi(formattedMonth).subscribe({
+    this.importAttendanceService.getImportHistories(formattedMonth, this.pageIndex - 1, this.pageSize).subscribe({
       next: (res: any) => {
         this.loading = false;
-        this.data = res?.content || []; // Assuming API returns 'content'
+        this.data = (res?.content || []).map((item: any) => ({
+          ...item,
+          createdAt: this.datePipe.transform(item.createdAt, 'dd/MM/yyyy')
+        }));
         this.total = res?.totalElements || 0;
-        this.updatePagedData();
+        this.pagedData = this.data;
       },
       error: () => {
         this.loading = false;
         this.data = [];
-        this.updatePagedData();
-        // console.error(err);
+        this.pagedData = [];
       }
     });
   }
 
-  updatePagedData() {
-    const start = (this.pageIndex - 1) * this.pageSize;
-    const end = start + this.pageSize;
-    this.pagedData = this.data.slice(start, end);
-  }
+
 
   beforeUpload = (file: NzUploadFile): boolean => {
     this.selectedFile = file as unknown as File;
@@ -114,6 +112,6 @@ export class ImportAttendanceComponent implements OnInit {
 
   onPageIndexChange(index: number) {
     this.pageIndex = index;
-    this.updatePagedData();
+    this.loadData();
   }
 }

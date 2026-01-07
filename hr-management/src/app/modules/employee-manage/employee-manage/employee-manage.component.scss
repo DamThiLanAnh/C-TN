@@ -12,7 +12,7 @@ button[nz-button] {
 
 ::ng-deep {
   .ant-table-body {
-    height: 450px;
+    height: 455px;
     overflow-y: auto;
   }
 
@@ -69,7 +69,7 @@ button[nz-button] {
         flex-wrap: nowrap;
         align-items: center;
       }
-      
+
       .ant-select-selection-item {
         max-width: 100%;
       }
@@ -78,7 +78,7 @@ button[nz-button] {
     .ant-picker-small {
       border-radius: 6px;
       font-size: 13px;
-      
+
       .ant-picker-input > input {
         font-size: 13px;
       }

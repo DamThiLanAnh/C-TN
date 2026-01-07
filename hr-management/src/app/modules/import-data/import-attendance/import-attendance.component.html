@@ -28,8 +28,9 @@
             Hệ thống cho phép tải lên tập tin dạng .xlsx, .xls<br>
             Số tệp tối đa là 1, kích thước tệp không vượt quá 5 MB.
           </p>
-          <div class="mt-2">
-            <a href="javascript:void(0)" class="text-primary"><span nz-icon nzType="download"></span> Tải file mẫu</a>
+          <div style="padding-bottom: 16px;">
+            <a href="javascript:void(0)" class="text-primary"><span nz-icon nzType="download">
+              </span> Tải file mẫu</a>
           </div>
         </nz-upload>
       </div>
@@ -53,8 +54,7 @@
     <tbody>
       <tr *ngFor="let row of pagedData; let i = index">
         <td *ngFor="let col of columns" [nzLeft]="col.fixedColumn || false" [nzRight]="col.fixedRight || false"
-          [ngSwitch]="col.name"
-          [nzAlign]="col.name === 'index' || col.name === 'month' || col.name === 'createdDate' ? 'center' : 'left'">
+          [ngSwitch]="col.name" [nzAlign]="'center'">
 
           <ng-container *ngSwitchCase="'index'">
             {{ (pageIndex - 1) * pageSize + i + 1 }}
@@ -64,11 +64,7 @@
             {{ row[col.name] | date: 'MM/yyyy' }}
           </ng-container>
 
-          <ng-container *ngSwitchCase="'createdDate'">
-            {{ row[col.name] | date: 'dd/MM/yyyy HH:mm' }}
-          </ng-container>
-
-          <ng-container *ngSwitchCase="'fileAttachment'">
+          <ng-container *ngSwitchCase="'fileName'">
             <a *ngIf="row[col.name]" [href]="row[col.name]" target="_blank" rel="noopener noreferrer"
               class="text-primary">
               <span nz-icon nzType="paper-clip" class="me-1"></span> {{ row[col.name] }}
