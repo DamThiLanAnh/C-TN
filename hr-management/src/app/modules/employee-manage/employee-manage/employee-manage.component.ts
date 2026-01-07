@@ -1,5 +1,6 @@
 import { Component, OnInit, OnDestroy, ElementRef } from '@angular/core';
 import { formatDate } from '@angular/common';
+import { AuthService } from '../../../services/auth.service';
 import { NzModalService } from 'ng-zorro-antd/modal';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import { NzTableQueryParams } from 'ng-zorro-antd/table';
@@ -29,19 +30,19 @@ export class EmployeeManageComponent implements OnInit, OnDestroy {
   employeeColumns = employeeManageColumns();
   StandardColumnType = StandardColumnType;
   searchFilters: { [key: string]: any } = {};
-  searchSubject = new Subject<any>();
+  // searchSubject = new Subject<any>(); // Removed
   filterChanged$ = new Subject<void>();
   private destroy$ = new Subject<void>();
 
   listOfData: any[] = [];
-  filteredData: any[] = []; // Data for table display after filter/pagination
+  filteredData: any[] = [];
   loadingTable = false;
 
   // Permissions
-  canAdd = true;
-  canEdit = true;
-  canDelete = true;
-  canTransferPosition = true;
+  canAdd = false;
+  canEdit = false;
+  canDelete = false;
+  canTransferPosition = false;
 
   // Pagination
   paging = {
@@ -55,7 +56,8 @@ export class EmployeeManageComponent implements OnInit, OnDestroy {
     private modalService: NzModalService,
     private messageService: NzMessageService,
     private employeeService: EmployeeManageService,
-    private elementRef: ElementRef
+    private elementRef: ElementRef,
+    private authService: AuthService
 
   ) { }
 
@@ -65,7 +67,14 @@ export class EmployeeManageComponent implements OnInit, OnDestroy {
 
 
   ngOnInit(): void {
-    this.searchSubject.pipe(
+    // Check permissions
+    const isHROrAdmin = this.authService.isHROrAdmin();
+    this.canAdd = isHROrAdmin;
+    this.canEdit = isHROrAdmin;
+    this.canDelete = isHROrAdmin;
+    this.canTransferPosition = isHROrAdmin;
+
+    this.filterChanged$.pipe(
       debounceTime(300),
       takeUntil(this.destroy$)
     ).subscribe(() => {
@@ -114,7 +123,11 @@ export class EmployeeManageComponent implements OnInit, OnDestroy {
     // Gender Options
     const genderCol = this.employeeColumns.find(c => c.name === 'gender');
     if (genderCol && genderCol.filter) {
-      genderCol.filter.options = GenderOptions;
+      // Map filter options to Nam/Nữ to match data
+      genderCol.filter.options = [
+        { label: 'Nam', value: 'Nam' },
+        { label: 'Nữ', value: 'Nữ' }
+      ];
     }
 
     const positionCol = this.employeeColumns.find(c => c.name === 'position');
@@ -125,45 +138,47 @@ export class EmployeeManageComponent implements OnInit, OnDestroy {
 
   loadData(): void {
     this.loadingTable = true;
+    // Client-side pagination: Load 1000 items
+    const page = 0;
+    const size = 1000;
 
-    // Fetch all (large size) for client-side filtering
-    // Note: If real server-side pagination is wanted, we'd use params.
-    // User requested "sửa lại giao diện và phần filter" ref "leave-manage" which does client side.
-    this.employeeService.getEmployees(0, 1000)
+    this.employeeService.getEmployees(page, size, {})
       .pipe(finalize(() => this.loadingTable = false))
       .subscribe({
         next: (response: any) => {
-          if (response?.content) {
-            const sortedContent = [...response.content].sort((a, b) => {
-              const codeA = a.code || '';
-              const codeB = b.code || '';
-              const numA = parseInt(codeA.replace(/\D/g, '')) || 0;
-              const numB = parseInt(codeB.replace(/\D/g, '')) || 0;
-              return numB - numA;
-            });
-
-            this.listOfData = sortedContent.map((item: any, index: number) => ({
-              ...item,
-              index: index + 1, // Global index?
-              userName: item.code, // Assuming code is used as userName
+          const content = response?.content || response;
+          if (Array.isArray(content)) {
+            this.listOfData = content.map((item: any, index: number) => ({
+              id: item.id,
+              code: item.code,
               fullName: item.fullName,
-              email: item.email,
-              phone: item.phoneNumber,
-              phoneNumber: item.phoneNumber,
-              workPositionName: item.position,
-              departmentName: item.departmentName,
-              statusName: item.status,
-              isActive: item.status === 'ACTIVE' ? 1 : 0,
-              isEnableEdit: item.status !== 'INACTIVE',
-              gender: item.gender,
               dateOfBirth: item.dateOfBirth,
+              gender: item.gender === 'MALE' ? 'Nam' : (item.gender === 'FEMALE' ? 'Nữ' : item.gender),
+              citizenId: item.citizenId,
+              address: item.address,
+              position: item.position,
+              workPositionName: item.position, // Keep alias for existing filters if needed, but user asked for "position" in data key. Column uses 'position' or?
+              // Column key is 'position' but `workPositionName` was mapped before.
+              // Let's check column definition: name: 'position'. So data should have 'position'.
+              departmentId: item.departmentId,
+              departmentName: item.departmentName,
+              status: item.status,
+              statusName: item.status, // Column uses `statusName` key. Keep both or ensure column matches.
+              email: item.email,
+              phoneNumber: item.phoneNumber,
+              userId: item.userId,
               createdAt: item.createdAt ? formatDate(item.createdAt, 'dd/MM/yyyy', 'en-US') : '',
-              createdAtOriginal: item.createdAt
+              createdAtOriginal: item.createdAt,
+
+              // Extra mappings for table compatibility if columns expected other keys
+              index: index + 1,
+              userName: item.code, // Fallback if some code uses userName
+              statusLabel: item.status // Or whatever logic
             }));
 
-            // Apply filters initially
+            // Initial search to set filteredData and paging
             this.onSearch();
-
+            
           } else {
             this.listOfData = [];
             this.filteredData = [];
@@ -182,68 +197,66 @@ export class EmployeeManageComponent implements OnInit, OnDestroy {
 
   onSearch(): void {
     const matches = this.listOfData.filter(item => {
-      // Filter by Code (Mã nhân viên)
-      if (this.searchFilters['code'] &&
-        !item.userName?.toLowerCase().includes(this.searchFilters['code'].toLowerCase())) {
+      // Filter by Code (userName)
+      if (this.searchFilters['code'] && !item.userName?.toLowerCase().includes(this.searchFilters['code'].toLowerCase())) {
         return false;
       }
-
-      // Filter by FullName
-      if (this.searchFilters['fullName'] &&
-        !item.fullName?.toLowerCase().includes(this.searchFilters['fullName'].toLowerCase())) {
+      // Filter by Name
+      if (this.searchFilters['fullName'] && !item.fullName?.toLowerCase().includes(this.searchFilters['fullName'].toLowerCase())) {
         return false;
       }
-
       // Filter by Email
-      if (this.searchFilters['email'] &&
-        !item.email?.toLowerCase().includes(this.searchFilters['email'].toLowerCase())) {
+      if (this.searchFilters['email'] && !item.email?.toLowerCase().includes(this.searchFilters['email'].toLowerCase())) {
         return false;
       }
-
       // Filter by Phone
-      if (this.searchFilters['phoneNumber'] &&
-        !item.phoneNumber?.toLowerCase().includes(this.searchFilters['phoneNumber'].toLowerCase())) {
+      if (this.searchFilters['phoneNumber'] && !item.phoneNumber?.toLowerCase().includes(this.searchFilters['phoneNumber'].toLowerCase())) {
         return false;
       }
-
-      // Filter by Department (Select Multiple)
-      if (this.searchFilters['departmentName'] && this.searchFilters['departmentName'].length > 0) {
-        if (!this.searchFilters['departmentName'].includes(item.departmentName)) {
-          return false;
-        }
-      }
-
-      // Filter by Position (Select Multiple)
+      // Filter by Position
       if (this.searchFilters['position'] && this.searchFilters['position'].length > 0) {
-        if (!this.searchFilters['position'].includes(item.position)) {
-          return false;
+        if (Array.isArray(this.searchFilters['position'])) {
+           if (!this.searchFilters['position'].includes(item.workPositionName)) return false;
+        } else {
+           if (item.workPositionName !== this.searchFilters['position']) return false;
         }
       }
-
-      // Filter by Status (Select Multiple)
+      // Filter by Department
+      if (this.searchFilters['departmentName'] && this.searchFilters['departmentName'].length > 0) {
+        if (Array.isArray(this.searchFilters['departmentName'])) {
+           if (!this.searchFilters['departmentName'].includes(item.departmentName)) return false;
+        } else {
+           if (item.departmentName !== this.searchFilters['departmentName']) return false;
+        }
+      }
+      // Filter by Status
       if (this.searchFilters['statusName'] && this.searchFilters['statusName'].length > 0) {
-        if (!this.searchFilters['statusName'].includes(item.statusName)) {
-          return false;
+        if (Array.isArray(this.searchFilters['statusName'])) {
+           if (!this.searchFilters['statusName'].includes(item.statusName)) return false;
+        } else {
+           if (item.statusName !== this.searchFilters['statusName']) return false;
         }
       }
-
-      // Filter by Gender (Select Multiple)
+      // Filter by Gender
       if (this.searchFilters['gender'] && this.searchFilters['gender'].length > 0) {
-        if (!this.searchFilters['gender'].includes(item.gender)) {
-          return false;
+        if (Array.isArray(this.searchFilters['gender'])) {
+           if (!this.searchFilters['gender'].includes(item.gender)) return false;
+        } else {
+           if (item.gender !== this.searchFilters['gender']) return false;
         }
       }
 
       // Filter by Date of Birth
-      if (this.searchFilters['dateOfBirth'] && this.searchFilters['dateOfBirth'].length === 2 && this.searchFilters['dateOfBirth'][0]) {
-        if (!this.checkDateInRange(item.dateOfBirth, this.searchFilters['dateOfBirth'][0], this.searchFilters['dateOfBirth'][1])) {
+      if (this.searchFilters['dateOfBirth']) {
+        if (!this.checkDateMatch(item.dateOfBirth, this.searchFilters['dateOfBirth'])) {
           return false;
         }
       }
 
-      // Filter by Created At (Ngày vào làm)
-      if (this.searchFilters['createdAt'] && this.searchFilters['createdAt'].length === 2 && this.searchFilters['createdAt'][0]) {
-        if (!this.checkDateInRange(item.createdAtOriginal, this.searchFilters['createdAt'][0], this.searchFilters['createdAt'][1])) {
+      // Filter by Created At (Joining Date)
+      if (this.searchFilters['createdAt']) {
+         // item.createdAtOriginal is the raw date string/object
+        if (!this.checkDateMatch(item.createdAtOriginal, this.searchFilters['createdAt'])) {
           return false;
         }
       }
@@ -253,7 +266,7 @@ export class EmployeeManageComponent implements OnInit, OnDestroy {
 
     this.paging.totalElements = matches.length;
 
-    // Pagination Slicing
+    // Slicing for pagination
     const start = (this.paging.pageIndex - 1) * this.paging.pageSize;
     const end = start + this.paging.pageSize;
     this.filteredData = matches.slice(start, end);
@@ -269,6 +282,20 @@ export class EmployeeManageComponent implements OnInit, OnDestroy {
 
     const end = toDate ? new Date(toDate) : new Date(start); // If toDate null, assume single day? Or usually range picker enforces both.
     if (toDate) end.setHours(23, 59, 59, 999);
+
+    return date >= start && date <= end;
+  }
+
+  checkDateMatch(dateValue: string | Date, filterDate: Date): boolean {
+    if (!dateValue || !filterDate) return false;
+    const date = new Date(dateValue);
+    if (isNaN(date.getTime())) return false;
+
+    const start = new Date(filterDate);
+    start.setHours(0, 0, 0, 0);
+
+    const end = new Date(filterDate);
+    end.setHours(23, 59, 59, 999);
 
     return date >= start && date <= end;
   }
@@ -343,7 +370,18 @@ export class EmployeeManageComponent implements OnInit, OnDestroy {
       if (result?.success) {
         this.loadingTable = true;
 
-        this.employeeService.updateEmployee(itemData.id, result.data)
+        // Construct exact payload for update
+        const payload = {
+          fullName: result.data.fullName,
+          dateOfBirth: result.data.dateOfBirth,
+          gender: result.data.gender, // "OTHER" in example, logic handles MALE/FEMALE, OTHER comes from input or constant? GenderOptions has MALE/FEMALE. If user passes OTHER via API/curl, UI handles it? UI uses select. If user wants OTHER, option must exist. But for now I bind what is selected.
+          address: result.data.address,
+          position: result.data.position,
+          departmentId: result.data.departmentId,
+          phoneNumber: result.data.phoneNumber
+        };
+
+        this.employeeService.updateEmployee(itemData.id, payload)
           .pipe(finalize(() => this.loadingTable = false))
           .subscribe({
             next: () => {

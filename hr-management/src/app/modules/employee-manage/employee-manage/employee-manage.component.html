@@ -9,7 +9,7 @@
   </div>
 
   <ng-container *ngIf="employeeColumns && StandardColumnType">
-    <nz-table #basicTable [nzData]="filteredData" [nzLoading]="loadingTable" [nzScroll]="{ y: 'calc(100vh - 17rem)' }"
+    <nz-table #basicTable [nzData]="filteredData" [nzLoading]="loadingTable" [nzFrontPagination]="false" [nzScroll]="{ y: 'calc(100vh - 17rem)' }"
       [nzShowPagination]="false" [nzSize]="'small'" [nzBordered]="true" (nzQueryParams)="onFilterInTable($event)">
       <thead>
         <tr>
@@ -22,20 +22,20 @@
           <th *ngFor="let col of employeeColumns">
             <ng-container *ngIf="col.isFilter">
               <input *ngIf="col.filter?.type === StandardColumnType.INPUT || col.type === StandardColumnType.TEXT"
-                type="text" nz-input [(ngModel)]="searchFilters[col.name]" (ngModelChange)="searchSubject.next()"
+                type="text" nz-input [(ngModel)]="searchFilters[col.name]" (ngModelChange)="filterChanged$.next()"
                 [placeholder]="'Tìm...'" nzSize="small" />
 
               <nz-select
-                *ngIf="col.filter?.type === StandardColumnType.SELECT || col.type === StandardColumnType.SELECT"
-                [(ngModel)]="searchFilters[col.name]" (ngModelChange)="searchSubject.next()"
+                *ngIf="col.filter?.type === StandardColumnType.SELECT || col.type === StandardColumnType.SELECT || col.filter?.type === StandardColumnType.TAG || col.type === StandardColumnType.TAG"
+                [(ngModel)]="searchFilters[col.name]" (ngModelChange)="filterChanged$.next()"
                 [nzMode]="col.filter?.multiple ? 'multiple' : 'default'" [nzPlaceHolder]="'Chọn ' + col.attr"
                 nzAllowClear [nzShowArrow]="true" style="width: 100%" nzSize="small" [nzMaxTagCount]="1">
                 <nz-option *ngFor="let opt of (col.filter?.options || [])" [nzValue]="opt.value"
                   [nzLabel]="opt.label"></nz-option>
               </nz-select>
 
-              <nz-date-picker *ngIf="col.type === StandardColumnType.DATE_RANGE_PICKER"
-                [(ngModel)]="searchFilters[col.name]" (ngModelChange)="searchSubject.next()" nzFormat="dd/MM/yyyy"
+              <nz-date-picker *ngIf="col.type === StandardColumnType.DATE_PICKER"
+                [(ngModel)]="searchFilters[col.name]" (ngModelChange)="filterChanged$.next()" nzFormat="dd/MM/yyyy"
                 nzPlaceHolder="Chọn..." nzSize="small" style="width: 100%"></nz-date-picker>
             </ng-container>
           </th>

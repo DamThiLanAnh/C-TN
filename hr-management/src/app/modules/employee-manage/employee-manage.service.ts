@@ -63,14 +63,8 @@ export class EmployeeManageService {
   }
 
   updateEmployee(id: number | string, employee: any): Observable<any> {
-    const payload = {
-      fullName: employee.fullName || '',
-      dateOfBirth: employee.dateOfBirth || employee.birthDay || null,
-      position: employee.position || employee.workPositionName || '',
-      department: employee.department || employee.organizationName || '',
-      email: employee.email || '',
-      phoneNumber: employee.phone || employee.phoneNumber || ''
-    };
+    // Payload is constructed in component
+    const payload = employee;
 
     return this.http.put(`${this.contextPath}/${id}`, payload, {
       headers: this.getHeaders()

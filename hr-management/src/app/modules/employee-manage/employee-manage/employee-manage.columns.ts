@@ -167,16 +167,16 @@ export const employeeManageColumns = (): StandardColumnModel[] => {
       isSort: true,
       filter: {
         name: 'dateOfBirth',
-        type: StandardColumnType.DATE_RANGE_PICKER
+        type: StandardColumnType.DATE_PICKER
       },
-      type: StandardColumnType.DATE_RANGE_PICKER,
+      type: StandardColumnType.DATE_PICKER,
     },
     {
       id: 13,
       name: 'phoneNumber',
       fixedColumn: false,
       fixedRight: false,
-      attr: 'SĐT',
+      attr: 'SĐT',  
       width: '120px',
       isFilter: true,
       isSort: true,
@@ -191,13 +191,13 @@ export const employeeManageColumns = (): StandardColumnModel[] => {
       fixedColumn: false,
       fixedRight: false,
       attr: 'Ngày vào làm',
-      type: StandardColumnType.DATE_RANGE_PICKER,
+      type: StandardColumnType.DATE_PICKER,
       width: '140px',
       isSort: true,
       isFilter: true,
       filter: {
         name: 'createdAt',
-        type: StandardColumnType.DATE_RANGE_PICKER
+        type: StandardColumnType.DATE_PICKER
       }
     },
   ];

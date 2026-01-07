@@ -94,7 +94,7 @@ export class EmployeeAddComponent implements OnInit {
       gender: [null],
       citizenId: [null],
       phoneNumber: [null, [Validators.required]],
-      email: [null, [Validators.required, Validators.email]],
+      email: [{ value: null, disabled: !!this.item }, [Validators.required, Validators.email]], // Disable if editing (item exists)
       address: [null],
       position: [null, [Validators.required]],
       departmentId: [null, [Validators.required]],
