@@ -31,7 +31,7 @@
   </div>
 
   <nz-table #basicTable
-    [nzData]="listOfData"
+    [nzData]="filteredData"
     [nzLoading]="loadingTable"
     [nzBordered]="true"
     [nzSize]="'small'"
@@ -41,16 +41,28 @@
   >
     <thead>
       <tr>
+        <th
+          nzWidth="50px"
+          [nzChecked]="checked"
+          [nzIndeterminate]="indeterminate"
+          (nzCheckedChange)="onChangeSelectAll($event)"
+        ></th>
         <th *ngFor="let col of specialScheduleColumns" [nzWidth]="col.width || null">{{ col.attr }}</th>
       </tr>
       <tr class="filter-row">
+        <th></th>
         <ng-container *ngFor="let col of specialScheduleColumns">
           <th *ngIf="col.isFilter">
             <input *ngIf="col.filter?.type === StandardColumnType.INPUT || col.type === StandardColumnType.TEXT" type="text" nz-input [(ngModel)]="searchFilters[col.name]" (ngModelChange)="searchSubject.next()" [placeholder]="'Tìm...'" nzSize="small" />
-            <nz-select *ngIf="col.filter?.type === StandardColumnType.SELECT || col.type === StandardColumnType.SELECT" [(ngModel)]="searchFilters[col.name]" (ngModelChange)="searchSubject.next()" nzPlaceHolder="Tìm..." nzAllowClear nzSize="small" style="width: 100%">
-              <ng-container *ngFor="let opt of (col.filter?.options || [])">
-                <nz-option [nzValue]="opt.value">{{ opt.label }}</nz-option>
-              </ng-container>
+            <nz-select *ngIf="col.filter?.type === StandardColumnType.SELECT || col.type === StandardColumnType.SELECT"
+                       [(ngModel)]="searchFilters[col.name]"
+                       (ngModelChange)="searchSubject.next()"
+                       [nzMode]="col.filter?.multiple ? 'multiple' : 'default'"
+                       nzPlaceHolder="Tìm..."
+                       nzAllowClear
+                       nzSize="small"
+                       style="width: 100%">
+              <nz-option *ngFor="let opt of (col.filter?.options || [])" [nzValue]="opt.value" [nzLabel]="opt.label"></nz-option>
             </nz-select>
             <nz-date-picker *ngIf="col.type === StandardColumnType.DATE_PICKER" [(ngModel)]="searchFilters[col.name]" (ngModelChange)="searchSubject.next()" nzFormat="dd/MM/yyyy" nzPlaceHolder="Chọn..." nzSize="small" style="width: 100%"></nz-date-picker>
           </th>
@@ -60,6 +72,12 @@
     </thead>
     <tbody>
       <tr *ngFor="let data of basicTable.data; let i = index">
+        <td
+          [nzChecked]="!!data.checked"
+          [nzDisabled]="!!data.disabled"
+          (nzCheckedChange)="onItemChecked(data, $event)"
+          (click)="$event.stopPropagation()"
+        ></td>
         <ng-container *ngFor="let col of specialScheduleColumns">
           <td *ngIf="col.type !== StandardColumnType.ACTION">{{ data[col.name] }}</td>
           <td *ngIf="col.name === 'action'" [ngClass]="col.classes || ''" class="text-center" (click)="$event.stopPropagation()">

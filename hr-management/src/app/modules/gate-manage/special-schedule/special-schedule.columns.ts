@@ -6,7 +6,45 @@ import {
   StandardFormItemModel
 } from '../../shares/interfaces';
 import { IconHtml } from '../../shares/enum/icon-html.enum';
-export const specialScheduleColumns = (): StandardColumnModel[] => {
+export const specialScheduleColumns = (isManagerOrHR: boolean): StandardColumnModel[] => {
+  const actions: ActionConfig[] = [];
+
+  if (isManagerOrHR) {
+    actions.push(
+      {
+        key: 'approve',
+        icon: 'approve',
+        label: 'Duyệt',
+        html: IconHtml.ACCEPT,
+        fieldCheckShow: 'isActiveAction',
+      },
+      {
+        key: 'reject',
+        icon: 'reject',
+        label: 'Từ chối',
+        html: IconHtml.REJECT,
+        fieldCheckShow: 'isActiveAction',
+      }
+    );
+  } else {
+    actions.push(
+      {
+        key: 'edit',
+        icon: 'edit',
+        label: 'Sửa',
+        html: IconHtml.UPDATE,
+        fieldCheckShow: 'isActiveAction',
+      },
+      {
+        key: 'delete',
+        icon: 'delete',
+        label: 'Xóa',
+        html: IconHtml.DELETE,
+        fieldCheckShow: 'isActiveAction',
+      }
+    );
+  }
+
   return [
     {
       id: 0,
@@ -31,40 +69,7 @@ export const specialScheduleColumns = (): StandardColumnModel[] => {
       width: '100px',
       isFilter: false,
       isSort: false,
-      listAction: [
-        {
-          key: 'edit',
-          icon: 'edit',
-          label: 'Sửa',
-          html: IconHtml.UPDATE,
-          // rules: ['ROLE_ADMIN_SYSTEM', 'ROLE_ABSENCE_UPDATE'],
-          fieldCheckShow: 'isActiveAction',
-        } as ActionConfig,
-        {
-          key: 'delete',
-          icon: 'delete',
-          label: 'Xóa',
-          html: IconHtml.DELETE,
-          // rules: ['ROLE_ADMIN_SYSTEM', 'ROLE_ABSENCE_DELETE'],
-          fieldCheckShow: 'isActiveAction',
-        } as ActionConfig,
-        // {
-        //   key: 'approve',
-        //   icon: 'approve',
-        //   label: 'Duyệt',
-        //   html: IconHtml.ACCEPT,
-        //   // rules: ['ROLE_ADMIN_SYSTEM', 'ROLE_ABSENCE_APPROVAL'],
-        //   fieldCheckShow: 'isActiveAction',
-        // } as ActionConfig,
-        // {
-        //   key: 'reject',
-        //   icon: 'reject',
-        //   label: 'Từ chối',
-        //   html: IconHtml.REJECT,
-        //   // rules: ['ROLE_ADMIN_SYSTEM', 'ROLE_ABSENCE_APPROVAL'],
-        //   fieldCheckShow: 'isActiveAction',
-        // } as ActionConfig,
-      ],
+      listAction: actions,
     },
     {
       id: 2,

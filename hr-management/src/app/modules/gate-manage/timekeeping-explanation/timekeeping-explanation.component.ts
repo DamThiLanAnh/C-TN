@@ -80,6 +80,13 @@ export class TimekeepingExplanationComponent implements OnInit {
   ngOnInit(): void {
     this.isManager = this.authService.isManager();
     this.isHROrAdmin = this.authService.isHROrAdmin();
+    this.canApprove = this.isManager || this.isHROrAdmin;
+
+    // Filter columns: Remove 'action' column for Employees (who cannot approve)
+    if (!this.canApprove) {
+      this.timekeepingColumns = this.timekeepingColumns.filter(col => col.name !== 'action');
+    }
+
     console.log('User is manager:', this.isManager);
     console.log('User is HR or Admin:', this.isHROrAdmin);
 
@@ -202,15 +209,15 @@ export class TimekeepingExplanationComponent implements OnInit {
       employeeEmail: item.employeeEmail || `emp${item.employeeId}@company.com`,
       departmentName: item.departmentName || 'N/A',
       workDate: item.workDate,
-      checkInTime: item.checkInTime || '--:--',
-      checkOutTime: item.checkOutTime || '--:--',
+      checkInTime: item.originalCheckIn || '--:--',
+      checkOutTime: item.originalCheckOut || '--:--',
       proposedCheckIn: item.proposedCheckIn || '--:--',
       proposedCheckOut: item.proposedCheckOut || '--:--',
       reason: item.reason || 'Không có lý do',
       status: this.mapStatus(item.status),
-      approvalDate: item.approvalDate,
-      approverName: item.approverName,
-      rejectReason: item.rejectReason,
+      approvalDate: item.decidedAt,
+      approverName: item.decidedBy,
+      rejectReason: item.managerNote,
       checked: false
     };
   }
@@ -500,7 +507,8 @@ export class TimekeepingExplanationComponent implements OnInit {
       nzWidth: 700,
       nzMaskClosable: false,
       nzComponentParams: {
-        itemData: data
+        itemData: data,
+        canApprove: this.canApprove
       }
     });
 

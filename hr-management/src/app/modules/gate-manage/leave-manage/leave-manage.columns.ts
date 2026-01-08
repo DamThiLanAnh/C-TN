@@ -7,7 +7,49 @@ import {
 } from '../../shares/interfaces';
 import   {IconHtml} from '../../shares/enum/icon-html.enum';
 
-export const leaveManageColumns = (): StandardColumnModel[] => {
+export const leaveManageColumns = (isManagerOrHR: boolean): StandardColumnModel[] => {
+  const actions: ActionConfig[] = [];
+
+  if (isManagerOrHR) {
+    actions.push(
+      {
+        key: 'approve',
+        icon: 'approve',
+        label: 'Duyệt',
+        html: IconHtml.ACCEPT,
+        rules: [],
+        fieldCheckShow: 'isActiveAction',
+      },
+      {
+        key: 'reject',
+        icon: 'reject',
+        label: 'Từ chối',
+        html: IconHtml.REJECT,
+        rules: [],
+        fieldCheckShow: 'isActiveAction',
+      }
+    );
+  } else {
+    actions.push(
+      {
+        key: 'edit',
+        icon: 'edit',
+        label: 'Cập nhật',
+        html: IconHtml.UPDATE,
+        rules: [],
+        // fieldCheckShow: 'isActiveAction', // Optional: Show only if pending?
+      },
+      {
+        key: 'delete',
+        icon: 'delete',
+        label: 'Xóa',
+        html: IconHtml.DELETE, // Check if DELETE icon is available
+        rules: [],
+        // fieldCheckShow: 'isActiveAction',
+      }
+    );
+  }
+
   return [
     {
       id: 1,
@@ -36,24 +78,7 @@ export const leaveManageColumns = (): StandardColumnModel[] => {
         isEdit: [''],
         isRemove: [''],
       },
-      listAction: [
-        {
-          key: 'approve',
-          icon: 'approve',
-          label: 'Duyệt',
-          html: IconHtml.ACCEPT,
-          rules: [],
-          fieldCheckShow: 'isActiveAction',
-        } as ActionConfig,
-        {
-          key: 'reject',
-          icon: 'reject',
-          label: 'Từ chối',
-          html: IconHtml.REJECT,
-          rules: [],
-          fieldCheckShow: 'isActiveAction',
-        } as ActionConfig,
-      ],
+      listAction: actions,
     },
     {
       id: 3,

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { NzModalRef } from 'ng-zorro-antd/modal';
 import { NzMessageService } from 'ng-zorro-antd/message';
@@ -13,6 +13,8 @@ export class ModalAddLeaveComponent implements OnInit {
   leaveForm!: FormGroup;
   isSubmitting = false;
   modalTitle = 'Thêm mới đơn nghỉ phép';
+  
+  @Input() data: any; // Input to receive data for editing
 
   leaveTypes = [
     { value: 'ANNUAL', label: 'Nghỉ phép năm' },
@@ -28,16 +30,19 @@ export class ModalAddLeaveComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
+    if (this.data) {
+      this.modalTitle = 'Cập nhật đơn nghỉ phép';
+    }
     this.initForm();
   }
 
   initForm(): void {
     this.leaveForm = this.fb.group({
-      employeeId: [null, [Validators.required]],
-      type: ['ANNUAL', [Validators.required]],
-      startDate: [null, [Validators.required]],
-      endDate: [null, [Validators.required]],
-      reason: ['', [Validators.required, Validators.maxLength(500)]]
+      employeeId: [this.data?.employeeId || null, [Validators.required]],
+      type: [this.data?.type || 'ANNUAL', [Validators.required]],
+      startDate: [this.data?.startDate ? new Date(this.data.startDate) : null, [Validators.required]],
+      endDate: [this.data?.endDate ? new Date(this.data.endDate) : null, [Validators.required]],
+      reason: [this.data?.absenceReason || '', [Validators.required, Validators.maxLength(500)]]
     });
   }
 
@@ -54,14 +59,21 @@ export class ModalAddLeaveComponent implements OnInit {
         reason: formValue.reason
       };
 
-      this.leaveService.addLeaveRequest(leaveRequest).subscribe(
+      let requestApi;
+      if (this.data && this.data.id) {
+          requestApi = this.leaveService.updateLeaveRequest(this.data.id, leaveRequest);
+      } else {
+          requestApi = this.leaveService.addLeaveRequest(leaveRequest);
+      }
+
+      requestApi.subscribe(
         (response) => {
-          this.message.success('Tạo đơn nghỉ phép thành công!');
+          this.message.success(this.data ? 'Cập nhật đơn nghỉ phép thành công!' : 'Tạo đơn nghỉ phép thành công!');
           this.modalRef.close({ success: true, data: response });
         },
         (error) => {
-          console.error('Error creating leave request:', error);
-          this.message.error('Không thể tạo đơn nghỉ phép. Vui lòng thử lại!');
+          console.error('Error submitting leave request:', error);
+          this.message.error('Có lỗi xảy ra. Vui lòng thử lại!');
           this.isSubmitting = false;
         }
       );

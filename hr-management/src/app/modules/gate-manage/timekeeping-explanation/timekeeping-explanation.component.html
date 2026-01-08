@@ -6,13 +6,14 @@
         <span nz-icon nzType="plus-circle" nzTheme="outline" aria-hidden="true"></span>Thêm mới
       </button>
       <button
+        *ngIf="isHROrAdmin"
         nz-button
         nzGhost
         class="me-2"
         nzType="primary"
         type="button"
         nzDanger
-        [disabled]="!isDataSelected() || !isHROrAdmin"
+        [disabled]="!isDataSelected()"
         (click)="onDelete()"
       >
         <span nz-icon nzType="delete" nzTheme="outline"></span> Xóa
@@ -21,6 +22,7 @@
   </div>
 
   <div
+    *ngIf="isManager || isHROrAdmin"
     nz-row
     nzJustify="start"
     class="action-table d-flex align-items-center mb-2">
@@ -70,6 +72,7 @@
     <thead>
     <tr>
       <th
+        *ngIf="isManager || isHROrAdmin"
         nzWidth="50px"
         [nzChecked]="checked"
         [nzIndeterminate]="indeterminate"
@@ -85,7 +88,7 @@
     <!-- Filter Row -->
     <tr class="filter-row">
       <!-- No filter for Checkbox -->
-      <th></th>
+      <th *ngIf="isManager || isHROrAdmin"></th>
       <!-- No filter for STT (Index) -->
       <th></th>
       <!-- No filter for Thao tác (Action) -->
@@ -185,7 +188,7 @@
     </thead>
     <tbody>
     <tr *ngFor="let data of basicTable.data; let i = index" (click)="openDetailModal(data)" style="cursor: pointer;">
-      <td [nzChecked]="!!data.checked" (nzCheckedChange)="onItemChecked(data, $event)" (click)="$event.stopPropagation()"></td>
+      <td *ngIf="isManager || isHROrAdmin" [nzChecked]="!!data.checked" (nzCheckedChange)="onItemChecked(data, $event)" (click)="$event.stopPropagation()"></td>
       <ng-container *ngFor="let col of timekeepingColumns">
         <!-- Index Column -->
         <td *ngIf="col.name === 'index'" [ngClass]="col.classes || ''" class="text-center">

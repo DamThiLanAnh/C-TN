@@ -134,7 +134,7 @@
 </ng-template>
 
 <div *nzModalFooter>
-  <ng-container *ngIf="itemData?.status === 'Chờ duyệt' || itemData?.status === 'PENDING'; else noApprove">
+  <ng-container *ngIf="(itemData?.status === 'Chờ duyệt' || itemData?.status === 'PENDING') && canApprove; else noApprove">
     <div class="text-end">
       <button nz-button nzType="default" type="button" (click)="destroyModal()">
         Đóng

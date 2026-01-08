@@ -5,19 +5,6 @@
       <button nz-button nzType="primary" type="button" nzDanger (click)="openAddModal()">
         <span nz-icon nzType="plus-circle" nzTheme="outline" aria-hidden="true" ></span>Thêm mới
       </button>
-<!--      button xoa-->
-      <button
-        nz-button
-        nzGhost
-        class="me-2"
-        nzType="primary"
-        type="button"
-        nzDanger
-        [disabled]="!isDataSelected() || !isHR"
-        (click)="onDelete()"
-      >
-        <span nz-icon nzType="delete" nzTheme="outline"></span> Xóa
-      </button>
     </div>
   </div>
   <div

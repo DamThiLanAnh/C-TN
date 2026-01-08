@@ -90,16 +90,16 @@ export class TimekeepingExplanationService {
     console.log('🔵 Manager calling API /api/timekeeping-explanations with params:', httpParams);
 
     // Manager uses same endpoint - backend filters by manager's department automatically
-    return this.http.get(`${this.baseUrl}/api/timekeeping-explanations`, {
+    return this.http.get(`${this.baseUrl}/api/timekeeping-explanations/pending`, {
       params: httpParams
     });
   }
 
   // Employee get their own timekeeping explanations
   getTimekeepingMy(page: number = 0, size: number = 10): Observable<any> {
-    console.log('🔵 Employee calling API /api/timekeeping-explanations/my');
+    console.log('🔵 Employee calling API /api/timekeeping-explanations');
 
-    return this.http.get(`${this.baseUrl}/api/timekeeping-explanations/my`, {
+    return this.http.get(`${this.baseUrl}/api/timekeeping-explanations`, {
       params: {
         page: page.toString(),
         size: size.toString()

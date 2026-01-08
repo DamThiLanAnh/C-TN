@@ -1,3 +1,11 @@
-.error{
+.error {
   color: red;
+}
+
+input.nz-input, textarea.nz-input, nz-select, select {
+  border-radius: 6px !important;
+}
+
+::ng-deep .ant-modal-content {
+  border-radius: 6px !important;
 }

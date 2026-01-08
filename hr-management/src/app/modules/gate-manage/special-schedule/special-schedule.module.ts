@@ -14,6 +14,7 @@ import { NzInputModule } from 'ng-zorro-antd/input';
 import { NzDividerModule } from 'ng-zorro-antd/divider';
 import { NzSelectModule } from 'ng-zorro-antd/select';
 import { NzDatePickerModule } from 'ng-zorro-antd/date-picker';
+import { NzTimePickerModule } from 'ng-zorro-antd/time-picker';
 import { SpecialScheduleComponent } from './special-schedule/special-schedule.component';
 import { ModalConfirmationComponent } from './modal-confirmation/modal-confirmation.component';
 import {
@@ -47,8 +48,10 @@ import { SharedModule } from '../../shares/shared.module';
     NzDividerModule,
     NzSelectModule,
     NzDatePickerModule,
+    NzDatePickerModule,
     NzToolTipModule,
-    SharedModule
+    SharedModule,
+    NzTimePickerModule
   ],
   providers: [SpecialScheduleService],
   exports: []

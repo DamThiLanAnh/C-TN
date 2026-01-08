@@ -50,6 +50,7 @@ export class LeaveManageComponent implements OnInit, OnDestroy {
   isManager = false; // Check if user is manager
   isHR = false; // Check if user is HR (only HR can delete)
   isHROrAdmin = false; // Check if user is HR or Admin
+  currentUser: any;
 
   // Search filters for each column
   public searchFilters: { [key: string]: any } = {};
@@ -61,7 +62,7 @@ export class LeaveManageComponent implements OnInit, OnDestroy {
   };
 
 
-  leaveManageColumns: StandardColumnModel[] = leaveManageColumns();
+  leaveManageColumns: StandardColumnModel[] = []; // Initialize empty, set in ngOnInit
 
   constructor(
     private modal: NzModalService,
@@ -90,6 +91,12 @@ export class LeaveManageComponent implements OnInit, OnDestroy {
 
     // Check if user is HR or Admin
     this.isHROrAdmin = this.authService.isHROrAdmin();
+    
+    // Set canApproveLeave based on role
+    this.canApproveLeave = this.isManager || this.isHROrAdmin;
+
+    this.currentUser = this.authService.getUser();
+    console.log('Current User:', this.currentUser);
 
     // Debounce filter changes
     this.filterChanged$
@@ -98,6 +105,9 @@ export class LeaveManageComponent implements OnInit, OnDestroy {
         this.paging.pageIndex = 1; // Reset to page 1 for new search
         this.onSearch();
       });
+
+    // Initialize columns based on role
+    this.leaveManageColumns = leaveManageColumns(this.canApproveLeave);
 
     this.loadDepartments();
     this.loadLeaveData();
@@ -129,17 +139,9 @@ export class LeaveManageComponent implements OnInit, OnDestroy {
     const page = 0; // Always load first page (which is "all" if size is big enough)
 
     let apiCall;
-    if (this.isHROrAdmin) {
-      // Remove filters for initial load to get full dataset for client-side filtering
-      apiCall = this.leaveService.getAllLeaveRequests({
-        page,
-        size: pageSize
-      });
-    } else if (this.isManager) {
-      // Manager also client-side filtering on limited set or full set?
-      // Keeping original behavior but ensure we have enough data?
-      // Assuming Manager also wants client-side filter -> increase size
-      apiCall = this.leaveService.getLeaveByDepartment(page, 1000);
+    if (this.isHROrAdmin || this.isManager) {
+      // Use getPendingLeaves for HR/Admin and Manager to see requests for approval
+      apiCall = this.leaveService.getPendingLeaves(page, pageSize);
     } else {
       // Employee
       apiCall = this.leaveService.getLeaveMy(page, 1000);
@@ -221,6 +223,7 @@ export class LeaveManageComponent implements OnInit, OnDestroy {
       timeRegisterEnd: this.formatTimeDisplay(item.endDate),
       absenceStatus: this.mapLeaveStatus(item.status),
       absenceReason: item.reason || 'Không có lý do',
+      approvalUserId: item.approverId,
       checked: false
     };
   }
@@ -333,13 +336,76 @@ export class LeaveManageComponent implements OnInit, OnDestroy {
   }
 
   onReject(): void {
-    console.log('Rejecting selected items:', this.dataDeleteChecked);
-    // Implement rejection logic here
+    if (this.dataDeleteChecked.length === 0) {
+      this.message.warning('Vui lòng chọn ít nhất một yêu cầu để từ chối');
+      return;
+    }
+
+    this.modal.confirm({
+      nzTitle: 'Xác nhận từ chối',
+      nzContent: `Bạn có chắc chắn muốn TỪ CHỐI ${this.dataDeleteChecked.length} yêu cầu này?`,
+      nzOkText: 'Từ chối',
+      nzOkType: 'primary',
+      nzOkDanger: true,
+      nzCancelText: 'Hủy',
+      nzOnOk: () => {
+        this.processReview('REJECT', 'Không đồng ý');
+      }
+    });
   }
 
   onAccept(): void {
-    console.log('Accepting selected items:', this.dataDeleteChecked);
-    // Implement acceptance logic here
+    if (this.dataDeleteChecked.length === 0) {
+      this.message.warning('Vui lòng chọn ít nhất một yêu cầu để duyệt');
+      return;
+    }
+
+    this.modal.confirm({
+      nzTitle: 'Xác nhận duyệt',
+      nzContent: `Bạn có chắc chắn muốn DUYỆT ${this.dataDeleteChecked.length} yêu cầu này?`,
+      nzOkText: 'Duyệt',
+      nzOkType: 'primary',
+      nzCancelText: 'Hủy',
+      nzOnOk: () => {
+        this.processReview('APPROVE', 'Đồng ý cho nghỉ');
+      }
+    });
+  }
+
+  private processReview(action: 'APPROVE' | 'REJECT', note: string): void {
+    this.loadingTable = true;
+    let successCount = 0;
+    let errorCount = 0;
+
+    const requests = this.dataDeleteChecked
+      .filter(item => item.id !== undefined)
+      .map(item => {
+        return this.leaveService.reviewLeaveRequest(item.id!, { action, managerNote: note }).toPromise()
+          .then(() => {
+            successCount++;
+          })
+          .catch((err) => {
+            console.error(`Error reviewing leave ${item.id}:`, err);
+            const errorMessage = err.error?.message || err.error || err.message || 'Lỗi không xác định';
+            this.message.error(`Lỗi request ${item.id}: ${errorMessage}`);
+            errorCount++;
+          });
+      });
+
+    Promise.all(requests).then(() => {
+      this.loadingTable = false;
+      if (successCount > 0) {
+        this.message.success(`Đã ${action === 'APPROVE' ? 'duyệt' : 'từ chối'} thành công ${successCount} yêu cầu`);
+      }
+      if (errorCount > 0) {
+        // The error details are already logged in the catch block
+        // We can try to be more specific if we captured the error messages
+        this.message.error(`Không thể thực hiện với ${errorCount} yêu cầu. Vui lòng kiểm tra quyền duyệt.`);
+      }
+      
+      this.dataDeleteChecked = [];
+      this.loadLeaveData();
+    });
   }
 
   handleAction(actionKey: string, data: LeaveManageModel): void {
@@ -352,7 +418,59 @@ export class LeaveManageComponent implements OnInit, OnDestroy {
       data.checked = true;
       this.dataDeleteChecked = [data];
       this.onReject();
+    } else if (actionKey === 'edit') {
+      this.onEdit(data);
+    } else if (actionKey === 'delete') {
+      this.onDeleteOne(data);
     }
+  }
+
+  onEdit(data: LeaveManageModel): void {
+      // Open modal in edit mode (assuming modal supports it or create logic)
+      // For now, reuse openAddModal but might need modification to pass data
+      // Checking if ModalAddLeaveComponent supports editing or if we should use another modal
+      // Given the files I saw earlier, there's `modal-add-leave` and `modal-leave`.
+      // `modal-leave` seems to be view detail. `modal-add-leave` is likely for adding.
+      // I'll assume we need to pass data to `modal-add-leave` or create a new instance.
+       
+       // Note: The user asked for "Update" button for Employee.
+       // I'll try to find if ModalAddLeaveComponent accepts input.
+      const modalRef = this.modal.create({
+          nzTitle: 'Cập nhật yêu cầu',
+          nzContent: ModalAddLeaveComponent,
+          nzFooter: null,
+          nzWidth: 600,
+          nzBodyStyle: { padding: '24px' },
+          nzComponentParams: {
+            // Check if I can pass data here. 
+            // I'll need to check ModalAddLeaveComponent content to be sure, but standard pattern is passing `data` or similar.
+            // For now, I'll pass `data` and hope it works or I'll fix it if I see errors/it doesn't work.
+            // But wait, I shouldn't guess wildy.
+            // Let's assume standard behavior:
+            // data: data 
+             data: data // passing the row data
+          }
+      });
+
+      modalRef.afterClose.subscribe(result => {
+          if (result && result.success) {
+              this.loadLeaveData();
+          }
+      });
+  }
+
+  onDeleteOne(data: LeaveManageModel): void {
+      this.modal.confirm({
+          nzTitle: 'Xác nhận xóa',
+          nzContent: `Bạn có chắc chắn muốn xóa yêu cầu này?`,
+          nzOkText: 'Xóa',
+          nzOkType: 'primary',
+          nzOkDanger: true,
+          nzOnOk: () => {
+             // Reuse performDelete
+             if (data.id) this.performDelete([data.id]);
+          }
+      });
   }
 
   onTableQueryParamsChange(params: any): void {

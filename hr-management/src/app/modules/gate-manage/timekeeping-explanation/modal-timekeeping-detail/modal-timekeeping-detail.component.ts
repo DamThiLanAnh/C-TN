@@ -12,6 +12,7 @@ export class ModalTimekeepingDetailComponent implements OnInit {
   modalTitle = 'Xem chi tiết giải trình công';
 
   @Input() itemData: any;
+  @Input() canApprove: boolean = false;
 
   rolesApproveTimekeeping = ['ADMIN', 'MANAGER', 'HR']; // Roles with approval rights
 

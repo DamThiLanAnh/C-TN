@@ -41,6 +41,13 @@ export class SpecialScheduleService {
     return this.http.get<any>(`${this.baseUrl}/department`, {params: httpParams});
   }
 
+  getPendingSpecialSchedulesApi(params: any): Observable<any> {
+    const httpParams = new HttpParams()
+      .set('page', params.page !== undefined ? params.page.toString() : '0')
+      .set('size', params.size !== undefined ? params.size.toString() : '10');
+    return this.http.get<any>(`${this.baseUrl}/pending`, {params: httpParams});
+  }
+
   createSpecialScheduleApi(body: any): Observable<any> {
     return this.http.post<any>(`${this.baseUrl}`, body);
   }

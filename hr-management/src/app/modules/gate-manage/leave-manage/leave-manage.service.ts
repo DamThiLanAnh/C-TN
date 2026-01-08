@@ -86,6 +86,15 @@ export class LeaveManagementService {
     return this.http.post(`${this.baseUrl}/api/leave`, body, { headers });
   }
 
+  // update leave request
+  updateLeaveRequest(id: number, body: LeaveRequest): Observable<any> {
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+      'accept': '*/*'
+    });
+    return this.http.put(`${this.baseUrl}/api/leave/${id}`, body, { headers });
+  }
+
   // HR delete a leave request (only HR has permission)
   deleteLeaveRequest(leaveId: number): Observable<any> {
     const url = `${this.baseUrl}/api/leave/hr/${leaveId}`;
@@ -104,5 +113,24 @@ export class LeaveManagementService {
   getActiveDepartments(): Observable<any> {
     console.log('LeaveManagementService.getActiveDepartments called');
     return this.http.get(`${this.baseUrl}/api/departments`); // Fixed: departments (plural)
+  }
+
+  // Get pending leave requests
+  getPendingLeaves(page: number = 0, size: number = 10): Observable<any> {
+    return this.http.get(`${this.baseUrl}/api/leave/pending`, {
+      params: {
+        page: page.toString(),
+        size: size.toString()
+      }
+    });
+  }
+
+  // Approve or Reject leave request
+  reviewLeaveRequest(id: number, body: { action: 'APPROVE' | 'REJECT', managerNote: string }): Observable<any> {
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+      'accept': '*/*'
+    });
+    return this.http.patch(`${this.baseUrl}/api/leave/${id}/decision`, body, { headers });
   }
 }
