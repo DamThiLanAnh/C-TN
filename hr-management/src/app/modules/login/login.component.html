@@ -4,26 +4,14 @@
     <h2 class="sub-title">StaffManagement</h2>
 
     <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
-      <input
-        type="text"
-        placeholder="Username"
-        class="input"
-        formControlName="username"
-        [class.error]="isInvalid('username')"
-        [disabled]="isLoading"
-      />
+      <input type="text" placeholder="Username" class="input" formControlName="username"
+        [class.error]="isInvalid('username')" [disabled]="isLoading" />
       <div class="error-text" *ngIf="isInvalid('username')">
         * Bạn cần nhập tài khoản
       </div>
 
-      <input
-        type="password"
-        placeholder="Password"
-        class="input"
-        formControlName="password"
-        [class.error]="isInvalid('password')"
-        [disabled]="isLoading"
-      />
+      <input type="password" placeholder="Password" class="input" formControlName="password"
+        [class.error]="isInvalid('password')" [disabled]="isLoading" />
       <div class="error-text" *ngIf="isInvalid('password')">
         * Bạn cần nhập mật khẩu
       </div>
@@ -31,11 +19,8 @@
         * Tài khoản hoặc mật khẩu không đúng
       </div>
 
-      <button
-        type="submit"
-        class="btn"
-        [disabled]="isLoading || loginForm.invalid">
-        Đăng nhâp
+      <button type="submit" class="btn" [disabled]="isLoading || loginForm.invalid">
+        Đăng nhập
       </button>
     </form>
   </div>

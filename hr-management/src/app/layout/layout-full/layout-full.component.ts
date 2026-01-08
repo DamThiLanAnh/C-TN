@@ -43,11 +43,11 @@ export class LayoutFullComponent implements OnInit {
 
   menus: UiNavModel[] = [
     {
-      htmlIcon: IconHtml.HOME,
-      title: 'Trang chủ',
+      htmlIcon: IconHtml.STATISTICS,
+      title: 'Thống kê',
       id: '1',
       level: 1,
-      url: '/welcome',
+      url: '/dashboard',
       roles: [],
       children: []
     },
@@ -348,7 +348,7 @@ export class LayoutFullComponent implements OnInit {
 
   private getMenuTitleFromUrl(url: string): string {
     const titleMap: { [key: string]: string } = {
-      '/welcome': 'Trang chủ',
+      '/dashboard': 'Thống kê',
       '/employee/employee-manage': 'Quản lý nhân viên',
       '/employee/department-manage': 'Quản lý phòng ban',
       '/employee/certificates-manage': 'Quản lý bằng cấp',

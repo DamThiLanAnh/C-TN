@@ -13,8 +13,8 @@ export const routes: Routes = [
     component: LayoutFullComponent,
     children: [
       {
-        path: 'welcome',
-        loadChildren: () => import('./modules/welcome/welcome.module').then(m => m.WelcomeModule)
+        path: 'dashboard',
+        loadChildren: () => import('./modules/dashboard/dashboard.module').then(m => m.DashboardModule)
       },
       {
         path: 'staffs/user-information',

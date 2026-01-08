@@ -41,7 +41,7 @@ export class LoginComponent implements OnInit {
       return;
     }
 
-    const {username, password} = this.loginForm.value;
+    const { username, password } = this.loginForm.value;
 
     this.isLoading = true;
     this.loginError = false;
@@ -58,7 +58,7 @@ export class LoginComponent implements OnInit {
           this.loginError = false;
 
           setTimeout(() => {
-            this.router.navigate(['/welcome']);
+            this.router.navigate(['/dashboard']);
           }, 100);
         },
         error: (error) => {

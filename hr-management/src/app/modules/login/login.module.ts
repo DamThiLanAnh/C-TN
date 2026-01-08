@@ -16,5 +16,4 @@ import { NzSpinModule } from 'ng-zorro-antd/spin';
   ],
   exports: [],
 })
-export class LoginModule {
-}
+export class LoginModule { }

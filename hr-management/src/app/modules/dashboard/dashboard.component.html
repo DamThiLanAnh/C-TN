@@ -1,0 +1,86 @@
+<div class="welcome-container">
+  <div class="welcome-header">
+    <div class="welcome-title">
+      <div style="display: flex; justify-content: space-between; align-items: center;">
+        <div>
+          <h1>Dashboard - Tháng {{ currentMonth | date: 'MM/yyyy' }}</h1>
+          <p class="subtitle">Tổng quan tình hình nhân sự và hoạt động</p>
+        </div>
+        <nz-date-picker class="custom-month-picker" nzMode="month" [(ngModel)]="currentMonth"
+          (ngModelChange)="onMonthChange($event)" [nzFormat]="'MM/yyyy'" [nzAllowClear]="false"></nz-date-picker>
+      </div>
+    </div>
+  </div>
+
+  <nz-alert *ngIf="error" nzType="error" [nzMessage]="error" nzShowIcon style="margin-bottom: 24px;"></nz-alert>
+
+  <nz-spin [nzSpinning]="isLoading">
+    <!-- Stats Grid -->
+    <div class="stats-grid" *ngIf="overviewData">
+      <nz-card class="stat-card stat-primary">
+        <div class="stat-content">
+          <span nz-icon nzType="team" nzTheme="outline" class="stat-icon"></span>
+          <div class="stat-info">
+            <h3>{{ overviewData.totalEmployees }}</h3>
+            <p>Tổng nhân viên</p>
+          </div>
+        </div>
+      </nz-card>
+
+      <nz-card class="stat-card stat-success">
+        <div class="stat-content">
+          <span nz-icon nzType="check-circle" nzTheme="outline" class="stat-icon"></span>
+          <div class="stat-info">
+            <h3>{{ overviewData.activeEmployees }}</h3>
+            <p>Nhân viên Official</p>
+          </div>
+        </div>
+      </nz-card>
+
+      <nz-card class="stat-card stat-warning">
+        <div class="stat-content">
+          <span nz-icon nzType="lock" nzTheme="outline" class="stat-icon"></span>
+          <div class="stat-info">
+            <h3>{{ overviewData.inactiveEmployees + overviewData.lockedEmployees }}</h3>
+            <p>Dừng/Khóa</p>
+          </div>
+        </div>
+      </nz-card>
+
+      <nz-card class="stat-card stat-info">
+        <div class="stat-content">
+          <span nz-icon nzType="apartment" nzTheme="outline" class="stat-icon"></span>
+          <div class="stat-info">
+            <h3>{{ overviewData.totalDepartments }}</h3>
+            <p>Phòng ban</p>
+          </div>
+        </div>
+      </nz-card>
+    </div>
+
+    <!-- Charts Grid -->
+    <div class="charts-grid" *ngIf="overviewData">
+      <div class="chart-container">
+        <canvas baseChart [data]="attendanceChartData" [options]="attendanceChartOptions" [type]="barChartType"
+          [legend]="barChartLegend">
+        </canvas>
+      </div>
+
+      <div class="chart-container">
+        <canvas baseChart [data]="overtimeChartData" [options]="overtimeChartOptions" [type]="barChartType"
+          [legend]="barChartLegend">
+        </canvas>
+      </div>
+
+      <div class="chart-container">
+        <canvas baseChart [data]="salaryChartData" [options]="salaryChartOptions" [type]="barChartType"
+          [legend]="barChartLegend">
+        </canvas>
+      </div>
+    </div>
+
+    <!-- Empty State -->
+    <nz-empty *ngIf="!overviewData && !isLoading && !error" nzNotFoundImage="simple"
+      nzNotFoundContent="Không có dữ liệu tháng này"></nz-empty>
+  </nz-spin>
+</div>
