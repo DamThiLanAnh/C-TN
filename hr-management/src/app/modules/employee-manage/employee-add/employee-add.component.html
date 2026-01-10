@@ -5,23 +5,9 @@
     <!--        [nzShowUploadList]="false" [nzBeforeUpload]="beforeUpload" [nzDisabled]="!canEdit">-->
     <!--        <ng-container *ngIf="!avatarUrl">-->
     <!--          <span class="upload-icon" style="margin-right: 5px;" nz-icon [nzType]="loading ? 'loading' : 'plus'"></span>-->
-    <!--          <div class="ant-upload-text">Tải ảnh lên</div>-->
-    <!--        </ng-container>-->
-    <!--        <img *ngIf="avatarUrl" [src]="avatarUrl" style="width: 100%; object-fit:cover;height: 100%;" />-->
-    <!--      </nz-upload>-->
-    <!--    </div>-->
-
     <form nz-form [formGroup]="formGroup">
-      <!-- Row 1: Mã nhân viên + Họ và tên -->
+      <!-- Row 1: Họ và tên + Giới tính -->
       <div nz-row [nzGutter]="16">
-        <div nz-col [nzSpan]="12">
-          <nz-form-item>
-            <nz-form-label [nzSpan]="8" nzRequired>Mã nhân viên</nz-form-label>
-            <nz-form-control [nzSpan]="16" nzErrorTip="Vui lòng nhập mã nhân viên!">
-              <input nz-input formControlName="code" placeholder="Nhập mã nhân viên" />
-            </nz-form-control>
-          </nz-form-item>
-        </div>
         <div nz-col [nzSpan]="12">
           <nz-form-item>
             <nz-form-label [nzSpan]="8" nzRequired>Họ và tên</nz-form-label>
@@ -30,23 +16,10 @@
             </nz-form-control>
           </nz-form-item>
         </div>
-      </div>
-
-      <!-- Row 2: Ngày sinh + Giới tính -->
-      <div nz-row [nzGutter]="16">
         <div nz-col [nzSpan]="12">
           <nz-form-item>
-            <nz-form-label [nzSpan]="8">Ngày sinh</nz-form-label>
-            <nz-form-control [nzSpan]="16">
-              <nz-date-picker formControlName="dateOfBirth" nzPlaceHolder="Chọn ngày sinh" style="width: 100%;"
-                nzFormat="yyyy-MM-dd"></nz-date-picker>
-            </nz-form-control>
-          </nz-form-item>
-        </div>
-        <div nz-col [nzSpan]="12">
-          <nz-form-item>
-            <nz-form-label [nzSpan]="8">Giới tính</nz-form-label>
-            <nz-form-control [nzSpan]="16">
+            <nz-form-label [nzSpan]="8" nzRequired>Giới tính</nz-form-label>
+            <nz-form-control [nzSpan]="16" nzErrorTip="Vui lòng chọn giới tính!">
               <nz-select nzShowSearch nzAllowClear nzPlaceHolder="Chọn giới tính" formControlName="gender">
                 <nz-option *ngFor="let g of GenderOptions" [nzLabel]="g.label" [nzValue]="g.value"></nz-option>
               </nz-select>
@@ -55,33 +28,34 @@
         </div>
       </div>
 
-      <!-- Row 3: CMND/CCCD + Số điện thoại -->
+      <!-- Row 2: Ngày sinh + CMND/CCCD -->
       <div nz-row [nzGutter]="16">
         <div nz-col [nzSpan]="12">
           <nz-form-item>
-            <nz-form-label [nzSpan]="8">CMND/CCCD</nz-form-label>
-            <nz-form-control [nzSpan]="16">
-              <input nz-input formControlName="citizenId" placeholder="Nhập CMND/CCCD" />
+            <nz-form-label [nzSpan]="8" nzRequired>Ngày sinh</nz-form-label>
+            <nz-form-control [nzSpan]="16" nzErrorTip="Vui lòng chọn ngày sinh!">
+              <nz-date-picker formControlName="dateOfBirth" nzPlaceHolder="Chọn ngày sinh" style="width: 100%;"
+                nzFormat="yyyy-MM-dd"></nz-date-picker>
             </nz-form-control>
           </nz-form-item>
         </div>
         <div nz-col [nzSpan]="12">
           <nz-form-item>
-            <nz-form-label [nzSpan]="8" nzRequired>Số điện thoại</nz-form-label>
-            <nz-form-control [nzSpan]="16" nzErrorTip="Vui lòng nhập số điện thoại!">
-              <input nz-input formControlName="phoneNumber" placeholder="Nhập số điện thoại" />
+            <nz-form-label [nzSpan]="8" nzRequired>CMND/CCCD</nz-form-label>
+            <nz-form-control [nzSpan]="16" nzErrorTip="Vui lòng nhập CMND/CCCD!">
+              <input nz-input formControlName="citizenId" placeholder="Nhập CMND/CCCD" />
             </nz-form-control>
           </nz-form-item>
         </div>
       </div>
 
-      <!-- Row 4: Email + Địa chỉ -->
+      <!-- Row 3: Số điện thoại + Địa chỉ -->
       <div nz-row [nzGutter]="16">
         <div nz-col [nzSpan]="12">
           <nz-form-item>
-            <nz-form-label [nzSpan]="8">Email</nz-form-label>
+            <nz-form-label [nzSpan]="8">Số điện thoại</nz-form-label>
             <nz-form-control [nzSpan]="16">
-              <input nz-input formControlName="email" placeholder="Nhập email" />
+              <input nz-input formControlName="phoneNumber" placeholder="Nhập số điện thoại" />
             </nz-form-control>
           </nz-form-item>
         </div>
@@ -95,7 +69,7 @@
         </div>
       </div>
 
-      <!-- Row 5: Vị trí + Phòng ban -->
+      <!-- Row 4: Vị trí + Phòng ban -->
       <div nz-row [nzGutter]="16">
         <div nz-col [nzSpan]="12">
           <nz-form-item>
@@ -107,7 +81,6 @@
             </nz-form-control>
           </nz-form-item>
         </div>
-
         <div nz-col [nzSpan]="12">
           <nz-form-item>
             <nz-form-label [nzSpan]="8" nzRequired>Phòng ban</nz-form-label>
@@ -120,8 +93,8 @@
         </div>
       </div>
 
-      <!-- Row 6: Trạng thái -->
-      <div nz-row [nzGutter]="16">
+      <!-- Row 5: Trạng thái -->
+      <div nz-row [nzGutter]="16" *ngIf="!item">
         <div nz-col [nzSpan]="12">
           <nz-form-item>
             <nz-form-label [nzSpan]="8" nzRequired>Trạng thái</nz-form-label>

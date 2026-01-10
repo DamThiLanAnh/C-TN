@@ -1,10 +1,10 @@
 <form nz-form [formGroup]="addForm" (ngSubmit)="submit()">
-  <nz-form-item>
+  <!-- <nz-form-item>
     <nz-form-label [nzSm]="6" [nzXs]="24" nzRequired nzFor="code">Mã phòng ban</nz-form-label>
     <nz-form-control [nzSm]="14" [nzXs]="24" nzErrorTip="Vui lòng nhập mã phòng ban!">
       <input nz-input formControlName="code" id="code" placeholder="Nhập mã phòng ban" />
     </nz-form-control>
-  </nz-form-item>
+  </nz-form-item> -->
 
   <nz-form-item>
     <nz-form-label [nzSm]="6" [nzXs]="24" nzRequired nzFor="name">Tên phòng ban</nz-form-label>
@@ -20,6 +20,14 @@
         <nz-option [nzValue]="true" nzLabel="Hoạt động"></nz-option>
         <nz-option [nzValue]="false" nzLabel="Ngừng hoạt động"></nz-option>
       </nz-select>
+    </nz-form-control>
+  </nz-form-item>
+
+  <nz-form-item>
+    <nz-form-label [nzSm]="6" [nzXs]="24" nzFor="description">Mô tả</nz-form-label>
+    <nz-form-control [nzSm]="14" [nzXs]="24">
+      <textarea nz-input formControlName="description" id="description" placeholder="Nhập mô tả"
+        [nzAutosize]="{ minRows: 3, maxRows: 5 }"></textarea>
     </nz-form-control>
   </nz-form-item>
 

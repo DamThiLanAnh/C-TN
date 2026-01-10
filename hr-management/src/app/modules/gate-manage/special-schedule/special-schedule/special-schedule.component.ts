@@ -67,7 +67,7 @@ export class SpecialScheduleComponent implements OnInit {
 
   ngOnInit(): void {
     console.log('SpecialScheduleComponent initialized');
-    
+
     // Check roles using authService methods like LeaveManageComponent
     this.isManager = this.authService.isManager();
     this.isHROrAdmin = this.authService.isHROrAdmin(); // Assuming similar admin rights might be needed, or just for consistency
@@ -75,13 +75,13 @@ export class SpecialScheduleComponent implements OnInit {
 
     // Adjust UI based on role
     if (this.isManager || this.isHROrAdmin) {
-       this.tableName = 'Quản lý lịch làm đặc thù (Duyệt)';
-       this.canApprove = true;
-       this.isEmployee = false;
+      this.tableName = 'Quản lý lịch làm đặc thù (Duyệt)';
+      this.canApprove = true;
+      this.isEmployee = false;
     } else {
-       this.tableName = 'Lịch làm đặc thù của tôi';
-       this.canApprove = false;
-       this.isEmployee = true;
+      this.tableName = 'Lịch làm đặc thù của tôi';
+      this.canApprove = false;
+      this.isEmployee = true;
     }
 
     this.specialScheduleColumns = specialScheduleColumns(this.isManager || this.isHROrAdmin);
@@ -106,7 +106,7 @@ export class SpecialScheduleComponent implements OnInit {
     } else {
       apiCall = this.specialScheduleService.getMySpecialSchedulesApi(params);
     }
-    
+
     apiCall.pipe(finalize(() => this.loadingTable = false)).subscribe(
       (response) => {
         const content = response?.content || [];
@@ -125,7 +125,7 @@ export class SpecialScheduleComponent implements OnInit {
           managerName: item.managerName,
           approverId: item.approverId
         }));
-        
+
         // Initial filter application
         this.onSearch();
       },
@@ -196,7 +196,7 @@ export class SpecialScheduleComponent implements OnInit {
     // Note: Do not reset pageIndex here to avoid jumping pages unexpectedly during typing if we stay on same page concept,
     // but usually search resets to page 1.
     // this.paging.pageIndex = 1; 
-    
+
     // Update displayed data (client-side pagination)
     this.updateDisplayedData(matches);
   }
@@ -208,7 +208,7 @@ export class SpecialScheduleComponent implements OnInit {
     // Also, we need to update totalElements if we are filtering?
     // In onSearch we already did: this.paging.totalElements = matches.length;
   }
-  
+
   // Helper for date format
   formatDateForComparison(date: Date): string {
     if (!date) return '';
@@ -229,11 +229,11 @@ export class SpecialScheduleComponent implements OnInit {
   }
 
   onFilterInTable(event: NzTableQueryParams): void {
-     // ignored for client side mostly, or used for verify
-      const { pageIndex, pageSize } = event;
-      this.paging.pageIndex = pageIndex;
-      this.paging.pageSize = pageSize;
-      this.onSearch();
+    // ignored for client side mostly, or used for verify
+    const { pageIndex, pageSize } = event;
+    this.paging.pageIndex = pageIndex;
+    this.paging.pageSize = pageSize;
+    this.onSearch();
   }
 
   getChangePagination(page: number): void {
@@ -287,13 +287,13 @@ export class SpecialScheduleComponent implements OnInit {
           nzClassName: 'rounded-modal',
           nzBodyStyle: { padding: '24px' },
           nzComponentParams: {
-              data: response
+            data: response
           }
         });
 
         modalRef.afterClose.subscribe(result => {
           if (result) {
-              this.loadData();
+            this.loadData();
           }
         });
       },
@@ -304,28 +304,28 @@ export class SpecialScheduleComponent implements OnInit {
   }
 
   onDeleteOne(data: SpecialScheduleDetail): void {
-      this.modalService.confirm({
-        nzTitle: 'Xác nhận xóa',
-        nzContent: `Bạn có chắc chắn muốn xóa lịch làm này?`,
-        nzOkText: 'Xóa',
-        nzOkType: 'primary',
-        nzOkDanger: true,
-        nzOnOk: () => {
-            if (data.id) {
-              this.loadingTable = true;
-              this.specialScheduleService.deleteSpecialScheduleApi(data.id).subscribe(
-                () => {
-                    this.messageService.success('Xóa thành công');
-                    this.loadData();
-                    this.loadingTable = false;
-                },
-                (err) => {
-                    this.messageService.error('Xóa thất bại: ' + (err.error?.message || err.message));
-                    this.loadingTable = false;
-                }
-              );
+    this.modalService.confirm({
+      nzTitle: 'Xác nhận xóa',
+      nzContent: `Bạn có chắc chắn muốn xóa lịch làm này?`,
+      nzOkText: 'Xóa',
+      nzOkType: 'primary',
+      nzOkDanger: true,
+      nzOnOk: () => {
+        if (data.id) {
+          this.loadingTable = true;
+          this.specialScheduleService.deleteSpecialScheduleApi(data.id).subscribe(
+            () => {
+              this.messageService.success('Xóa thành công');
+              this.loadData();
+              this.loadingTable = false;
+            },
+            (err) => {
+              this.messageService.error('Xóa thất bại: ' + (err.error?.message || err.message));
+              this.loadingTable = false;
             }
+          );
         }
+      }
     });
   }
 
@@ -334,22 +334,22 @@ export class SpecialScheduleComponent implements OnInit {
     // Usually select all applies to the current view.
     // If we want to check all in filtered list:
     this.filteredData.forEach(item => {
-        if (!item.disabled) {
-            item.checked = checked;
-             if (checked) {
-                if (!this.dataDeleteChecked.some(d => d.id === item.id)) {
-                    this.dataDeleteChecked.push(item);
-                }
-             } else {
-                this.dataDeleteChecked = this.dataDeleteChecked.filter(d => d.id !== item.id);
-             }
+      if (!item.disabled) {
+        item.checked = checked;
+        if (checked) {
+          if (!this.dataDeleteChecked.some(d => d.id === item.id)) {
+            this.dataDeleteChecked.push(item);
+          }
+        } else {
+          this.dataDeleteChecked = this.dataDeleteChecked.filter(d => d.id !== item.id);
         }
+      }
     });
     // Also update listOfData to keep sync if we ever go back to full list?
     // It's safer to just iterate listOfData but that selects invisible items too.
     // Standard behavior: Select all usually selects visible items on page or all filtered items.
     // Let's select all filtered items.
-    
+
     this.refreshCheckedStatus();
   }
 
@@ -368,14 +368,14 @@ export class SpecialScheduleComponent implements OnInit {
     // Currently checked status is shown for visible items (filteredData).
     const validItems = this.filteredData.filter(item => !item.disabled);
     if (validItems.length === 0) {
-        this.checked = false;
-        this.indeterminate = false;
-        return;
+      this.checked = false;
+      this.indeterminate = false;
+      return;
     }
-    
+
     const allChecked = validItems.every(item => item.checked);
     const someChecked = validItems.some(item => item.checked);
-    
+
     this.checked = allChecked;
     this.indeterminate = someChecked && !allChecked;
   }

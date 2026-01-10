@@ -69,17 +69,17 @@ export class EmployeeAddComponent implements OnInit {
       if (pos === 'Trưởng phòng') pos = 'TP';
 
       this.formGroup.patchValue({
-        code: this.item.code || this.item.username,
+
         fullName: this.item.fullName || this.item.name,
         dateOfBirth: this.item.dateOfBirth,
-        gender: this.item.gender, // If null, stays null
+        gender: this.item.gender === 1 || this.item.gender === 'MALE' ? 'MALE' : (this.item.gender === 0 || this.item.gender === 'FEMALE' ? 'FEMALE' : null),
         citizenId: this.item.citizenId,
         phoneNumber: this.item.phoneNumber || this.item.phone,
-        email: this.item.email,
+
         address: this.item.address || this.item.siteName,
         position: pos,
-        departmentId: this.item.departmentId || this.item.department, // departmentId is 4. Options use ID.
-        status: this.item.status // 'ACTIVE'
+        departmentId: this.item.departmentId || this.item.department,
+        status: this.item.status
       });
 
       this.avatarUrl = 'https://via.placeholder.com/150';
@@ -88,17 +88,15 @@ export class EmployeeAddComponent implements OnInit {
 
   initForm(): void {
     this.formGroup = this.formBuilder.group({
-      code: [null, [Validators.required]],
       fullName: [null, [Validators.required]],
-      dateOfBirth: [null],
-      gender: [null],
-      citizenId: [null],
-      phoneNumber: [null, [Validators.required]],
-      email: [{ value: null, disabled: !!this.item }, [Validators.required, Validators.email]], // Disable if editing (item exists)
+      dateOfBirth: [null, [Validators.required]],
+      gender: [null, [Validators.required]],
+      citizenId: [null, [Validators.required]],
+      phoneNumber: [null],
       address: [null],
       position: [null, [Validators.required]],
       departmentId: [null, [Validators.required]],
-      status: ['ACTIVE'] // Default or bound
+      status: ['ACTIVE', [Validators.required]]
     });
 
     // If viewing (not editing), disable is handled below, but maybe disable specific if needed.

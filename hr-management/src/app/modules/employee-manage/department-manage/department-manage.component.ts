@@ -17,7 +17,7 @@ import { NzModalService } from 'ng-zorro-antd/modal';
 export class DepartmentManageComponent implements OnInit {
   listOfData: any[] = [];
   tableName = 'Quản lý phòng ban';
-  
+
   departmentColumns: StandardColumnModel[] = departmentManageColumns();
   public StandardColumnType = StandardColumnType;
 
@@ -72,7 +72,7 @@ export class DepartmentManageComponent implements OnInit {
     ).subscribe(
       (response) => {
         console.log('API Department Response:', response);
-        
+
         if (Array.isArray(response)) {
           this.fullDataList = response;
         } else if (response && response.content) {
@@ -104,15 +104,19 @@ export class DepartmentManageComponent implements OnInit {
       const name = this.searchFilters['name'].toLowerCase().trim();
       processedData = processedData.filter((item: any) => item.name && item.name.toLowerCase().includes(name));
     }
+    if (this.searchFilters['description']) {
+      const description = this.searchFilters['description'].toLowerCase().trim();
+      processedData = processedData.filter((item: any) => item.description && item.description.toLowerCase().includes(description));
+    }
     if (this.searchFilters['status']) {
-        const isLookingForActive = this.searchFilters['status'] === 'ACTIVE';
-        processedData = processedData.filter((item: any) => {
-              if (item.active !== undefined && item.active !== null) return item.active === isLookingForActive;
-              if (item.isActive !== undefined && item.isActive !== null) return Boolean(item.isActive) === isLookingForActive;
-              if (item.status === 1 || item.status === '1' || item.status === 'ACTIVE') return isLookingForActive;
-              if (item.status === 0 || item.status === '0' || item.status === 'INACTIVE') return !isLookingForActive;
-              return true;
-        });
+      const isLookingForActive = this.searchFilters['status'] === 'ACTIVE';
+      processedData = processedData.filter((item: any) => {
+        if (item.active !== undefined && item.active !== null) return item.active === isLookingForActive;
+        if (item.isActive !== undefined && item.isActive !== null) return Boolean(item.isActive) === isLookingForActive;
+        if (item.status === 1 || item.status === '1' || item.status === 'ACTIVE') return isLookingForActive;
+        if (item.status === 0 || item.status === '0' || item.status === 'INACTIVE') return !isLookingForActive;
+        return true;
+      });
     }
 
     // Update Total based on filtered result
@@ -129,32 +133,32 @@ export class DepartmentManageComponent implements OnInit {
   }
 
   private loadData(): void {
-      // Alias for backward compatibility if needed, or just redirect to fetch
-      this.fetchDataFromServer();
+    // Alias for backward compatibility if needed, or just redirect to fetch
+    this.fetchDataFromServer();
   }
 
   private mapData(data: any[]): void {
     this.listOfData = data.map((item, index) => {
       let status = item.status;
-      
+
       // Normalize 'active' field from backend to 'status' for table display
       if (item.active !== undefined && item.active !== null) {
-          status = item.active ? 'ACTIVE' : 'INACTIVE';
+        status = item.active ? 'ACTIVE' : 'INACTIVE';
       } else {
-          // Fallback normalization
-          if (status === undefined || status === null) {
-              if (item.isActive === true || item.isActive === 1) status = 'ACTIVE';
-              else if (item.isActive === false || item.isActive === 0) status = 'INACTIVE';
-          }
-          if (status === 1 || status === '1') status = 'ACTIVE';
-          if (status === 0 || status === '0') status = 'INACTIVE';
+        // Fallback normalization
+        if (status === undefined || status === null) {
+          if (item.isActive === true || item.isActive === 1) status = 'ACTIVE';
+          else if (item.isActive === false || item.isActive === 0) status = 'INACTIVE';
+        }
+        if (status === 1 || status === '1') status = 'ACTIVE';
+        if (status === 0 || status === '0') status = 'INACTIVE';
       }
 
       return {
         ...item,
         // Calculate index based on page
         index: (this.paging.pageIndex - 1) * this.paging.pageSize + index + 1,
-        status: status || 'ACTIVE', 
+        status: status || 'ACTIVE',
         isActiveAction: true
       };
     });
@@ -164,9 +168,9 @@ export class DepartmentManageComponent implements OnInit {
     const { pageIndex, pageSize } = event;
     // Only update if changed
     if (this.paging.pageIndex !== pageIndex || this.paging.pageSize !== pageSize) {
-        this.paging.pageIndex = pageIndex;
-        this.paging.pageSize = pageSize;
-        this.filterLocalData(); 
+      this.paging.pageIndex = pageIndex;
+      this.paging.pageSize = pageSize;
+      this.filterLocalData();
     }
   }
 
@@ -225,8 +229,8 @@ export class DepartmentManageComponent implements OnInit {
       nzFooter: null,
       nzWidth: 600,
       nzComponentParams: {
-         id: id,
-         data: data
+        id: id,
+        data: data
       }
     });
     modalRef.afterClose.subscribe((result) => {
