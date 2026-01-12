@@ -25,12 +25,12 @@ export class SpecialScheduleComponent implements OnInit {
   tableName = 'Quản lý lịch làm đặc thù';
   dataDeleteChecked: SpecialScheduleDetail[] = [];
   canApprove: boolean = true;
-  isEmployee: boolean = false; // Flag to check if user is employee
+  isEmployee: boolean = false;
   isManager = false;
   isHROrAdmin = false;
   currentUser: any;
 
-  specialScheduleColumns: StandardColumnModel[] = []; // Initialize empty
+  specialScheduleColumns: StandardColumnModel[] = [];
   public StandardColumnType = StandardColumnType;
 
   // Pagination

@@ -1,0 +1,60 @@
+<form nz-form [formGroup]="formGroup" (ngSubmit)="submitForm()" nzLayout="vertical">
+    <div class="row">
+        <div class="col-12 col-md-6">
+            <nz-form-item>
+                <nz-form-label nzRequired>Mã nhân viên</nz-form-label>
+                <nz-form-control nzErrorTip="Vui lòng nhập mã nhân viên!">
+                    <input nz-input formControlName="empCode" placeholder="Nhập mã nhân viên" />
+                </nz-form-control>
+            </nz-form-item>
+        </div>
+        <div class="col-12 col-md-6">
+            <nz-form-item>
+                <nz-form-label nzRequired>Tên chứng chỉ</nz-form-label>
+                <nz-form-control nzErrorTip="Vui lòng nhập tên chứng chỉ!">
+                    <input nz-input formControlName="name" placeholder="Nhập tên chứng chỉ" />
+                </nz-form-control>
+            </nz-form-item>
+        </div>
+        <div class="col-12 col-md-6">
+            <nz-form-item>
+                <nz-form-label nzRequired>Nơi cấp</nz-form-label>
+                <nz-form-control nzErrorTip="Vui lòng nhập nơi cấp!">
+                    <input nz-input formControlName="issuer" placeholder="Nhập nơi cấp" />
+                </nz-form-control>
+            </nz-form-item>
+        </div>
+        <div class="col-12 col-md-6">
+            <nz-form-item>
+                <nz-form-label nzRequired>Ngày cấp</nz-form-label>
+                <nz-form-control nzErrorTip="Vui lòng chọn ngày cấp!">
+                    <nz-date-picker formControlName="issuedDate" style="width: 100%" nzFormat="dd/MM/yyyy"
+                        nzPlaceHolder="Chọn ngày cấp"></nz-date-picker>
+                </nz-form-control>
+            </nz-form-item>
+        </div>
+        <div class="col-12 col-md-6">
+            <nz-form-item>
+                <nz-form-label>Ngày hết hạn</nz-form-label>
+                <nz-form-control>
+                    <nz-date-picker formControlName="expiredDate" style="width: 100%" nzFormat="dd/MM/yyyy"
+                        nzPlaceHolder="Chọn ngày hết hạn"></nz-date-picker>
+                </nz-form-control>
+            </nz-form-item>
+        </div>
+        <div class="col-12">
+            <nz-form-item>
+                <nz-form-label>Ghi chú</nz-form-label>
+                <nz-form-control>
+                    <textarea nz-input formControlName="note" placeholder="Nhập ghi chú"
+                        [nzAutosize]="{ minRows: 3, maxRows: 5 }"></textarea>
+                </nz-form-control>
+            </nz-form-item>
+        </div>
+    </div>
+
+    <div *nzModalFooter>
+        <button nz-button nzType="default" (click)="close()">Hủy</button>
+        <button nz-button nzType="primary" (click)="submitForm()" [nzLoading]="isLoading">Lưu</button>
+    </div>
+</form>

@@ -9,6 +9,7 @@ import { NzModalService } from 'ng-zorro-antd/modal';
 
 import { AuthService } from '../../../services/auth.service';
 import { certificatesManageColumns } from './certificates-manage.columns';
+import { ModalAddCertificateComponent } from './modal-add-certificate/modal-add-certificate.component';
 
 @Component({
   selector: 'app-certificates-manage',
@@ -63,9 +64,9 @@ export class CertificatesManageComponent implements OnInit {
   private initColumns(): void {
     const cols = certificatesManageColumns();
     if (!this.isHR) {
-        this.certificatesColumns = cols.filter(c => c.name !== 'action');
+      this.certificatesColumns = cols.filter(c => c.name !== 'action');
     } else {
-        this.certificatesColumns = cols;
+      this.certificatesColumns = cols;
     }
   }
 
@@ -131,14 +132,14 @@ export class CertificatesManageComponent implements OnInit {
       processedData = processedData.filter((item: any) => item.issuer && item.issuer.toLowerCase().includes(val));
     }
     if (this.searchFilters['issuedDate']) {
-        const date = new Date(this.searchFilters['issuedDate']);
-        const val = `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')}`;
-        processedData = processedData.filter((item: any) => item.issuedDate && item.issuedDate.includes(val));
+      const date = new Date(this.searchFilters['issuedDate']);
+      const val = `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')}`;
+      processedData = processedData.filter((item: any) => item.issuedDate && item.issuedDate.includes(val));
     }
     if (this.searchFilters['expiredDate']) {
-        const date = new Date(this.searchFilters['expiredDate']);
-        const val = `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')}`;
-        processedData = processedData.filter((item: any) => item.expiredDate && item.expiredDate.includes(val));
+      const date = new Date(this.searchFilters['expiredDate']);
+      const val = `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')}`;
+      processedData = processedData.filter((item: any) => item.expiredDate && item.expiredDate.includes(val));
     }
 
 
@@ -170,9 +171,9 @@ export class CertificatesManageComponent implements OnInit {
   onFilterInTable(event: NzTableQueryParams): void {
     const { pageIndex, pageSize } = event;
     if (this.paging.pageIndex !== pageIndex || this.paging.pageSize !== pageSize) {
-        this.paging.pageIndex = pageIndex;
-        this.paging.pageSize = pageSize;
-        this.filterLocalData();
+      this.paging.pageIndex = pageIndex;
+      this.paging.pageSize = pageSize;
+      this.filterLocalData();
     }
   }
 
@@ -225,17 +226,15 @@ export class CertificatesManageComponent implements OnInit {
   }
 
   openAddCertificateModal(id?: any, data?: any): void {
-    // Placeholder for now as modal component is not created
-    this.messageService.info('Chức năng thêm mới/sửa sẽ được cập nhật sau.');
-    /*
     const modalRef = this.modalService.create({
       nzTitle: id ? 'Cập nhật chứng chỉ' : 'Thêm mới chứng chỉ',
       nzContent: ModalAddCertificateComponent,
       nzFooter: null,
       nzWidth: 600,
       nzComponentParams: {
-         id: id,
-         data: data
+        id: id,
+        data: data,
+        isHR: this.isHR
       }
     });
     modalRef.afterClose.subscribe((result) => {
@@ -243,6 +242,5 @@ export class CertificatesManageComponent implements OnInit {
         this.fetchDataFromServer();
       }
     });
-    */
   }
 }

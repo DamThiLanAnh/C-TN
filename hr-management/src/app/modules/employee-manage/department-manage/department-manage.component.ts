@@ -63,8 +63,8 @@ export class DepartmentManageComponent implements OnInit {
     // If backend supports pagination but we want client-side filter, we might need a large size or a specific 'all' endpoint.
     // Assuming /api/departments/active returns a list or we request a large page.
     const params = {
-      page: 0,
-      size: 1000 // Request large size to get all active departments for client side filtering
+      page: this.paging.pageIndex - 1,
+      size: this.paging.pageSize
     };
 
     this.departmentManageService.getDepartmentsApi(params).pipe(

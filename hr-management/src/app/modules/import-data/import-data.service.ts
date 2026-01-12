@@ -30,6 +30,14 @@ export class ImportDataService {
         return this.http.get(`${this.baseUrl}/import-histories`, { params });
     }
 
+    exportAttendance(month: string): Observable<Blob> {
+        const params = new HttpParams().set('month', month);
+        return this.http.get(`${this.baseUrl}/export`, {
+            params,
+            responseType: 'blob'
+        });
+    }   
+
     importSalary(month: string, file: File): Observable<any> {
         const formData = new FormData();
         formData.append('file', file);

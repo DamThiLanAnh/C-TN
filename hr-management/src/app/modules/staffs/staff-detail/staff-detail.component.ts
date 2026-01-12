@@ -39,6 +39,8 @@ export class StaffDetailComponent implements OnInit {
     eduLevelName: ''
   };
 
+  listCertificates: any[] = [];
+
   listSkillFilter: EmployeeSkill[] = [
     {
       id: 1,
@@ -122,7 +124,23 @@ export class StaffDetailComponent implements OnInit {
       }
 
       this.loadEmployeeDetail(id);
+      this.loadCertificates();
     });
+  }
+
+  loadCertificates(): void {
+    this.staffsService.getMyCertificates(0, 100).subscribe(
+      (res: any) => {
+        if (res && res.content) {
+          this.listCertificates = res.content;
+        } else if (Array.isArray(res)) {
+          this.listCertificates = res;
+        }
+      },
+      (err) => {
+        console.error('Failed to load certificates', err);
+      }
+    );
   }
 
   loadEmployeeDetail(id?: number) {

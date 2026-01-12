@@ -1,1 +1,102 @@
-<p>staff-cost works!</p>
+<nz-card class="d-block mb-3 full-height">
+    <div class="d-flex justify-content-between mb-2">
+        <h6>Danh sách bảng lương</h6>
+    </div>
+
+    <nz-table #table [nzData]="data" [nzLoading]="loading" nzBordered
+        [nzScroll]="{ x: '100%', y: 'calc(100vh - 12rem)' }" [nzSize]="'small'" [nzShowPagination]="false"
+        [nzNoResult]="noResultTemplate">
+        <thead>
+            <tr>
+                <th *ngFor="let col of columns" [nzWidth]="col.width!" [nzLeft]="col.fixedColumn || false"
+                    [nzRight]="col.fixedRight || false" [nzAlign]="'center'">
+                    {{ col.attr }}
+                </th>
+            </tr>
+            <!-- Filter Row -->
+            <tr class="filter-row">
+                <th *ngFor="let col of columns">
+                    <ng-container *ngIf="col.isFilter">
+                        <input *ngIf="col.filter?.type === 7" type="number" nz-input
+                            [(ngModel)]="searchFilters[col.name]" (ngModelChange)="filterChanged$.next()"
+                            [placeholder]="'Tìm ' + col.attr" nzSize="small" />
+
+                        <input *ngIf="!col.filter || col.filter.type === 0 || col.filter.type === 1" type="text"
+                            nz-input [(ngModel)]="searchFilters[col.name]" (ngModelChange)="filterChanged$.next()"
+                            [placeholder]="'Tìm ' + col.attr" nzSize="small" />
+                    </ng-container>
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr *ngFor="let row of data; let i = index" (click)="onRowClick(row)" style="cursor: pointer;">
+                <td *ngFor="let col of columns" [nzLeft]="col.fixedColumn || false" [nzRight]="col.fixedRight || false"
+                    [ngSwitch]="col.name" [nzAlign]="'center'" [ngClass]="col.classes || ''">
+
+                    <ng-container *ngSwitchCase="'index'">
+                        {{ (pageIndex - 1) * pageSize + i + 1 }}
+                    </ng-container>
+
+                    <ng-container *ngSwitchCase="'importedAt'">
+                        {{ row[col.name] | date: 'dd/MM/yyyy' }}
+                    </ng-container>
+
+                    <ng-container *ngSwitchDefault>
+                        {{ row[col.name] }}
+                    </ng-container>
+                </td>
+            </tr>
+        </tbody>
+    </nz-table>
+
+    <div class="mt-2 text-lg-end">
+        <nz-pagination [nzPageIndex]="pageIndex" [nzTotal]="total" [nzPageSize]="pageSize" [nzShowSizeChanger]="true"
+            (nzPageIndexChange)="onPageIndexChange($event)" (nzPageSizeChange)="onPageSizeChange($event)"
+            class="mt-3 d-flex justify-content-end">
+        </nz-pagination>
+    </div>
+
+    <ng-template #noResultTemplate>
+        <nz-empty nzNotFoundImage="simple" nzNotFoundContent="Không có dữ liệu"></nz-empty>
+    </ng-template>
+
+    <nz-modal [(nzVisible)]="isModalVisible" [nzTitle]="modalTitle" (nzOnCancel)="handleCancel()" [nzFooter]="null">
+        <ng-container *nzModalContent>
+            <div *ngIf="selectedSalary; else loadingDetail">
+                <div class="row mb-2">
+                    <div class="col-6 fw-bold">Lương cơ bản:</div>
+                    <div class="col-6 text-end">{{ selectedSalary.salary.basic | number }}</div>
+                </div>
+                <div class="row mb-2">
+                    <div class="col-6 fw-bold">Phụ cấp:</div>
+                    <div class="col-6 text-end">{{ selectedSalary.salary.allowance | number }}</div>
+                </div>
+                <div class="row mb-2">
+                    <div class="col-6 fw-bold">Lương OT:</div>
+                    <div class="col-6 text-end">{{ selectedSalary.salary.otPay | number }}</div>
+                </div>
+                <div class="row mb-2">
+                    <div class="col-6 fw-bold">Thưởng:</div>
+                    <div class="col-6 text-end">{{ selectedSalary.salary.bonus | number }}</div>
+                </div>
+                <div class="row mb-2">
+                    <div class="col-6 fw-bold">Khấu trừ:</div>
+                    <div class="col-6 text-end">{{ selectedSalary.salary.deduction | number }}</div>
+                </div>
+                <hr>
+                <div class="row mb-2">
+                    <div class="col-6 fw-bold">Tổng cộng:</div>
+                    <div class="col-6 text-end fw-bold text-primary">{{ selectedSalary.salary.total | number }}</div>
+                </div>
+            </div>
+            <ng-template #loadingDetail>
+                <div class="text-center">
+                    <nz-spin nzSimple></nz-spin>
+                </div>
+            </ng-template>
+        </ng-container>
+    </nz-modal>
+    <ng-template #modalTitle>
+        Chi tiết lương tháng {{ selectedSalary?.month }}/{{ selectedSalary?.year }}
+    </ng-template>
+</nz-card>

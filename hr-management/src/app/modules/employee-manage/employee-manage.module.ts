@@ -31,6 +31,7 @@ import { SharedModule } from '../shares/shared.module';
 import { DepartmentManageComponent } from './department-manage/department-manage.component';
 import { CertificatesManageComponent } from './certificates-manage/certificates-manage.component';
 import { ModalAddDepartmentComponent } from './department-manage/modal-add-department/modal-add-department.component';
+import { ModalAddCertificateComponent } from './certificates-manage/modal-add-certificate/modal-add-certificate.component';
 
 @NgModule({
   imports: [
@@ -72,7 +73,8 @@ import { ModalAddDepartmentComponent } from './department-manage/modal-add-depar
     EmployeeAddComponent,
     ModalAddDepartmentComponent,
     DepartmentManageComponent,
-    CertificatesManageComponent
+    CertificatesManageComponent,
+    ModalAddCertificateComponent
   ]
 })
 

@@ -114,4 +114,26 @@ export class ImportAttendanceComponent implements OnInit {
     this.pageIndex = index;
     this.loadData();
   }
+
+  downloadFile(row: any) {
+    if (!row.month) return;
+    const formattedMonth = this.datePipe.transform(row.month, 'yyyy-MM');
+    if (!formattedMonth) return;
+
+    this.importAttendanceService.exportAttendance(formattedMonth).subscribe({
+      next: (blob: Blob) => {
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = row.fileName;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(url);
+      },
+      error: () => {
+        this.message.error('Lỗi khi tải file!');
+      }
+    });
+  }
 }

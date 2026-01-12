@@ -38,7 +38,7 @@ export const certificatesManageColumns = (): StandardColumnModel[] => [
         key: 'delete',
         icon: 'delete',
         label: 'Xóa',
-        html: IconHtml.ACCEPT,
+        html: IconHtml.DELETE,
         fieldCheckShow: 'isActiveAction',
       } as ActionConfig,
     ],

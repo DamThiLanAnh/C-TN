@@ -28,4 +28,10 @@ export class StaffsService {
         }
         return this.http.get(`${this.apiUrl}/employees/me`, { headers });
     }
+    getMyCertificates(page: number = 0, size: number = 10): Observable<any> {
+        const params = new HttpParams()
+            .set('page', page.toString())
+            .set('size', size.toString());
+        return this.http.get<any>(`${this.apiUrl}/certificates/my`, { params });
+    }
 }

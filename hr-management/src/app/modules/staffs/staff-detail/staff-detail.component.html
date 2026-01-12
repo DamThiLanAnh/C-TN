@@ -63,17 +63,18 @@
 
           </nz-card>
           <nz-card class="mb-3 rounded pb-0 pt-3">
-            <div class="fz-18 mb-3"> Đào tạo</div>
+            <div class="fz-18 mb-3">Chứng chỉ</div>
             <div class="tab-custom">
               <div class="tab-content">
                 <nz-timeline>
-                  <nz-timeline-item [nzDot]="dotTemplate">
+                  <nz-timeline-item *ngFor="let item of listCertificates" [nzDot]="dotTemplate">
                     <div class="info">
-                      <p class="fw-500 mb-2">{{dataDetail?.universityName}}</p>
-                      <p class="small mb-2"><img src="../../../../assets/icons/teacher.svg" alt=""> <span>Chuyên ngành:
-                          {{dataDetail?.majorEduName}}</span></p>
-                      <p class="small ms-4">Trình độ: {{dataDetail?.eduLevelName}}</p>
-
+                      <p class="fw-500 mb-2">{{item.name}}</p>
+                      <p class="small mb-2">
+                        <img src="../../../../assets/icons/certificate-badge-svgrepo-com.svg" alt="">
+                        <span>Nơi cấp: {{item.issuer}}</span>
+                      </p>
+                      <p class="small ms-4" *ngIf="item.note">Ghi chú: {{item.note}}</p>
                     </div>
                   </nz-timeline-item>
                 </nz-timeline>

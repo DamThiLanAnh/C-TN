@@ -65,8 +65,7 @@
           </ng-container>
 
           <ng-container *ngSwitchCase="'fileName'">
-            <a *ngIf="row[col.name]" [href]="row[col.name]" target="_blank" rel="noopener noreferrer"
-              class="text-primary">
+            <a *ngIf="row[col.name]" (click)="downloadFile(row)" href="javascript:void(0)" class="text-primary">
               <span nz-icon nzType="paper-clip" class="me-1"></span> {{ row[col.name] }}
             </a>
             <span *ngIf="!row[col.name]" class="text-muted">-</span>
