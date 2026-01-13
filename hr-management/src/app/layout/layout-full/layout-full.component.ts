@@ -286,6 +286,7 @@ export class LayoutFullComponent implements OnInit {
   ngOnInit(): void {
 
     this.loadUserInfo();
+    this.filterMenuByRole();
 
     this.addTabFromCurrentRoute();
 
@@ -297,6 +298,24 @@ export class LayoutFullComponent implements OnInit {
     });
   }
 
+  private filterMenuByRole(): void {
+    const user = this.authService.getUser();
+    let roleCount = 0;
+
+    if (user) {
+      if (Array.isArray(user.roles)) {
+        roleCount = user.roles.length;
+      } else if (user.role) {
+        roleCount = 1;
+      }
+    }
+
+    if (roleCount < 2) {
+      const restrictedTitles = ['Thống kê', 'Nhân viên', 'Import dữ liệu', 'Cài đặt hệ thống'];
+      this.menus = this.menus.filter(item => !restrictedTitles.includes(item.title));
+    }
+  }
+
   private loadUserInfo(): void {
     const userInfo = this.authService.getUser();
     if (userInfo) {
@@ -305,7 +324,8 @@ export class LayoutFullComponent implements OnInit {
         userName: userInfo.username || 'User',
         email: userInfo.email || '',
         gender: userInfo.gender !== undefined ? userInfo.gender : true,
-        image: userInfo.image || ''
+        image: userInfo.image || '',
+        roles: userInfo.roles
       };
       console.log('✅ [LayoutFull] User info loaded:', this.user);
     }

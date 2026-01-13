@@ -15,6 +15,7 @@ import { NzDatePickerModule } from 'ng-zorro-antd/date-picker';
 import { NzTimePickerModule } from 'ng-zorro-antd/time-picker';
 import { NzPaginationModule } from 'ng-zorro-antd/pagination';
 import { ActivityLogComponent } from './activity-log/activity-log.component';
+import { NzTagModule } from 'ng-zorro-antd/tag';
 
 @NgModule({
   imports: [
@@ -30,7 +31,8 @@ import { ActivityLogComponent } from './activity-log/activity-log.component';
     FormsModule,
     NzDatePickerModule,
     NzTimePickerModule,
-    NzPaginationModule
+    NzPaginationModule,
+    NzTagModule
   ],
   declarations: [
     SettingComponent,

@@ -1,1 +1,94 @@
-<p>user-account works!</p>
+<nz-card class="container-card d-flex flex-column p-0">
+    <div class="d-flex justify-content-between mb-2 align-items-center">
+        <span class="d-flex align-items-center" style="flex-wrap: wrap; gap: 8px">
+            <h6>Danh sách tài khoản người dùng</h6>
+        </span>
+    </div>
+
+    <div class="approve-config-tab-container">
+        <div class="tab">
+            <button [class.active]="selectedTabIndex === 0" (click)="onTabChange(0)">
+                <span class="title-card">Người dùng có tài khoản</span>
+            </button>
+            <button [class.active]="selectedTabIndex === 1" (click)="onTabChange(1)">
+                <span class="title-card">Người dùng chưa có tài khoản</span>
+            </button>
+        </div>
+        <nz-card style="box-shadow: none">
+            <ng-container *ngIf="selectedTabIndex === 0">
+                <div class="table-wrapper">
+                    <nz-table #basicTable [nzData]="users" [nzLoading]="isLoading" [nzTotal]="totalElements"
+                        [nzPageIndex]="pageIndex" [nzPageSize]="pageSize" [nzShowSizeChanger]="true"
+                        [nzFrontPagination]="false" (nzQueryParams)="onQueryParamsChange($event)" nzBordered="true">
+                        <thead>
+                            <tr>
+                                <th *ngFor="let col of userColumns" [nzWidth]="col.width" [class]="col.className">
+                                    {{ col.header }}
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let data of users; let i = index">
+                                <td class="text-center">{{ (pageIndex - 1) * pageSize + i + 1 }}</td>
+                                <td>{{ data.username }}</td>
+                                <td>
+                                    <ng-container *ngFor="let role of data.roles">
+                                        <nz-tag [nzColor]="'blue'">{{ role }}</nz-tag>
+                                    </ng-container>
+                                </td>
+                                <td>
+                                    <nz-tag [nzColor]="data.status === 'ACTIVE' ? 'success' : 'error'">
+                                        {{ data.status }}
+                                    </nz-tag>
+                                </td>
+                                <td>{{ data.employeeId }}</td>
+                                <td>
+                                    <i *ngIf="data.canApprove" nz-icon nzType="check-circle" nzTheme="fill"
+                                        class="text-success"></i>
+                                    <i *ngIf="!data.canApprove" nz-icon nzType="close-circle" nzTheme="fill"
+                                        class="text-secondary"></i>
+                                </td>
+                                <td>{{ data.createdAt | date: 'dd/MM/yyyy HH:mm' }}</td>
+                                <td>{{ data.updatedAt | date: 'dd/MM/yyyy HH:mm' }}</td>
+                                <td>{{ data.lastLogin | date: 'dd/MM/yyyy HH:mm' }}</td>
+                            </tr>
+                        </tbody>
+                    </nz-table>
+                </div>
+            </ng-container>
+
+            <ng-container *ngIf="selectedTabIndex === 1">
+                <div class="table-wrapper">
+                    <nz-table #noUserTable [nzData]="noUserEmployees" [nzLoading]="noUserIsLoading"
+                        [nzTotal]="noUserTotalElements" [nzPageIndex]="noUserPageIndex" [nzPageSize]="noUserPageSize"
+                        [nzShowSizeChanger]="true" [nzFrontPagination]="false"
+                        (nzQueryParams)="onNoUserQueryParamsChange($event)" nzBordered="true">
+                        <thead>
+                            <tr>
+                                <th *ngFor="let col of noUserColumns" [nzWidth]="col.width" [class]="col.className">
+                                    {{ col.header }}
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let data of noUserEmployees; let i = index">
+                                <td class="text-center">{{ (noUserPageIndex - 1) * noUserPageSize + i + 1 }}</td>
+                                <td>{{ data.code }}</td>
+                                <td>{{ data.fullName }}</td>
+                                <td>{{ data.departmentName }}</td>
+                                <td>{{ data.position }}</td>
+                                <td>{{ data.email }}</td>
+                                <td>{{ data.onboardDate | date: 'dd/MM/yyyy' }}</td>
+                                <td>
+                                    <nz-tag [nzColor]="data.status === 'ACTIVE' ? 'success' : 'error'">
+                                        {{ data.status }}
+                                    </nz-tag>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </nz-table>
+                </div>
+            </ng-container>
+        </nz-card>
+    </div>
+</nz-card>

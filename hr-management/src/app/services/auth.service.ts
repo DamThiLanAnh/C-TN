@@ -37,7 +37,7 @@ export class AuthService {
     return this._authState$.asObservable();
   }
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   login(username: string, password: string): Observable<LoginResponse> {
     console.log('🔐 Calling login API:', `${this.apiUrl}/auth/login`);
@@ -154,10 +154,10 @@ export class AuthService {
       // Sử dụng jwt-decode để giải mã JWT an toàn
       const payload: any = jwt_decode(token);
       return payload.role ||
-             (payload.roles && Array.isArray(payload.roles) ? payload.roles[0] : undefined) ||
-             (payload.authorities && Array.isArray(payload.authorities) ? payload.authorities[0]?.authority : undefined) ||
-             payload.authority ||
-             null;
+        (payload.roles && Array.isArray(payload.roles) ? payload.roles[0] : undefined) ||
+        (payload.authorities && Array.isArray(payload.authorities) ? payload.authorities[0]?.authority : undefined) ||
+        payload.authority ||
+        null;
     } catch (error) {
       console.error('Error decoding token:', error);
       return null;
@@ -183,8 +183,8 @@ export class AuthService {
     }
 
     const isManagerRole = role === 'MANAGER' ||
-           role === 'ROLE_MANAGER' ||
-           role.toUpperCase().includes('MANAGER');
+      role === 'ROLE_MANAGER' ||
+      role.toUpperCase().includes('MANAGER');
 
     console.log('isManager result:', isManagerRole);
     return isManagerRole;
@@ -200,8 +200,8 @@ export class AuthService {
     }
 
     const isHRRole = role === 'HR' ||
-           role === 'ROLE_HR' ||
-           role.toUpperCase() === 'HR';
+      role === 'ROLE_HR' ||
+      role.toUpperCase() === 'HR';
 
     console.log('isHR result:', isHRRole);
     return isHRRole;
@@ -215,12 +215,25 @@ export class AuthService {
     }
 
     const isHROrAdminRole = role === 'HR' ||
-           role === 'ROLE_HR' ||
-           role === 'ADMIN' ||
-           role === 'ROLE_ADMIN' ||
-           role.toUpperCase().includes('HR') ||
-           role.toUpperCase().includes('ADMIN');
+      role === 'ROLE_HR' ||
+      role === 'ADMIN' ||
+      role === 'ROLE_ADMIN' ||
+      role.toUpperCase().includes('HR') ||
+      role.toUpperCase().includes('ADMIN');
 
     return isHROrAdminRole;
+  }
+  getRefreshToken(): string | null {
+    return localStorage.getItem('refreshToken');
+  }
+
+  logout(): void {
+    localStorage.removeItem('token');
+    localStorage.removeItem('refreshToken');
+    localStorage.removeItem('user');
+    this._authState$.next({ user: null, token: null });
+    // Reload page to clear state and redirect to login (guarded by guards)
+    // Or you can inject Router and navigate to /login
+    window.location.href = '/login';
   }
 }

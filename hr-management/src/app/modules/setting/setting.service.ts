@@ -21,12 +21,28 @@ export class SettingService {
         params = params.set(key, filters[key]);
       }
     });
-    
+
     // User requested explicit headers
     const headers = new HttpHeaders({
-        'Accept': '*/*'
+      'Accept': '*/*'
     });
 
     return this.http.get(`${this.apiUrl}/audit`, { params, headers });
+  }
+
+  getUsers(page: number, size: number): Observable<any> {
+    const params = new HttpParams()
+      .set('page', page.toString())
+      .set('size', size.toString());
+
+    return this.http.get(`${environment.apiUrl}/api/users`, { params });
+  }
+
+  getEmployeesNoUser(page: number, size: number): Observable<any> {
+    const params = new HttpParams()
+      .set('page', page.toString())
+      .set('size', size.toString());
+
+    return this.http.get(`${environment.apiUrl}/api/employees/no-user`, { params });
   }
 }
