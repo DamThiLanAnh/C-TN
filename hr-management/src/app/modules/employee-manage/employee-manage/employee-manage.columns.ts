@@ -126,7 +126,7 @@ export const employeeManageColumns = (): StandardColumnModel[] => {
     },
     {
       id: 12,
-      name: 'statusName',
+      name: 'status',
       fixedColumn: false,
       fixedRight: false,
       attr: 'Tình trạng',
@@ -134,7 +134,7 @@ export const employeeManageColumns = (): StandardColumnModel[] => {
       isFilter: true,
       isSort: true,
       filter: {
-        name: 'statusName',
+        name: 'status',
         multiple: true,
         options: []
       },
@@ -176,7 +176,7 @@ export const employeeManageColumns = (): StandardColumnModel[] => {
       name: 'phoneNumber',
       fixedColumn: false,
       fixedRight: false,
-      attr: 'SĐT',  
+      attr: 'SĐT',
       width: '120px',
       isFilter: true,
       isSort: true,
@@ -187,7 +187,7 @@ export const employeeManageColumns = (): StandardColumnModel[] => {
     },
     {
       id: 17,
-      name: 'createdAt',
+      name: 'onboardDate',
       fixedColumn: false,
       fixedRight: false,
       attr: 'Ngày vào làm',
@@ -196,7 +196,7 @@ export const employeeManageColumns = (): StandardColumnModel[] => {
       isSort: true,
       isFilter: true,
       filter: {
-        name: 'createdAt',
+        name: 'onboardDate',
         type: StandardColumnType.DATE_PICKER
       }
     },

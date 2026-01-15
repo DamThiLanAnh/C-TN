@@ -30,7 +30,6 @@ export class EmployeeManageComponent implements OnInit, OnDestroy {
   employeeColumns = employeeManageColumns();
   StandardColumnType = StandardColumnType;
   searchFilters: { [key: string]: any } = {};
-  // searchSubject = new Subject<any>(); // Removed
   filterChanged$ = new Subject<void>();
   private destroy$ = new Subject<void>();
 
@@ -38,13 +37,11 @@ export class EmployeeManageComponent implements OnInit, OnDestroy {
   filteredData: any[] = [];
   loadingTable = false;
 
-  // Permissions
   canAdd = false;
   canEdit = false;
   canDelete = false;
   canTransferPosition = false;
 
-  // Pagination
   paging = {
     pageIndex: 1,
     pageSize: 10,
@@ -67,12 +64,12 @@ export class EmployeeManageComponent implements OnInit, OnDestroy {
 
 
   ngOnInit(): void {
-    // Check permissions
-    const isHROrAdmin = this.authService.isHROrAdmin();
-    this.canAdd = isHROrAdmin;
-    this.canEdit = isHROrAdmin;
-    this.canDelete = isHROrAdmin;
-    this.canTransferPosition = isHROrAdmin;
+    const isHR = this.authService.isHR();
+
+    this.canAdd = isHR;
+    this.canEdit = isHR;
+    this.canDelete = isHR;
+    this.canTransferPosition = isHR;
 
     this.filterChanged$.pipe(
       debounceTime(300),
@@ -115,9 +112,12 @@ export class EmployeeManageComponent implements OnInit, OnDestroy {
     // I will leave position options empty or try to extract from data if possible.
 
     // Status Options
-    const statusCol = this.employeeColumns.find(c => c.name === 'statusName');
+    const statusCol = this.employeeColumns.find(c => c.name === 'status');
     if (statusCol && statusCol.filter) {
-      statusCol.filter.options = Status;
+      statusCol.filter.options = [
+        { label: 'Hoạt động', value: 'ACTIVE' },
+        { label: 'Ngừng hoạt động', value: 'INACTIVE' }
+      ];
     }
 
     // Gender Options
@@ -163,12 +163,11 @@ export class EmployeeManageComponent implements OnInit, OnDestroy {
               departmentId: item.departmentId,
               departmentName: item.departmentName,
               status: item.status,
-              statusName: item.status, // Column uses `statusName` key. Keep both or ensure column matches.
               email: item.email,
               phoneNumber: item.phoneNumber,
               userId: item.userId,
-              createdAt: item.createdAt ? formatDate(item.createdAt, 'dd/MM/yyyy', 'en-US') : '',
-              createdAtOriginal: item.createdAt,
+              onboardDate: item.onboardDate ? formatDate(item.onboardDate, 'dd/MM/yyyy', 'en-US') : '',
+              onboardDateOriginal: item.onboardDate,
 
               // Extra mappings for table compatibility if columns expected other keys
               index: index + 1,
@@ -178,7 +177,7 @@ export class EmployeeManageComponent implements OnInit, OnDestroy {
 
             // Initial search to set filteredData and paging
             this.onSearch();
-            
+
           } else {
             this.listOfData = [];
             this.filteredData = [];
@@ -216,33 +215,33 @@ export class EmployeeManageComponent implements OnInit, OnDestroy {
       // Filter by Position
       if (this.searchFilters['position'] && this.searchFilters['position'].length > 0) {
         if (Array.isArray(this.searchFilters['position'])) {
-           if (!this.searchFilters['position'].includes(item.workPositionName)) return false;
+          if (!this.searchFilters['position'].includes(item.workPositionName)) return false;
         } else {
-           if (item.workPositionName !== this.searchFilters['position']) return false;
+          if (item.workPositionName !== this.searchFilters['position']) return false;
         }
       }
       // Filter by Department
       if (this.searchFilters['departmentName'] && this.searchFilters['departmentName'].length > 0) {
         if (Array.isArray(this.searchFilters['departmentName'])) {
-           if (!this.searchFilters['departmentName'].includes(item.departmentName)) return false;
+          if (!this.searchFilters['departmentName'].includes(item.departmentName)) return false;
         } else {
-           if (item.departmentName !== this.searchFilters['departmentName']) return false;
+          if (item.departmentName !== this.searchFilters['departmentName']) return false;
         }
       }
       // Filter by Status
-      if (this.searchFilters['statusName'] && this.searchFilters['statusName'].length > 0) {
-        if (Array.isArray(this.searchFilters['statusName'])) {
-           if (!this.searchFilters['statusName'].includes(item.statusName)) return false;
+      if (this.searchFilters['status'] && this.searchFilters['status'].length > 0) {
+        if (Array.isArray(this.searchFilters['status'])) {
+          if (!this.searchFilters['status'].includes(item.status)) return false;
         } else {
-           if (item.statusName !== this.searchFilters['statusName']) return false;
+          if (item.status !== this.searchFilters['status']) return false;
         }
       }
       // Filter by Gender
       if (this.searchFilters['gender'] && this.searchFilters['gender'].length > 0) {
         if (Array.isArray(this.searchFilters['gender'])) {
-           if (!this.searchFilters['gender'].includes(item.gender)) return false;
+          if (!this.searchFilters['gender'].includes(item.gender)) return false;
         } else {
-           if (item.gender !== this.searchFilters['gender']) return false;
+          if (item.gender !== this.searchFilters['gender']) return false;
         }
       }
 
@@ -253,10 +252,10 @@ export class EmployeeManageComponent implements OnInit, OnDestroy {
         }
       }
 
-      // Filter by Created At (Joining Date)
-      if (this.searchFilters['createdAt']) {
-         // item.createdAtOriginal is the raw date string/object
-        if (!this.checkDateMatch(item.createdAtOriginal, this.searchFilters['createdAt'])) {
+      // Filter by Onboard Date
+      if (this.searchFilters['onboardDate']) {
+        // item.onboardDateOriginal is the raw date string/object
+        if (!this.checkDateMatch(item.onboardDateOriginal, this.searchFilters['onboardDate'])) {
           return false;
         }
       }

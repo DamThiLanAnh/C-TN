@@ -112,7 +112,10 @@ export class AuthService {
       username: response['username'],
       roles: response['roles'],
       status: response['status'],
-      lastLogin: response['lastLogin']
+      lastLogin: response['lastLogin'],
+      isAdmin: response['isAdmin'],
+      isHR: response['isHR'],
+      isManager: response['isManager']
     };
 
     if (userInfo) {
@@ -138,6 +141,8 @@ export class AuthService {
       }
       if (user.roles && Array.isArray(user.roles) && user.roles.length > 0) {
         console.log('Found roles array:', user.roles);
+        // Prioritize HR or ADMIN if present in array? 
+        // Returning the first one is legacy behavior, keeping it for fallback
         return user.roles[0];
       }
     }
@@ -166,11 +171,14 @@ export class AuthService {
 
   isManager(): boolean {
     const user = this.getUser();
-    if (user && Array.isArray(user.roles)) {
-      const roles = user.roles.map((r: any) => r.toString().toUpperCase());
-      if (roles.includes('MANAGER') || roles.includes('ROLE_MANAGER') || roles.some((r: string) => r.includes('MANAGER'))) {
-        console.log('isManager true via roles array');
-        return true;
+    if (user) {
+      if (user.isManager === true) return true;
+      if (Array.isArray(user.roles)) {
+        const roles = user.roles.map((r: any) => r.toString().toUpperCase());
+        if (roles.includes('MANAGER') || roles.includes('ROLE_MANAGER') || roles.some((r: string) => r.includes('MANAGER'))) {
+          console.log('isManager true via roles array');
+          return true;
+        }
       }
     }
 
@@ -191,6 +199,9 @@ export class AuthService {
   }
 
   isHR(): boolean {
+    const user = this.getUser();
+    if (user && user.isHR === true) return true;
+
     const role = this.getUserRole();
     console.log('isHR check - role:', role);
 
@@ -208,6 +219,11 @@ export class AuthService {
   }
 
   isHROrAdmin(): boolean {
+    const user = this.getUser();
+    if (user) {
+      if (user.isHR === true || user.isAdmin === true) return true;
+    }
+
     const role = this.getUserRole();
 
     if (!role) {

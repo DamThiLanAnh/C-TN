@@ -32,9 +32,11 @@
                                 <td class="text-center">{{ (pageIndex - 1) * pageSize + i + 1 }}</td>
                                 <td>{{ data.username }}</td>
                                 <td>
-                                    <ng-container *ngFor="let role of data.roles">
-                                        <nz-tag [nzColor]="'blue'">{{ role }}</nz-tag>
-                                    </ng-container>
+                                    <div class="d-flex align-items-center" style="gap: 4px; flex-wrap: wrap;">
+                                        <ng-container *ngFor=" let role of data.roles">
+                                            <nz-tag [nzColor]="'blue'" class="m-0">{{ role }}</nz-tag>
+                                        </ng-container>
+                                    </div>
                                 </td>
                                 <td>
                                     <nz-tag [nzColor]="data.status === 'ACTIVE' ? 'success' : 'error'">
@@ -42,15 +44,10 @@
                                     </nz-tag>
                                 </td>
                                 <td>{{ data.employeeId }}</td>
-                                <td>
-                                    <i *ngIf="data.canApprove" nz-icon nzType="check-circle" nzTheme="fill"
-                                        class="text-success"></i>
-                                    <i *ngIf="!data.canApprove" nz-icon nzType="close-circle" nzTheme="fill"
-                                        class="text-secondary"></i>
-                                </td>
-                                <td>{{ data.createdAt | date: 'dd/MM/yyyy HH:mm' }}</td>
-                                <td>{{ data.updatedAt | date: 'dd/MM/yyyy HH:mm' }}</td>
-                                <td>{{ data.lastLogin | date: 'dd/MM/yyyy HH:mm' }}</td>
+
+                                <td>{{ data.createdAt | date: 'dd/MM/yyyy' }}</td>
+                                <td>{{ data.updatedAt | date: 'dd/MM/yyyy' }}</td>
+                                <td>{{ data.lastLogin | date: 'dd/MM/yyyy' }}</td>
                             </tr>
                         </tbody>
                     </nz-table>

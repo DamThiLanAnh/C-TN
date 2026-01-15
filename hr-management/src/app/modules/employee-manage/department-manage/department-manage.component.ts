@@ -41,7 +41,8 @@ export class DepartmentManageComponent implements OnInit {
     private modalService: NzModalService
   ) { }
 
-  fullDataList: any[] = []; // Cache for client-side filtering
+
+
 
   ngOnInit(): void {
     this.setupStreamSearch();
@@ -50,90 +51,48 @@ export class DepartmentManageComponent implements OnInit {
 
   private setupStreamSearch(): void {
     this.searchSubject.pipe(
-      debounceTime(300)
+      debounceTime(300),
+      distinctUntilChanged()
     ).subscribe(() => {
       this.paging.pageIndex = 1; // Reset to first page on search
-      this.filterLocalData();
+      this.fetchDataFromServer();
     });
   }
 
   private fetchDataFromServer(): void {
     this.loadingTable = true;
-    // For initial fetch, we want all data. 
-    // If backend supports pagination but we want client-side filter, we might need a large size or a specific 'all' endpoint.
-    // Assuming /api/departments/active returns a list or we request a large page.
+
+    // Prepare params from paging and searchFilters
     const params = {
       page: this.paging.pageIndex - 1,
-      size: this.paging.pageSize
+      size: this.paging.pageSize,
+      ...this.searchFilters
     };
 
     this.departmentManageService.getDepartmentsApi(params).pipe(
       finalize(() => this.loadingTable = false)
     ).subscribe(
       (response) => {
-        console.log('API Department Response:', response);
-
-        if (Array.isArray(response)) {
-          this.fullDataList = response;
-        } else if (response && response.content) {
-          this.fullDataList = response.content;
+        if (response && response.content) {
+          this.mapData(response.content);
+          this.paging.totalElements = response.totalElements || 0;
+          this.paging.totalPages = response.totalPages || 0;
         } else {
-          this.fullDataList = [];
+          this.listOfData = [];
+          this.paging.totalElements = 0;
         }
-
-        this.filterLocalData();
       },
       (error) => {
         this.messageService.error('Không thể tải danh sách phòng ban: ' + (error.error || error.message || 'Error'));
         this.listOfData = [];
-        this.fullDataList = [];
         this.paging.totalElements = 0;
       }
     );
   }
 
-  private filterLocalData(): void {
-    let processedData = [...this.fullDataList];
-
-    // Client-side filtering logic
-    if (this.searchFilters['code']) {
-      const code = this.searchFilters['code'].toLowerCase().trim();
-      processedData = processedData.filter((item: any) => item.code && item.code.toLowerCase().includes(code));
-    }
-    if (this.searchFilters['name']) {
-      const name = this.searchFilters['name'].toLowerCase().trim();
-      processedData = processedData.filter((item: any) => item.name && item.name.toLowerCase().includes(name));
-    }
-    if (this.searchFilters['description']) {
-      const description = this.searchFilters['description'].toLowerCase().trim();
-      processedData = processedData.filter((item: any) => item.description && item.description.toLowerCase().includes(description));
-    }
-    if (this.searchFilters['status']) {
-      const isLookingForActive = this.searchFilters['status'] === 'ACTIVE';
-      processedData = processedData.filter((item: any) => {
-        if (item.active !== undefined && item.active !== null) return item.active === isLookingForActive;
-        if (item.isActive !== undefined && item.isActive !== null) return Boolean(item.isActive) === isLookingForActive;
-        if (item.status === 1 || item.status === '1' || item.status === 'ACTIVE') return isLookingForActive;
-        if (item.status === 0 || item.status === '0' || item.status === 'INACTIVE') return !isLookingForActive;
-        return true;
-      });
-    }
-
-    // Update Total based on filtered result
-    const total = processedData.length;
-    this.paging.totalElements = total;
-    this.paging.totalPages = Math.ceil(total / this.paging.pageSize) || 1;
-
-    // Client-side pagination
-    const start = (this.paging.pageIndex - 1) * this.paging.pageSize;
-    const end = start + this.paging.pageSize;
-    const slicedData = processedData.slice(start, end);
-
-    this.mapData(slicedData);
-  }
+  // filterLocalData removed
 
   private loadData(): void {
-    // Alias for backward compatibility if needed, or just redirect to fetch
     this.fetchDataFromServer();
   }
 
@@ -170,19 +129,19 @@ export class DepartmentManageComponent implements OnInit {
     if (this.paging.pageIndex !== pageIndex || this.paging.pageSize !== pageSize) {
       this.paging.pageIndex = pageIndex;
       this.paging.pageSize = pageSize;
-      this.filterLocalData();
+      this.fetchDataFromServer();
     }
   }
 
   getChangePagination(page: number): void {
     this.paging.pageIndex = page;
-    this.filterLocalData();
+    this.fetchDataFromServer();
   }
 
   onPageSizeChange(size: number): void {
     this.paging.pageSize = size;
     this.paging.pageIndex = 1;
-    this.filterLocalData();
+    this.fetchDataFromServer();
   }
 
   handleAction(actionKey: string, data: any): void {

@@ -13,12 +13,12 @@ export const USER_ACCOUNT_COLUMNS = [
     {
         header: 'Vai trò',
         field: 'roles',
-        width: 'auto'
+        width: '200px'
     },
     {
         header: 'Trạng thái',
         field: 'status',
-        width: '100px',
+        width: '70px',
         className: 'text-center'
     },
     {
@@ -26,12 +26,7 @@ export const USER_ACCOUNT_COLUMNS = [
         field: 'employeeId',
         width: 'auto'
     },
-    {
-        header: 'Quyền duyệt',
-        field: 'canApprove',
-        width: '100px',
-        className: 'text-center'
-    },
+
     {
         header: 'Ngày tạo',
         field: 'createdAt',
