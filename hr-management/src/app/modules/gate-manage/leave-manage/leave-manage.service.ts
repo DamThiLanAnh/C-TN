@@ -28,7 +28,7 @@ export class LeaveManagementService {
 
   constructor(private http: HttpClient) { }
 
-  // HR/Admin get all leave requests with optional filters
+  // lay tat ca yeu cau (HR/Admin)
   getAllLeaveRequests(params: LeaveQueryParams = {}): Observable<any> {
     const { page = 0, size = 10, employeeName, department, status, type } = params;
 
@@ -37,7 +37,7 @@ export class LeaveManagementService {
       size: size.toString()
     };
 
-    // Add optional filter parameters if provided
+    // them tham so loc
     if (employeeName) {
       httpParams.employeeName = employeeName;
     }
@@ -56,7 +56,7 @@ export class LeaveManagementService {
     });
   }
 
-  // employee get his/her leave requests
+  // lay yeu cau cua toi
   getLeaveMy(page: number = 0, size: number = 10): Observable<any> {
     return this.http.get(`${this.baseUrl}/api/leave/my`, {
       params: {
@@ -66,7 +66,7 @@ export class LeaveManagementService {
     });
   }
 
-  // Get leave requests by department (for managers)
+  // lay yeu cau theo phong ban
   getLeaveByDepartment(page: number = 0, size: number = 10): Observable<any> {
     return this.http.get(`${this.baseUrl}/api/leave/department`, {
       params: {
@@ -76,7 +76,7 @@ export class LeaveManagementService {
     });
   }
 
-  //employee submit a leave request
+  // tao yeu cau moi
   addLeaveRequest(body: LeaveRequest): Observable<any> {
     const headers = new HttpHeaders({
       'Content-Type': 'application/json',
@@ -86,7 +86,7 @@ export class LeaveManagementService {
     return this.http.post(`${this.baseUrl}/api/leave`, body, { headers });
   }
 
-  // update leave request
+  // cap nhat yeu cau
   updateLeaveRequest(id: number, body: LeaveRequest): Observable<any> {
     const headers = new HttpHeaders({
       'Content-Type': 'application/json',
@@ -95,7 +95,7 @@ export class LeaveManagementService {
     return this.http.put(`${this.baseUrl}/api/leave/${id}`, body, { headers });
   }
 
-  // HR delete a leave request (only HR has permission)
+  // xoa yeu cau (HR)
   deleteLeaveRequest(leaveId: number): Observable<any> {
     const url = `${this.baseUrl}/api/leave/hr/${leaveId}`;
     console.log('🔍 DELETE URL:', url);
@@ -109,13 +109,13 @@ export class LeaveManagementService {
     return this.http.delete(url, { headers });
   }
 
-  // Get active departments for dropdown
+  // lay danh sach phong ban
   getActiveDepartments(): Observable<any> {
     console.log('LeaveManagementService.getActiveDepartments called');
     return this.http.get(`${this.baseUrl}/api/departments`); // Fixed: departments (plural)
   }
 
-  // Get pending leave requests
+  // lay yeu cau cho duyet
   getPendingLeaves(page: number = 0, size: number = 10): Observable<any> {
     return this.http.get(`${this.baseUrl}/api/leave/pending`, {
       params: {
@@ -125,12 +125,12 @@ export class LeaveManagementService {
     });
   }
 
-  // Approve or Reject leave request
-  reviewLeaveRequest(id: number, body: { action: 'APPROVE' | 'REJECT', managerNote: string }): Observable<any> {
+  // duyet hoac tu choi
+  decisionLeaveRequest(body: { ids: number[], action: 'APPROVE' | 'REJECT', managerNote?: string }): Observable<any> {
     const headers = new HttpHeaders({
       'Content-Type': 'application/json',
       'accept': '*/*'
     });
-    return this.http.patch(`${this.baseUrl}/api/leave/${id}/decision`, body, { headers });
+    return this.http.patch(`${this.baseUrl}/api/leave/decision`, body, { headers });
   }
 }

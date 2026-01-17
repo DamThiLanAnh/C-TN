@@ -3,145 +3,110 @@
     <h6>Quản lý vắng mặt</h6>
     <div nz-row nzJustify="end" class="action-table">
       <button nz-button nzType="primary" type="button" nzDanger (click)="openAddModal()">
-        <span nz-icon nzType="plus-circle" nzTheme="outline" aria-hidden="true" ></span>Thêm mới
+        <span nz-icon nzType="plus-circle" nzTheme="outline" aria-hidden="true"></span>Thêm mới
       </button>
     </div>
   </div>
-  <div
-    nz-row
-    nzJustify="start"
-    class="action-table d-flex align-items-center mb-2">
+  <div nz-row nzJustify="start" class="action-table d-flex align-items-center mb-2">
     <div *ngIf="isDataSelected()">
       <button nz-button class="me-2" nzType="default" type="button" (click)="onChangeUnselectData()">
         Bỏ ({{ dataDeleteChecked.length }}) lựa chọn
       </button>
     </div>
 
-    <button
-      nz-button
-      nzGhost
-      class="me-2"
-      nzType="primary"
-      type="button"
-      nzDanger
-      [disabled]="!isDataSelected()"
-      (click)="onReject()"
-      *ngIf="canApproveLeave"
-    >
+    <button nz-button nzGhost class="me-2" nzType="primary" type="button" nzDanger [disabled]="!isDataSelected()"
+      (click)="onReject()" *ngIf="canApproveLeave">
       Từ chối
     </button>
 
-    <button nz-button class="me-2" nzType="primary" type="button" nzDanger
-            [disabled]="!isDataSelected()"
-            (click)="onAccept()"
-            *ngIf="canApproveLeave">
+    <button nz-button class="me-2" nzType="primary" type="button" nzDanger [disabled]="!isDataSelected()"
+      (click)="onAccept()" *ngIf="canApproveLeave">
       Duyệt
     </button>
   </div>
 
-  <nz-table #basicTable
-            [nzData]="filteredData"
-            [nzBordered]="true"
-            [nzSize]="'small'"
-            [nzScroll]="{ x: '1600px', y: 'calc(100vh - 20rem)' }"
-            [nzLoading]="loadingTable"
-            [nzShowPagination]="false"
-            (nzQueryParams)="onTableQueryParamsChange($event)"
-  >
+  <nz-table #basicTable [nzData]="filteredData" [nzBordered]="true" [nzSize]="'small'"
+    [nzScroll]="{ x: '1600px', y: 'calc(100vh - 20rem)' }" [nzLoading]="loadingTable" [nzShowPagination]="false"
+    (nzQueryParams)="onTableQueryParamsChange($event)">
     <thead>
-    <tr>
-      <th
-        nzWidth="50px"
-        [nzChecked]="checked"
-        [nzIndeterminate]="indeterminate"
-        (nzCheckedChange)="onChangeSelectAll($event)"
-      ></th>
-      <th *ngFor="let col of leaveManageColumns"
-          [nzWidth]="col.width || null"
-          [nzSortFn]="col.isSort ? true : null"
+      <tr>
+        <th nzWidth="50px" [nzChecked]="checked" [nzIndeterminate]="indeterminate"
+          (nzCheckedChange)="onChangeSelectAll($event)"></th>
+        <th *ngFor="let col of leaveManageColumns" [nzWidth]="col.width || null" [nzSortFn]="col.isSort ? true : null"
           [nzColumnKey]="col.name">
-        {{ col.attr }}
-      </th>
-    </tr>
-    <!-- Filter Row -->
-    <tr class="filter-row">
-      <th></th>
-      <ng-container *ngFor="let col of leaveManageColumns">
-        <th *ngIf="col.isFilter">
-          <input *ngIf="col.filter?.type === StandardColumnType.INPUT || col.type === StandardColumnType.TEXT" type="text" nz-input [(ngModel)]="searchFilters[col.name]" (ngModelChange)="filterChanged$.next()" [placeholder]="'Tìm...'" nzSize="small" />
-          <nz-select *ngIf="col.filter?.type === StandardColumnType.SELECT || col.type === StandardColumnType.SELECT"
-                     [(ngModel)]="searchFilters[col.name]"
-                     (ngModelChange)="filterChanged$.next()"
-                     [nzMode]="col.filter?.multiple ? 'multiple' : 'default'"
-                     [nzPlaceHolder]="'Chọn ' + col.attr"
-                     nzAllowClear
-                     [nzShowArrow]="true"
-                     nzSize="small"
-                     [nzMaxTagCount]="1"
-                     style="width: 100%">
-            <nz-option *ngFor="let opt of (col.filter?.options || [])" [nzValue]="opt.value" [nzLabel]="opt.label"></nz-option>
-          </nz-select>
-          <nz-date-picker *ngIf="col.type === StandardColumnType.DATE_RANGE_PICKER" [(ngModel)]="searchFilters[col.name]" (ngModelChange)="filterChanged$.next()" nzFormat="dd/MM/yyyy" nzPlaceHolder="Chọn..." nzSize="small" style="width: 100%"></nz-date-picker>
-          <nz-time-picker *ngIf="col.type === StandardColumnType.TIME_RANGE_PICKER" [(ngModel)]="searchFilters[col.name]" (ngModelChange)="filterChanged$.next()" nzFormat="HH:mm" nzPlaceHolder="Chọn..." nzSize="small" style="width: 100%"></nz-time-picker>
+          {{ col.attr }}
         </th>
-        <th *ngIf="!col.isFilter"></th>
-      </ng-container>
-    </tr>
+      </tr>
+      <!-- Filter Row -->
+      <tr class="filter-row">
+        <th></th>
+        <ng-container *ngFor="let col of leaveManageColumns">
+          <th *ngIf="col.isFilter">
+            <input *ngIf="col.filter?.type === StandardColumnType.INPUT || col.type === StandardColumnType.TEXT"
+              type="text" nz-input [(ngModel)]="searchFilters[col.name]" (ngModelChange)="filterChanged$.next()"
+              [placeholder]="'Tìm...'" nzSize="small" />
+            <nz-select *ngIf="col.filter?.type === StandardColumnType.SELECT || col.type === StandardColumnType.SELECT"
+              [(ngModel)]="searchFilters[col.name]" (ngModelChange)="filterChanged$.next()"
+              [nzMode]="col.filter?.multiple ? 'multiple' : 'default'" [nzPlaceHolder]="'Chọn ' + col.attr" nzAllowClear
+              [nzShowArrow]="true" nzSize="small" [nzMaxTagCount]="1" style="width: 100%">
+              <nz-option *ngFor="let opt of (col.filter?.options || [])" [nzValue]="opt.value"
+                [nzLabel]="opt.label"></nz-option>
+            </nz-select>
+            <nz-date-picker *ngIf="col.type === StandardColumnType.DATE_RANGE_PICKER"
+              [(ngModel)]="searchFilters[col.name]" (ngModelChange)="filterChanged$.next()" nzFormat="dd/MM/yyyy"
+              nzPlaceHolder="Chọn..." nzSize="small" style="width: 100%"></nz-date-picker>
+            <nz-time-picker *ngIf="col.type === StandardColumnType.TIME_RANGE_PICKER"
+              [(ngModel)]="searchFilters[col.name]" (ngModelChange)="filterChanged$.next()" nzFormat="HH:mm"
+              nzPlaceHolder="Chọn..." nzSize="small" style="width: 100%"></nz-time-picker>
+          </th>
+          <th *ngIf="!col.isFilter"></th>
+        </ng-container>
+      </tr>
     </thead>
     <tbody>
-    <tr *ngFor="let data of basicTable.data; let i = index" (click)="openDetailModal(data)" style="cursor: pointer;">
-      <td [nzChecked]="!!data.checked" (nzCheckedChange)="onItemChecked(data, $event)" (click)="$event.stopPropagation()"></td>
-      <ng-container *ngFor="let col of leaveManageColumns">
-        <!-- Index Column -->
-        <td *ngIf="col.name === 'index'" [ngClass]="col.classes || ''" class="text-center">
-          {{ (paging.pageIndex - 1) * paging.pageSize + i + 1 }}
-        </td>
-
-        <!-- Action Column -->
-        <td *ngIf="col.name === 'action'" [ngClass]="col.classes || ''" class="text-center" (click)="$event.stopPropagation()">
-          <div class="action-buttons d-flex justify-content-center gap-2">
-            <ng-container *ngFor="let action of col.listAction">
-              <button
-                nz-button
-                nzType="link"
-                nzSize="small"
-                nz-tooltip
-                [nzTooltipTitle]="action.label"
-                (click)="handleAction(action.key, data)"
-                [innerHTML]="action.html | vssSafeHtml"
-                class="action-icon-btn"
-              >
-              </button>
-            </ng-container>
-          </div>
-        </td>
-
-        <!-- Regular Columns -->
-        <ng-container *ngIf="col.name !== 'index' && col.name !== 'action'">
-          <td *ngIf="col.type !== 7 && col.type !== 8; else tagColumn" [ngClass]="col.classes || ''">
-            {{ data[col.name] }}
+      <tr *ngFor="let data of basicTable.data; let i = index" (click)="openDetailModal(data)" style="cursor: pointer;">
+        <td [nzChecked]="!!data.checked" (nzCheckedChange)="onItemChecked(data, $event)"
+          (click)="$event.stopPropagation()"></td>
+        <ng-container *ngFor="let col of leaveManageColumns">
+          <!-- Index Column -->
+          <td *ngIf="col.name === 'index'" [ngClass]="col.classes || ''" class="text-center">
+            {{ (paging.pageIndex - 1) * paging.pageSize + i + 1 }}
           </td>
-          <ng-template #tagColumn>
-            <td [ngClass]="col.classes || ''">
-              <nz-tag [nzColor]="getStatusColor(data[col.name])">
-                {{ data[col.name] }}
-              </nz-tag>
+
+          <!-- Action Column -->
+          <td *ngIf="col.name === 'action'" [ngClass]="col.classes || ''" class="text-center"
+            (click)="$event.stopPropagation()">
+            <div class="action-buttons d-flex justify-content-center gap-2">
+              <ng-container *ngFor="let action of col.listAction">
+                <button nz-button nzType="link" nzSize="small" nz-tooltip [nzTooltipTitle]="action.label"
+                  (click)="handleAction(action.key, data)" [innerHTML]="action.html | vssSafeHtml"
+                  class="action-icon-btn">
+                </button>
+              </ng-container>
+            </div>
+          </td>
+
+          <!-- Regular Columns -->
+          <ng-container *ngIf="col.name !== 'index' && col.name !== 'action'">
+            <td *ngIf="col.type !== 7 && col.type !== 8; else tagColumn" [ngClass]="col.classes || ''">
+              {{ data[col.name] }}
             </td>
-          </ng-template>
+            <ng-template #tagColumn>
+              <td [ngClass]="col.classes || ''">
+                <nz-tag [nzColor]="getStatusColor(data[col.name])">
+                  {{ data[col.name] }}
+                </nz-tag>
+              </td>
+            </ng-template>
+          </ng-container>
         </ng-container>
-      </ng-container>
-    </tr>
+      </tr>
     </tbody>
   </nz-table>
 
   <div class="mt-2 text-lg-end">
-    <nz-pagination
-      [nzTotal]="paging.totalElements"
-      [nzPageSize]="paging.pageSize"
-      [nzPageIndex]="paging.pageIndex"
-      [nzShowSizeChanger]="true"
-      (nzPageIndexChange)="getChangePagination($event)"
-      (nzPageSizeChange)="onPageSizeChange($event)"
-    ></nz-pagination>
+    <nz-pagination [nzTotal]="paging.totalElements" [nzPageSize]="paging.pageSize" [nzPageIndex]="paging.pageIndex"
+      [nzShowSizeChanger]="true" (nzPageIndexChange)="getChangePagination($event)"
+      (nzPageSizeChange)="onPageSizeChange($event)"></nz-pagination>
   </div>
 </nz-card>

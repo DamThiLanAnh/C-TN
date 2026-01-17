@@ -1,0 +1,23 @@
+<div class="custom-modal-content">
+    <div class="modal-icon" [ngClass]="type">
+        <span nz-icon [nzType]="type === 'approve' ? 'check' : 'close'" nzTheme="outline"></span>
+    </div>
+
+    <div class="modal-title">{{ title }}</div>
+
+    <div class="modal-desc" [innerHTML]="content"></div>
+
+    <div class="form-group" *ngIf="requireReason">
+        <label class="input-label required">Lý do {{ type === 'reject' ? 'từ chối' : '' }}</label>
+        <textarea rows="3" nz-input [(ngModel)]="reason" placeholder="Nhập lý do..."></textarea>
+        <div class="error-text" *ngIf="reasonError">Vui lòng nhập lý do</div>
+    </div>
+
+    <div class="modal-footer-custom">
+        <button nz-button nzType="default" (click)="onCancel()">Hủy</button>
+        <button nz-button [nzType]="type === 'approve' ? 'primary' : 'default'" [nzDanger]="type === 'reject'"
+            (click)="onConfirm()">
+            Xác nhận
+        </button>
+    </div>
+</div>

@@ -26,9 +26,9 @@ export interface TimekeepingExplanationQueryParams {
 export class TimekeepingExplanationService {
   private baseUrl = environment.apiUrl;
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
-  // HR/Admin/Manager get all timekeeping explanations with optional filters
+  // HR/Admin/Manager lay danh sach giai trinh cong voi bo loc tuy chon
   getAllTimekeepingExplanations(params: TimekeepingExplanationQueryParams = {}): Observable<any> {
     const { page = 0, size = 10, employeeCode, department, fromDate, toDate, status } = params;
 
@@ -37,7 +37,7 @@ export class TimekeepingExplanationService {
       size: size.toString()
     };
 
-    // Add optional filter parameters if provided
+    // Them tham so loc tuy chon neu co
     if (employeeCode) {
       httpParams.employeeCode = employeeCode;
     }
@@ -54,14 +54,12 @@ export class TimekeepingExplanationService {
       httpParams.status = status;
     }
 
-    console.log('🔵 Calling API /api/timekeeping-explanations with params:', httpParams);
-
     return this.http.get(`${this.baseUrl}/api/timekeeping-explanations`, {
       params: httpParams
     });
   }
 
-  // Manager get department timekeeping explanations with optional filters
+  // Manager lay danh sach giai trinh cong phong ban voi bo loc tuy chon
   getTimekeepingByDepartment(params: TimekeepingExplanationQueryParams = {}): Observable<any> {
     const { page = 0, size = 10, employeeCode, department, fromDate, toDate, status } = params;
 
@@ -70,7 +68,7 @@ export class TimekeepingExplanationService {
       size: size.toString()
     };
 
-    // Add optional filter parameters if provided
+    // Them tham so loc tuy chon neu co
     if (employeeCode) {
       httpParams.employeeCode = employeeCode;
     }
@@ -87,18 +85,15 @@ export class TimekeepingExplanationService {
       httpParams.status = status;
     }
 
-    console.log('🔵 Manager calling API /api/timekeeping-explanations with params:', httpParams);
-
-    // Manager uses same endpoint - backend filters by manager's department automatically
+    // Manager su dung cung endpoint - backend tu dong loc theo phong ban cua quan ly
     return this.http.get(`${this.baseUrl}/api/timekeeping-explanations/pending`, {
       params: httpParams
     });
   }
 
-  // Employee get their own timekeeping explanations
+  // Nhan vien lay danh sach giai trinh cong cua minh
+  // Nhan vien lay danh sach giai trinh cong cua minh
   getTimekeepingMy(page: number = 0, size: number = 10): Observable<any> {
-    console.log('🔵 Employee calling API /api/timekeeping-explanations');
-
     return this.http.get(`${this.baseUrl}/api/timekeeping-explanations`, {
       params: {
         page: page.toString(),
@@ -107,19 +102,37 @@ export class TimekeepingExplanationService {
     });
   }
 
-  // Employee submit a timekeeping explanation request
+  // Lay danh sach giai trinh cong can duyet (cho Manager/Admin)
+  getPendingTimekeepingExplanationsApi(params: TimekeepingExplanationQueryParams = {}): Observable<any> {
+    const { page = 0, size = 10, employeeCode, department, fromDate, toDate, status } = params;
+
+    let httpParams: any = {
+      page: page.toString(),
+      size: size.toString()
+    };
+
+    if (employeeCode) httpParams.employeeCode = employeeCode;
+    if (department) httpParams.department = department;
+    if (fromDate) httpParams.fromDate = fromDate;
+    if (toDate) httpParams.toDate = toDate;
+    if (status) httpParams.status = status;
+
+    return this.http.get(`${this.baseUrl}/api/timekeeping-explanations/pending`, {
+      params: httpParams
+    });
+  }
+
+  // Nhan vien gui yeu cau giai trinh cong
   addTimekeepingExplanation(body: TimekeepingExplanationRequest): Observable<any> {
     const headers = new HttpHeaders({
       'Content-Type': 'application/json',
       'accept': '*/*'
     });
 
-    console.log('🔵 Calling POST API /api/timekeeping-explanations with body:', body);
-
     return this.http.post(`${this.baseUrl}/api/timekeeping-explanations`, body, { headers });
   }
 
-  // HR/Admin delete a timekeeping explanation
+  // HR/Admin xoa giai trinh cong
   deleteTimekeepingExplanation(id: number): Observable<any> {
     const headers = new HttpHeaders({
       'accept': '*/*'
@@ -132,33 +145,9 @@ export class TimekeepingExplanationService {
     return of({ success: true });
   }
 
-  // Approve timekeeping explanation
-  approveTimekeepingExplanation(id: number): Observable<any> {
-    const headers = new HttpHeaders({
-      'Content-Type': 'application/json',
-      'accept': '*/*'
-    });
-
-    // TODO: Replace with actual API endpoint
-    // return this.http.put(`${this.baseUrl}/api/timekeeping-explanation/${id}/approve`, {}, { headers });
-
-    // Mock response
-    return of({ success: true, message: 'Duyệt thành công' });
+  // Duyet/Tu choi nhieu giai trinh cong
+  bulkDecisionTimekeepingExplanationApi(body: { ids: number[], action: 'APPROVE' | 'REJECT', managerNote?: string }): Observable<any> {
+    return this.http.patch<any>(`${this.baseUrl}/api/timekeeping-explanations/bulk-decision`, body);
   }
-
-  // Reject timekeeping explanation
-  rejectTimekeepingExplanation(id: number, reason?: string): Observable<any> {
-    const headers = new HttpHeaders({
-      'Content-Type': 'application/json',
-      'accept': '*/*'
-    });
-
-    // TODO: Replace with actual API endpoint
-    // return this.http.put(`${this.baseUrl}/api/timekeeping-explanation/${id}/reject`, { reason }, { headers });
-
-    // Mock response
-    return of({ success: true, message: 'Từ chối thành công' });
-  }
-
 }
 

@@ -13,21 +13,21 @@ export class SpecialScheduleService {
   }
 
   getMySpecialSchedulesApi(params: any): Observable<any> {
-    // Simplify params - only send page and size like leave API
+    // Don gian hoa tham so - chi gui page va size giong API leave
     const httpParams = new HttpParams()
       .set('page', params.page !== undefined ? params.page.toString() : '0')
       .set('size', params.size !== undefined ? params.size.toString() : '10');
 
     const url = `${this.baseUrl}/my`;
 
-    return this.http.get<any>(url, {params: httpParams});
+    return this.http.get<any>(url, { params: httpParams });
   }
 
   getMyApprovalsSpecialSchedulesApi(params: any): Observable<any> {
     const httpParams = new HttpParams()
       .set('page', params.page !== undefined ? params.page.toString() : '0')
       .set('size', params.size !== undefined ? params.size.toString() : '10');
-    return this.http.get<any>(`${this.baseUrl}/my-approvals`, {params: httpParams});
+    return this.http.get<any>(`${this.baseUrl}/my-approvals`, { params: httpParams });
   }
 
   findByIdApi(id: string | number): Observable<any> {
@@ -38,14 +38,14 @@ export class SpecialScheduleService {
     const httpParams = new HttpParams()
       .set('page', params.page !== undefined ? params.page.toString() : '0')
       .set('size', params.size !== undefined ? params.size.toString() : '10');
-    return this.http.get<any>(`${this.baseUrl}/department`, {params: httpParams});
+    return this.http.get<any>(`${this.baseUrl}/department`, { params: httpParams });
   }
 
   getPendingSpecialSchedulesApi(params: any): Observable<any> {
     const httpParams = new HttpParams()
       .set('page', params.page !== undefined ? params.page.toString() : '0')
       .set('size', params.size !== undefined ? params.size.toString() : '10');
-    return this.http.get<any>(`${this.baseUrl}/pending`, {params: httpParams});
+    return this.http.get<any>(`${this.baseUrl}/pending`, { params: httpParams });
   }
 
   createSpecialScheduleApi(body: any): Observable<any> {
@@ -58,5 +58,9 @@ export class SpecialScheduleService {
 
   deleteSpecialScheduleApi(id: number | string): Observable<any> {
     return this.http.delete<any>(`${this.baseUrl}/${id}`);
+  }
+
+  decisionSpecialScheduleApi(body: { ids: number[], action: 'APPROVE' | 'REJECT', managerNote?: string }): Observable<any> {
+    return this.http.post<any>(`${this.baseUrl}/decision/bulk`, body);
   }
 }

@@ -1,0 +1,96 @@
+.custom-modal-content {
+    display: flex;
+    flex-direction: column;
+    padding: 8px;
+
+    .modal-icon {
+        width: 48px;
+        height: 48px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 16px;
+
+        span {
+            font-size: 24px;
+        }
+
+        &.approve {
+            background-color: #ecfdf5; // Light green
+            color: #10b981; // Green
+        }
+
+        &.reject {
+            background-color: #fef2f2; // Light red
+            color: #ef4444; // Red
+        }
+    }
+
+    .modal-title {
+        font-size: 18px;
+        font-weight: 600;
+        color: #111827; // Gray 900
+        margin-bottom: 8px;
+    }
+
+    .modal-desc {
+        font-size: 14px;
+        color: #6b7280; // Gray 500
+        margin-bottom: 24px;
+        white-space: pre-line;
+        /* Allow newlines in content */
+    }
+
+    .form-group {
+        margin-bottom: 24px;
+        width: 100%;
+
+        .input-label {
+            display: block;
+            font-size: 14px;
+            font-weight: 500;
+            color: #374151; // Gray 700
+            margin-bottom: 8px;
+
+            &.required::after {
+                content: " *";
+                color: #ef4444;
+            }
+        }
+
+        textarea {
+            width: 100%;
+            border-radius: 6px;
+            border: 1px solid #d1d5db; // Gray 300
+            padding: 10px;
+            font-size: 14px;
+            resize: vertical;
+
+            &:focus {
+                border-color: #ef4444; // Red focus to match theme or primary
+                box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.1);
+                outline: none;
+            }
+        }
+
+        .error-text {
+            color: #ef4444;
+            font-size: 12px;
+            margin-top: 4px;
+        }
+    }
+
+    .modal-footer-custom {
+        display: flex;
+        justify-content: flex-end;
+        gap: 12px;
+        width: 100%;
+
+        button {
+            min-width: 80px;
+            border-radius: 6px;
+            font-weight: 500;
+        }
+    }
+}

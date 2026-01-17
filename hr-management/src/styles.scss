@@ -82,10 +82,12 @@
     height: unset !important;
     overflow: hidden !important;
   }
+
   .ant-tabs-content {
     margin-top: 0 !important;
   }
-  > nz-tabset > .ant-tabs-content-holder > .ant-tabs-content {
+
+  >nz-tabset>.ant-tabs-content-holder>.ant-tabs-content {
     height: calc(100vh - 5rem) !important;
   }
 }
@@ -93,20 +95,25 @@
 nz-content.ant-layout-content {
   overflow: hidden;
 }
+
 .ant-menu-sub.ant-menu-inline {
   padding-left: 30px;
 }
+
 .cs-menu .ant-menu-inline.ant-menu-root .ant-menu-item,
 .cs-menu .ant-menu-inline.ant-menu-root .ant-menu-submenu-title {
   padding-left: 24px !important;
 }
+
 .project {
   border-radius: 15px;
   opacity: 0.7;
+
   &.blue {
     color: #0e58f7;
     background: #0e58f7;
     border-color: #0e58f7;
+
     .gantt_task_progress {
       background: #0e58f7;
     }
@@ -116,6 +123,7 @@ nz-content.ant-layout-content {
     color: #ffa100;
     background: #ffa100;
     border-color: #ffa100;
+
     .gantt_task_progress {
       background: #ffa100;
     }
@@ -125,6 +133,7 @@ nz-content.ant-layout-content {
     color: #eb2fca;
     background: #eb2fca;
     border-color: #eb2fca;
+
     .gantt_task_progress {
       background: #eb2fca;
     }
@@ -134,6 +143,7 @@ nz-content.ant-layout-content {
     color: #6830eb;
     background: #6830eb;
     border-color: #6830eb;
+
     .gantt_task_progress {
       background: #6830eb;
     }
@@ -143,6 +153,7 @@ nz-content.ant-layout-content {
     color: #00ac7d;
     background: #00ac7d;
     border-color: #00ac7d;
+
     .gantt_task_progress {
       background: #00ac7d;
     }
@@ -152,6 +163,7 @@ nz-content.ant-layout-content {
     color: #ffce00;
     background: #ffce00;
     border-color: #ffce00;
+
     .gantt_task_progress {
       background: #ffce00;
     }
@@ -161,73 +173,96 @@ nz-content.ant-layout-content {
 .item ::ng-deep vss-ui-select-box {
   width: 10vw;
 }
+
 .fs-10 {
   font-size: 10px;
 }
+
 .fs-12 {
   font-size: 12px;
 }
+
 .fs-14 {
   font-size: 14px;
 }
+
 .fs-16 {
   font-size: 16px;
 }
+
 .fs-18 {
   font-size: 18px;
 }
+
 .fs-20 {
   font-size: 20px;
 }
+
 .fs-22 {
   font-size: 22px;
 }
+
 .fs-24 {
   font-size: 24px;
 }
+
 .fs-26 {
   font-size: 26px;
 }
+
 .fs-30 {
   font-size: 30px;
 }
+
 .fs-32 {
   font-size: 32px;
 }
+
 .fs-36 {
   font-size: 36px;
 }
+
 .fs-40 {
   font-size: 40px;
 }
+
 .fs-50 {
   font-size: 50px;
 }
+
 .fs-60 {
   font-size: 60px;
 }
+
 .fw-400 {
   font-weight: 400;
 }
+
 .fw-500 {
   font-weight: 500;
 }
+
 .fw-600 {
   font-weight: 600;
 }
+
 .fw-900 {
   font-weight: 900;
 }
+
 .fx-11 {
   font-size: 11px;
 }
+
 .fz-18 {
   font-size: 18px;
   font-weight: 500;
 }
+
 .fw-500 {
   font-weight: 500;
 }
+
 .fz-16 {
   font-size: 16px;
 }
@@ -244,7 +279,7 @@ nz-content.ant-layout-content {
   display: none !important;
 }
 
-.ant-picker-input > input[disabled] {
+.ant-picker-input>input[disabled] {
   color: #000000b8;
 }
 
@@ -256,19 +291,23 @@ nz-content.ant-layout-content {
 .gantt_message_area {
   display: none !important;
 }
-.ant-menu-inline.ant-menu-root .ant-menu-item > *,
-.ant-menu-inline.ant-menu-root .ant-menu-submenu-title > * {
+
+.ant-menu-inline.ant-menu-root .ant-menu-item>*,
+.ant-menu-inline.ant-menu-root .ant-menu-submenu-title>* {
   white-space: nowrap;
 }
+
 ::-webkit-scrollbar-thumb {
   background: var(--gray-3);
 }
+
 nz-tag {
   //max-width: 100%;
   //text-overflow: ellipsis;
   display: flex !important;
   align-items: center;
   max-width: max-content;
+
   span {
     max-width: 100%;
     text-overflow: ellipsis;
@@ -277,12 +316,18 @@ nz-tag {
     display: block;
   }
 }
-app-trainee, app-cost-training, app-employee-competency,
-app-employee-training, app-english-certificate,
-app-trainee-cost, app-trainee-effort,
-app-trainee-project, app-training-program,
+
+app-trainee,
+app-cost-training,
+app-employee-competency,
+app-employee-training,
+app-english-certificate,
+app-trainee-cost,
+app-trainee-effort,
+app-trainee-project,
+app-training-program,
 app-training-program-score {
-  .ant-table-thead > tr > th {
+  .ant-table-thead>tr>th {
     background: #ebedf3 !important;
   }
 }
@@ -296,7 +341,7 @@ app-training-program-score {
 //}
 
 
-.tag-left >.d-flex.justify-content-center {
+.tag-left>.d-flex.justify-content-center {
   justify-content: flex-start !important;
 }
 
@@ -336,3 +381,7 @@ app-training-program-score {
   border-radius: 6px !important;
 }
 
+.custom-confirm-modal .ant-modal-content {
+  border-radius: 12px !important;
+  overflow: hidden;
+}

@@ -299,21 +299,35 @@ export class LayoutFullComponent implements OnInit {
   }
 
   private filterMenuByRole(): void {
-    const user = this.authService.getUser();
-    let roleCount = 0;
+    const { isHR, isManager, isAdmin, isOnlyEmployee } = this.authService.getUserRolesState();
 
-    if (user) {
-      if (Array.isArray(user.roles)) {
-        roleCount = user.roles.length;
-      } else if (user.role) {
-        roleCount = 1;
-      }
+    console.log('Role check for Sidebar:', { isHR, isManager, isAdmin, isOnlyEmployee });
+
+    let allowedTitles: string[] = [];
+
+    if (isAdmin) {
+      // isAdmin -> Thong tin nguoi dung, Thiet lap he thong
+      allowedTitles = ['Thông tin người dùng', 'Cài đặt hệ thống'];
+    } else if (isHR) {
+      // isHR -> Nhan vien, Dashboard, Quan ly vao ra, Thong tin nguoi dung, Chi phi, Import du lieu
+      allowedTitles = ['Thống kê', 'Nhân viên', 'Quản lý vào ra', 'Thông tin người dùng', 'Chi phí', 'Import dữ liệu'];
+    } else if (isManager || isOnlyEmployee) {
+      // isManager OR Only Employee -> Quan ly vao ra, Thong tin nguoi dung, Chi phi
+      allowedTitles = ['Quản lý vào ra', 'Thông tin người dùng', 'Chi phí'];
+    } else {
+      // Default fallback
+      allowedTitles = ['Thống kê', 'Quản lý vào ra', 'Thông tin người dùng'];
     }
 
-    if (roleCount < 2) {
-      const restrictedTitles = ['Thống kê', 'Nhân viên', 'Import dữ liệu', 'Cài đặt hệ thống'];
-      this.menus = this.menus.filter(item => !restrictedTitles.includes(item.title));
+    // Luu lai menu goc neu chua luu (tranh filter nhieu lan lam mat menu)
+    if (!(this as any).originalMenus) {
+      (this as any).originalMenus = [...this.menus];
+    } else {
+      this.menus = [...(this as any).originalMenus];
     }
+
+    this.menus = this.menus.filter(item => allowedTitles.includes(item.title));
+    console.log('Filtered Sidebar Menus:', this.menus);
   }
 
   private loadUserInfo(): void {

@@ -6,7 +6,7 @@ import { Subject } from 'rxjs';
 import { finalize, debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import { NzTableQueryParams } from 'ng-zorro-antd/table';
 import { ModalViewDetailSpecialScheduleComponent } from '../modal-view-detail-special-schedule/modal-view-detail-special-schedule.component';
-import { ModalConfirmationComponent } from '../modal-confirmation/modal-confirmation.component';
+import { ConfirmModalComponent } from '../../../shares/components/confirm-modal/confirm-modal.component';
 import { SpecialScheduleService } from '../special-schedule.service';
 import { AuthService } from '../../../../services/auth.service';
 import { specialScheduleColumns } from '../special-schedule.columns';
@@ -33,7 +33,7 @@ export class SpecialScheduleComponent implements OnInit {
   specialScheduleColumns: StandardColumnModel[] = [];
   public StandardColumnType = StandardColumnType;
 
-  // Pagination
+  // Phan trang
   paging = {
     pageIndex: 1,
     pageSize: 10,
@@ -41,12 +41,12 @@ export class SpecialScheduleComponent implements OnInit {
     totalPages: 0
   };
 
-  // Table state
+  // Trang thai bang
   checked = false;
   indeterminate = false;
   loadingTable = false;
 
-  // Search stream
+  // Luong tim kiem
   public searchFilters: { [key: string]: any } = {};
   public searchSubject = new Subject<any>();
 
@@ -59,28 +59,27 @@ export class SpecialScheduleComponent implements OnInit {
     private specialScheduleService: SpecialScheduleService,
     private authService: AuthService
   ) {
-    console.trace('SpecialScheduleComponent instantiated');
     this.rejectForm = this.fb.group({
       reason: ['', Validators.required]
     });
   }
 
   ngOnInit(): void {
-    console.log('SpecialScheduleComponent initialized');
-
-    // Check roles using authService methods like LeaveManageComponent
+    // Kiem tra quyen su dung authService
     this.isManager = this.authService.isManager();
-    this.isHROrAdmin = this.authService.isHROrAdmin(); // Assuming similar admin rights might be needed, or just for consistency
+    this.isHROrAdmin = this.authService.isHROrAdmin();
     this.currentUser = this.authService.getUser();
 
-    // Adjust UI based on role
-    if (this.isManager || this.isHROrAdmin) {
+    // Dieu chinh giao dien dua tren quyen
+    // Dieu chinh giao dien dua tren quyen
+    // Set canApprove based on role/auth service
+    this.canApprove = this.authService.canApprove();
+
+    if (this.canApprove) {
       this.tableName = 'Quản lý lịch làm đặc thù (Duyệt)';
-      this.canApprove = true;
       this.isEmployee = false;
     } else {
       this.tableName = 'Lịch làm đặc thù của tôi';
-      this.canApprove = false;
       this.isEmployee = true;
     }
 
@@ -95,13 +94,14 @@ export class SpecialScheduleComponent implements OnInit {
   loadData(): void {
     this.loadingTable = true;
     let apiCall;
-    // Client-side filtering strategy: Load "all" (limit 1000)
+    // Chien luoc loc phia client: Tai "tat ca" (gioi han 1000)
+    // Chien luoc loc phia client: Tai "tat ca" (gioi han 1000)
     const params = {
-      page: 0,
-      size: 1000
+      page: this.paging.pageIndex > 0 ? this.paging.pageIndex - 1 : 0,
+      size: this.paging.pageSize
     };
-    if (this.isManager || this.isHROrAdmin) {
-      // Use getPendingSpecialSchedulesApi for Manager/Approver
+    if (this.canApprove) {
+      // Su dung getPendingSpecialSchedulesApi cho Quan ly/Nguoi duyet
       apiCall = this.specialScheduleService.getPendingSpecialSchedulesApi(params);
     } else {
       apiCall = this.specialScheduleService.getMySpecialSchedulesApi(params);
@@ -110,13 +110,18 @@ export class SpecialScheduleComponent implements OnInit {
     apiCall.pipe(finalize(() => this.loadingTable = false)).subscribe(
       (response) => {
         const content = response?.content || [];
+        // Cap nhat totalElements tu API
+        if (response?.totalElements !== undefined) {
+          this.paging.totalElements = response.totalElements;
+        }
+
         this.listOfData = content.map((item: any, index: number) => ({
           ...item,
           index: index + 1,
           checked: false,
           disabled: item.status !== 'PENDING',
           isActiveAction: item.status === 'PENDING',
-          // Explicitly map fields requested
+          // Anh xa cac truong duoc yeu cau
           employeeCode: item.employeeCode,
           employeeName: item.employeeName,
           departmentName: item.departmentName,
@@ -126,38 +131,40 @@ export class SpecialScheduleComponent implements OnInit {
           approverId: item.approverId
         }));
 
-        // Initial filter application
-        this.onSearch();
+        this.filteredData = this.listOfData; // Gan luon filteredData cho phan trang server
+        // Ap dung bo loc ban dau (neu can thiet loc them phia client tren trang hien tai)
+        // this.onSearch();
       },
       (error) => {
         this.listOfData = [];
-        this.paging.totalElements = 0;
+        this.filteredData = [];
+        // this.paging.totalElements = 0;
       }
     );
   }
 
   onSearch(): void {
-    // Client-side filtering
+    // Loc phia client
     const matches = this.listOfData.filter(item => {
-      // Filter by employeeCode
+      // Loc theo ma nhan vien
       if (this.searchFilters['employeeCode'] &&
         !item.employeeCode?.toLowerCase().includes(this.searchFilters['employeeCode'].toLowerCase())) {
         return false;
       }
 
-      // Filter by employeeName
+      // Loc theo ten nhan vien
       if (this.searchFilters['employeeName'] &&
         !item.employeeName?.toLowerCase().includes(this.searchFilters['employeeName'].toLowerCase())) {
         return false;
       }
 
-      // Filter by departmentName
+      // Loc theo ten phong ban
       if (this.searchFilters['departmentName'] &&
         !item.departmentName?.toLowerCase().includes(this.searchFilters['departmentName'].toLowerCase())) {
         return false;
       }
 
-      // Filter by startDate
+      // Loc theo ngay bat dau
       if (this.searchFilters['startDate']) {
         const filterDate = this.formatDateForComparison(this.searchFilters['startDate']);
         if (item.startDate !== filterDate) {
@@ -165,7 +172,7 @@ export class SpecialScheduleComponent implements OnInit {
         }
       }
 
-      // Filter by endDate
+      // Loc theo ngay ket thuc
       if (this.searchFilters['endDate']) {
         const filterDate = this.formatDateForComparison(this.searchFilters['endDate']);
         if (item.endDate !== filterDate) {
@@ -173,17 +180,17 @@ export class SpecialScheduleComponent implements OnInit {
         }
       }
 
-      // Filter by type
+      // Loc theo loai
       if (this.searchFilters['type'] && item.type !== this.searchFilters['type']) {
         return false;
       }
 
-      // Filter by status
+      // Loc theo trang thai
       if (this.searchFilters['status'] && item.status !== this.searchFilters['status']) {
         return false;
       }
 
-      // Filter by reason
+      // Loc theo ly do
       if (this.searchFilters['reason'] &&
         !item.reason?.toLowerCase().includes(this.searchFilters['reason'].toLowerCase())) {
         return false;
@@ -193,11 +200,10 @@ export class SpecialScheduleComponent implements OnInit {
     });
 
     this.paging.totalElements = matches.length;
-    // Note: Do not reset pageIndex here to avoid jumping pages unexpectedly during typing if we stay on same page concept,
-    // but usually search resets to page 1.
+    // Luu y: Khong reset pageIndex o day de tranh nhay trang bat ngo...
     // this.paging.pageIndex = 1; 
 
-    // Update displayed data (client-side pagination)
+    // Cap nhat du lieu hien thi (phan trang client)
     this.updateDisplayedData(matches);
   }
 
@@ -205,11 +211,9 @@ export class SpecialScheduleComponent implements OnInit {
     const start = (this.paging.pageIndex - 1) * this.paging.pageSize;
     const end = start + this.paging.pageSize;
     this.filteredData = matches.slice(start, end);
-    // Also, we need to update totalElements if we are filtering?
-    // In onSearch we already did: this.paging.totalElements = matches.length;
   }
 
-  // Helper for date format
+  // Ho tro dinh dang ngay
   formatDateForComparison(date: Date): string {
     if (!date) return '';
     const year = date.getFullYear();
@@ -218,7 +222,7 @@ export class SpecialScheduleComponent implements OnInit {
     return `${year}-${month}-${day}`;
   }
 
-  // Override setupStreamSearch to call onSearch locally
+  // Ghi de setupStreamSearch de goi onSearch cuc bo
   private setupStreamSearch(): void {
     this.searchSubject.pipe(
       debounceTime(300)
@@ -238,13 +242,13 @@ export class SpecialScheduleComponent implements OnInit {
 
   getChangePagination(page: number): void {
     this.paging.pageIndex = page;
-    this.onSearch();
+    this.loadData();
   }
 
   onPageSizeChange(size: number): void {
     this.paging.pageSize = size;
     this.paging.pageIndex = 1;
-    this.onSearch();
+    this.loadData();
   }
 
   onItemChecked(item: SpecialScheduleDetail, checked: boolean): void {
@@ -381,15 +385,12 @@ export class SpecialScheduleComponent implements OnInit {
   }
 
   viewDetail(row: SpecialScheduleDetail): void {
-    console.log('🔵 Fetching detail for ID:', row.id);
     this.loadingTable = true;
 
     this.specialScheduleService.findByIdApi(row.id).pipe(
       finalize(() => this.loadingTable = false)
     ).subscribe(
       (response) => {
-        console.log('✅ Detail data received:', response);
-
         this.modalService.create({
           nzContent: ModalViewDetailSpecialScheduleComponent,
           nzMaskClosable: false,
@@ -404,7 +405,7 @@ export class SpecialScheduleComponent implements OnInit {
         });
       },
       (error) => {
-        console.error('❌ Error fetching detail:', error);
+        console.error('Error fetching detail:', error);
         this.messageService.error('Không thể tải chi tiết. Vui lòng thử lại!');
       }
     );
@@ -414,53 +415,41 @@ export class SpecialScheduleComponent implements OnInit {
 
   onApproveConfirm(data: SpecialScheduleDetail, onCloseModal?: () => void): void {
     const modal: NzModalRef = this.modalService.create({
-      nzTitle: undefined,
-      nzContent: ModalConfirmationComponent,
+      nzContent: ConfirmModalComponent,
       nzCentered: true,
+      nzFooter: null,
+      nzClassName: 'custom-confirm-modal',
       nzComponentParams: {
+        type: 'approve',
         title: 'Xác nhận duyệt',
-        message: 'Bạn có muốn duyệt không?',
-        showReasonBox: false,
+        content: 'Bạn có muốn duyệt không?'
       },
     });
 
     modal.afterClose.subscribe((result) => {
-      if (result) {
-        this.loadingTable = true;
-        // MOCK - Giả lập approve
-        setTimeout(() => {
-          this.loadingTable = false;
-          this.messageService.success('Bạn đã phê duyệt thành công (Mock)');
-          this.getChangePagination(this.paging.pageIndex);
-          if (onCloseModal) onCloseModal();
-        }, 500);
+      if (result && result.success) {
+        this.processDecision([data.id!], 'APPROVE', result.reason, onCloseModal);
       }
     });
   }
 
   onRejectConfirm(data: SpecialScheduleDetail, onCloseModal?: () => void): void {
     const modal: NzModalRef = this.modalService.create({
-      nzTitle: undefined,
-      nzContent: ModalConfirmationComponent,
+      nzContent: ConfirmModalComponent,
       nzCentered: true,
+      nzFooter: null,
+      nzClassName: 'custom-confirm-modal',
       nzComponentParams: {
+        type: 'reject',
         title: 'Xác nhận từ chối',
-        message: 'Bạn có muốn từ chối không?',
-        showReasonBox: true,
-        reasonLabel: 'Lý do từ chối',
+        content: 'Bạn có muốn từ chối không?',
+        requireReason: true
       },
     });
 
     modal.afterClose.subscribe((result) => {
-      if (result) {
-        this.loadingTable = true;
-        // MOCK - Giả lập reject
-        setTimeout(() => {
-          this.loadingTable = false;
-          this.messageService.success('Bạn đã từ chối phê duyệt thành công (Mock)');
-          this.getChangePagination(this.paging.pageIndex);
-          if (onCloseModal) onCloseModal();
-        }, 500);
+      if (result && result.success) {
+        this.processDecision([data.id!], 'REJECT', result.reason, onCloseModal);
       }
     });
   }
@@ -471,26 +460,21 @@ export class SpecialScheduleComponent implements OnInit {
     if (this.dataDeleteChecked.length === 0) return;
 
     const modal: NzModalRef = this.modalService.create({
-      nzTitle: undefined,
-      nzContent: ModalConfirmationComponent,
+      nzContent: ConfirmModalComponent,
       nzCentered: true,
+      nzFooter: null,
+      nzClassName: 'custom-confirm-modal',
       nzComponentParams: {
+        type: 'approve',
         title: 'Xác nhận duyệt',
-        message: `Bạn có muốn duyệt ${this.dataDeleteChecked.length} mục không?`,
-        showReasonBox: false,
+        content: `Bạn có muốn duyệt ${this.dataDeleteChecked.length} mục không?`
       },
     });
 
     modal.afterClose.subscribe((result) => {
-      if (result) {
-        this.loadingTable = true;
-        // MOCK - Giả lập approve list
-        setTimeout(() => {
-          this.loadingTable = false;
-          this.messageService.success('Bạn đã phê duyệt danh sách thành công (Mock)');
-          this.dataDeleteChecked = [];
-          this.getChangePagination(this.paging.pageIndex);
-        }, 500);
+      if (result && result.success) {
+        const ids = this.dataDeleteChecked.map(d => d.id!).filter(id => id !== undefined);
+        this.processDecision(ids, 'APPROVE', result.reason);
       }
     });
   }
@@ -499,29 +483,67 @@ export class SpecialScheduleComponent implements OnInit {
     if (this.dataDeleteChecked.length === 0) return;
 
     const modal: NzModalRef = this.modalService.create({
-      nzTitle: undefined,
-      nzContent: ModalConfirmationComponent,
+      nzContent: ConfirmModalComponent,
       nzCentered: true,
+      nzFooter: null,
+      nzClassName: 'custom-confirm-modal',
       nzComponentParams: {
+        type: 'reject',
         title: 'Xác nhận từ chối',
-        message: `Bạn có muốn từ chối ${this.dataDeleteChecked.length} mục không?`,
-        showReasonBox: true,
-        reasonLabel: 'Lý do từ chối',
+        content: `Bạn có muốn từ chối ${this.dataDeleteChecked.length} mục không?`,
+        requireReason: true
       },
     });
 
     modal.afterClose.subscribe((result) => {
-      if (result) {
-        this.loadingTable = true;
-        // MOCK - Giả lập reject list
-        setTimeout(() => {
-          this.loadingTable = false;
-          this.messageService.success('Bạn đã từ chối phê duyệt danh sách thành công (Mock)');
-          this.dataDeleteChecked = [];
-          this.getChangePagination(this.paging.pageIndex);
-        }, 500);
+      if (result && result.success) {
+        const ids = this.dataDeleteChecked.map(d => d.id!).filter(id => id !== undefined);
+        this.processDecision(ids, 'REJECT', result.reason);
       }
     });
+  }
+
+  private processDecision(ids: number[], action: 'APPROVE' | 'REJECT', reason?: string, callback?: () => void): void {
+    if (ids.length === 0) return;
+
+    this.loadingTable = true;
+    const body = {
+      ids,
+      action,
+      managerNote: reason || ''
+    };
+
+    this.specialScheduleService.decisionSpecialScheduleApi(body).subscribe(
+      (res: any) => {
+        this.loadingTable = false;
+
+        // Xu ly phan hoi voi danh sach thanh cong va that bai
+        const successCount = res.success ? res.success.length : 0;
+        const failedCount = res.failed ? res.failed.length : 0;
+
+        if (successCount > 0) {
+          this.messageService.success(`Đã ${action === 'APPROVE' ? 'duyệt' : 'từ chối'} thành công ${successCount} yêu cầu`);
+        }
+
+        if (failedCount > 0) {
+          this.messageService.error(`Không thể ${action === 'APPROVE' ? 'duyệt' : 'từ chối'} ${failedCount} yêu cầu (ID: ${res.failed.join(', ')})`);
+        }
+
+        if (successCount === 0 && failedCount === 0) {
+          this.messageService.success(`Đã ${action === 'APPROVE' ? 'duyệt' : 'từ chối'} thành công yêu cầu`);
+        }
+
+        this.dataDeleteChecked = [];
+        this.loadData();
+        if (callback) callback();
+      },
+      (err) => {
+        console.error(`Error processing decision:`, err);
+        this.loadingTable = false;
+        const errorMessage = err.error?.message || err.error || err.message || 'Lỗi không xác định';
+        this.messageService.error(`Lỗi xử lý yêu cầu: ${errorMessage}`);
+      }
+    );
   }
 
   openAddSpecialScheduleModal(): void {

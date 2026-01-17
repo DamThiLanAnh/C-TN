@@ -13,6 +13,7 @@ import {
 import { AuthService } from '../../../services/auth.service';
 import { ModalAddTimekeepingComponent } from './modal-add-timekeeping/modal-add-timekeeping.component';
 import { ModalTimekeepingDetailComponent } from './modal-timekeeping-detail/modal-timekeeping-detail.component';
+import { ConfirmModalComponent } from '../../shares/components/confirm-modal/confirm-modal.component';
 
 @Component({
   selector: 'app-timekeeping-explanation',
@@ -20,7 +21,7 @@ import { ModalTimekeepingDetailComponent } from './modal-timekeeping-detail/moda
   styleUrls: ['./timekeeping-explanation.component.scss']
 })
 export class TimekeepingExplanationComponent implements OnInit {
-  // Constants
+  // Hang so
   private readonly STATUS_LABELS = RequestStatus.reduce((acc, status) => {
     acc[status.value] = status.label;
     return acc;
@@ -31,7 +32,7 @@ export class TimekeepingExplanationComponent implements OnInit {
     return acc;
   }, {} as Record<string, string>);
 
-  // Data properties
+  // Du lieu
   listOfData: TimekeepingExplanationModel[] = [];
   filteredData: TimekeepingExplanationModel[] = [];
   dataDeleteChecked: TimekeepingExplanationModel[] = [];
@@ -39,13 +40,11 @@ export class TimekeepingExplanationComponent implements OnInit {
   checked = false;
   indeterminate = false;
   canApprove = true;
-  isManager = false;
-  isHROrAdmin = false;
 
-  // Date range for picker
+  // Khoang thoi gian
   dateRange: Date[] | null = null;
 
-  // Search filters
+  // Bo loc tim kiem
   searchFilters: TimekeepingExplanationFilters = {
     employeeUserName: '',
     employeeName: '',
@@ -70,39 +69,20 @@ export class TimekeepingExplanationComponent implements OnInit {
     private service: TimekeepingExplanationService,
     private message: NzMessageService,
     private authService: AuthService
-  ) {}
+  ) { }
 
-  // Expose constants for template
+  // Hang so template
   get requestStatusOptions() {
     return RequestStatus;
   }
 
   ngOnInit(): void {
-    this.isManager = this.authService.isManager();
-    this.isHROrAdmin = this.authService.isHROrAdmin();
-    this.canApprove = this.isManager || this.isHROrAdmin;
+    // Set canApprove based on role/auth service
+    this.canApprove = this.authService.canApprove();
 
-    // Filter columns: Remove 'action' column for Employees (who cannot approve)
+    // Loc cot: Xoa cot 'action' cho Nhan vien (nguoi khong the duyet)
     if (!this.canApprove) {
       this.timekeepingColumns = this.timekeepingColumns.filter(col => col.name !== 'action');
-    }
-
-    console.log('User is manager:', this.isManager);
-    console.log('User is HR or Admin:', this.isHROrAdmin);
-
-    // Debug: Check if columns are loaded correctly
-    console.log('Timekeeping Columns:', this.timekeepingColumns);
-    const actionColumn = this.timekeepingColumns.find(col => col.name === 'action');
-    if (actionColumn) {
-      console.log('Action Column found:', actionColumn);
-      console.log('Action Column listAction:', actionColumn.listAction);
-      if (actionColumn.listAction) {
-        actionColumn.listAction.forEach((action: any) => {
-          console.log(`Action ${action.key}:`, action.label, 'has HTML:', !!action.html);
-        });
-      }
-    } else {
-      console.warn('Action Column NOT found!');
     }
 
     this.loadData();
@@ -115,24 +95,16 @@ export class TimekeepingExplanationComponent implements OnInit {
 
     let apiCall;
 
-    if (this.isHROrAdmin || this.isManager) {
-      // Both HR/Admin and Manager use same API with filters
+    if (this.canApprove) {
+      // Ca HR/Admin va Manager su dung cung API voi bo loc
       const filters = this.buildFilterParams();
-      if (this.isHROrAdmin) {
-        apiCall = this.service.getAllTimekeepingExplanations({ page, size, ...filters });
-        console.log('HR/Admin calling getAllTimekeepingExplanations API with filters:', filters);
-      } else {
-        apiCall = this.service.getTimekeepingByDepartment({ page, size, ...filters });
-        console.log('Manager calling getTimekeepingByDepartment API with filters:', filters);
-      }
+      apiCall = this.service.getPendingTimekeepingExplanationsApi({ page, size, ...filters });
     } else {
       apiCall = this.service.getTimekeepingMy(page, size);
-      console.log('Employee calling getTimekeepingMy API');
     }
 
     apiCall.subscribe(
       (response) => {
-        console.log('Timekeeping explanation data loaded:', response);
 
         const content = response?.content || (Array.isArray(response) ? response : []);
 
@@ -162,17 +134,17 @@ export class TimekeepingExplanationComponent implements OnInit {
   private buildFilterParams(): any {
     const filters: any = {};
 
-    // Employee code filter
+    // Loc theo ma nhan vien
     if (this.searchFilters.employeeUserName) {
       filters.employeeCode = this.searchFilters.employeeUserName;
     }
 
-    // Department filter
+    // Loc theo phong ban
     if (this.searchFilters.departmentName) {
       filters.department = this.searchFilters.departmentName;
     }
 
-    // Date range filters
+    // Loc theo khoang thoi gian
     if (this.searchFilters.fromDate) {
       filters.fromDate = this.formatDateForAPI(this.searchFilters.fromDate);
     }
@@ -181,7 +153,7 @@ export class TimekeepingExplanationComponent implements OnInit {
       filters.toDate = this.formatDateForAPI(this.searchFilters.toDate);
     }
 
-    // Status filter
+    // Loc theo trang thai
     if (this.searchFilters.status) {
       const statusEntry = RequestStatus.find(s => s.label === this.searchFilters.status);
       if (statusEntry) {
@@ -241,8 +213,7 @@ export class TimekeepingExplanationComponent implements OnInit {
 
     modal.afterClose.subscribe((result) => {
       if (result && result.success) {
-        console.log('Timekeeping explanation created successfully:', result);
-        this.loadData(); // Reload data after creating
+        this.loadData(); // Tai lai du lieu sau khi tao
       }
     });
   }
@@ -269,7 +240,7 @@ export class TimekeepingExplanationComponent implements OnInit {
   }
 
   onDelete(): void {
-    if (!this.isHROrAdmin) {
+    if (!this.canApprove) {
       this.message.warning('Bạn không có quyền xóa giải trình công');
       return;
     }
@@ -340,54 +311,26 @@ export class TimekeepingExplanationComponent implements OnInit {
       return;
     }
 
-    const selectedIds: number[] = this.dataDeleteChecked
-      .map(item => item.id)
-      .filter((id): id is number => typeof id === 'number');
+    const modal = this.modal.create({
+      nzContent: ConfirmModalComponent,
+      nzFooter: null,
+      nzClassName: 'custom-confirm-modal',
+      nzComponentParams: {
+        type: 'reject',
+        title: 'Xác nhận từ chối',
+        content: `Bạn có chắc chắn muốn từ chối ${this.dataDeleteChecked.length} giải trình công đã chọn?`,
+        requireReason: true
+      }
+    });
 
-    this.modal.confirm({
-      nzTitle: 'Xác nhận từ chối',
-      nzContent: `Bạn có chắc chắn muốn từ chối ${selectedIds.length} giải trình công đã chọn?`,
-      nzOkText: 'Từ chối',
-      nzOkType: 'primary',
-      nzOkDanger: true,
-      nzCancelText: 'Hủy',
-      nzOnOk: () => {
-        this.performReject(selectedIds);
+    modal.afterClose.subscribe((result) => {
+      if (result && result.success) {
+        this.processDecision('REJECT', result.reason);
       }
     });
   }
 
-  private performReject(ids: number[]): void {
-    this.loadingTable = true;
-    let successCount = 0;
-    let errorCount = 0;
 
-    const rejectRequests = ids.map(id =>
-      this.service.rejectTimekeepingExplanation(id).toPromise()
-        .then(() => {
-          successCount++;
-        })
-        .catch((error) => {
-          console.error(`Error rejecting timekeeping explanation ${id}:`, error);
-          errorCount++;
-        })
-    );
-
-    Promise.all(rejectRequests).then(() => {
-      this.loadingTable = false;
-
-      if (successCount > 0) {
-        this.message.success(`Đã từ chối thành công ${successCount} giải trình công`);
-      }
-
-      if (errorCount > 0) {
-        this.message.error(`Không thể từ chối ${errorCount} giải trình công`);
-      }
-
-      this.dataDeleteChecked = [];
-      this.loadData();
-    });
-  }
 
   onAccept(): void {
     if (this.dataDeleteChecked.length === 0) {
@@ -395,56 +338,75 @@ export class TimekeepingExplanationComponent implements OnInit {
       return;
     }
 
+    const modal = this.modal.create({
+      nzContent: ConfirmModalComponent,
+      nzFooter: null,
+      nzClassName: 'custom-confirm-modal',
+      nzComponentParams: {
+        type: 'approve',
+        title: 'Xác nhận duyệt',
+        content: `Bạn có chắc chắn muốn duyệt ${this.dataDeleteChecked.length} giải trình công đã chọn?`
+      }
+    });
+
+    modal.afterClose.subscribe((result) => {
+      if (result && result.success) {
+        this.processDecision('APPROVE', result.reason);
+      }
+    });
+  }
+
+  private processDecision(action: 'APPROVE' | 'REJECT', reason?: string): void {
     const selectedIds: number[] = this.dataDeleteChecked
       .map(item => item.id)
       .filter((id): id is number => typeof id === 'number');
 
-    this.modal.confirm({
-      nzTitle: 'Xác nhận duyệt',
-      nzContent: `Bạn có chắc chắn muốn duyệt ${selectedIds.length} giải trình công đã chọn?`,
-      nzOkText: 'Duyệt',
-      nzOkType: 'primary',
-      nzCancelText: 'Hủy',
-      nzOnOk: () => {
-        this.performApprove(selectedIds);
-      }
-    });
-  }
+    if (selectedIds.length === 0) {
+      this.message.warning('Không tìm thấy ID hợp lệ để xử lý.');
+      return;
+    }
 
-  private performApprove(ids: number[]): void {
     this.loadingTable = true;
-    let successCount = 0;
-    let errorCount = 0;
+    const body = {
+      ids: selectedIds,
+      action: action,
+      managerNote: reason || ''
+    };
 
-    const approveRequests = ids.map(id =>
-      this.service.approveTimekeepingExplanation(id).toPromise()
-        .then(() => {
-          successCount++;
-        })
-        .catch((error) => {
-          console.error(`Error approving timekeeping explanation ${id}:`, error);
-          errorCount++;
-        })
+    this.service.bulkDecisionTimekeepingExplanationApi(body).subscribe(
+      (res: any) => {
+        this.loadingTable = false;
+
+        // Handle response with success and failed arrays
+        const successCount = res.success ? res.success.length : 0;
+        const failedCount = res.failed ? res.failed.length : 0;
+
+        if (successCount > 0) {
+          this.message.success(`Đã ${action === 'APPROVE' ? 'duyệt' : 'từ chối'} thành công ${successCount} giải trình công`);
+        }
+
+        if (failedCount > 0) {
+          this.message.error(`Không thể ${action === 'APPROVE' ? 'duyệt' : 'từ chối'} ${failedCount} giải trình công (ID: ${res.failed.join(', ')})`);
+        }
+
+        if (successCount === 0 && failedCount === 0) {
+          // Fallback if response format is different or empty
+          this.message.success(`Đã ${action === 'APPROVE' ? 'duyệt' : 'từ chối'} thành công yêu cầu`);
+        }
+
+        this.dataDeleteChecked = [];
+        this.loadData();
+      },
+      (err) => {
+        console.error(`Error processing timekeeping explanation:`, err);
+        this.loadingTable = false;
+        const errorMessage = err.error?.message || err.error || err.message || 'Lỗi không xác định';
+        this.message.error(`Lỗi xử lý yêu cầu: ${errorMessage}`);
+      }
     );
-
-    Promise.all(approveRequests).then(() => {
-      this.loadingTable = false;
-
-      if (successCount > 0) {
-        this.message.success(`Đã duyệt thành công ${successCount} giải trình công`);
-      }
-
-      if (errorCount > 0) {
-        this.message.error(`Không thể duyệt ${errorCount} giải trình công`);
-      }
-
-      this.dataDeleteChecked = [];
-      this.loadData();
-    });
   }
 
   handleAction(actionKey: string, data: TimekeepingExplanationModel): void {
-    console.log(`Action ${actionKey} triggered for:`, data);
     if (actionKey === 'approve') {
       data.checked = true;
       this.dataDeleteChecked = [data];
@@ -457,7 +419,6 @@ export class TimekeepingExplanationComponent implements OnInit {
   }
 
   onTableQueryParamsChange(params: any): void {
-    console.log('Table query params changed:', params);
   }
 
   onChangeSelectAll(checked: boolean): void {
@@ -486,19 +447,16 @@ export class TimekeepingExplanationComponent implements OnInit {
 
   getChangePagination(pageIndex: number): void {
     this.paging.pageIndex = pageIndex;
-    console.log('Page changed to:', pageIndex);
     this.loadData();
   }
 
   onPageSizeChange(pageSize: number): void {
     this.paging.pageSize = pageSize;
     this.paging.pageIndex = 1;
-    console.log('Page size changed to:', pageSize);
     this.loadData();
   }
 
   openDetailModal(data: TimekeepingExplanationModel): void {
-    console.log('Opening detail modal for:', data);
 
     const modal = this.modal.create({
       nzTitle: 'Chi tiết giải trình công',
@@ -514,21 +472,20 @@ export class TimekeepingExplanationComponent implements OnInit {
 
     modal.afterClose.subscribe((result) => {
       if (result && (result.action === 'accept' || result.action === 'reject')) {
-        console.log('Modal closed with action:', result);
-        this.loadData(); // Reload data after approve/reject
+        this.loadData(); // Tai lai du lieu sau khi duyet/tu choi
       }
     });
   }
 
   onSearch(): void {
-    // For HR/Admin and Manager, reload data from API with filters (server-side filtering)
-    if (this.isHROrAdmin || this.isManager) {
+    // Voi HR/Admin va Manager, tai lai du lieu tu API voi bo loc (loc server-side)
+    if (this.canApprove) {
       this.paging.pageIndex = 1;
       this.loadData();
       return;
     }
 
-    // For Employee, use client-side filtering
+    // Voi Nhan vien, su dung loc client-side
     this.filteredData = this.listOfData.filter(item => {
       if (this.searchFilters.employeeUserName &&
         !item.employeeUserName?.toLowerCase().includes(this.searchFilters.employeeUserName.toLowerCase())) {
@@ -595,7 +552,7 @@ export class TimekeepingExplanationComponent implements OnInit {
     // Reset date range picker
     this.dateRange = null;
 
-    if (this.isHROrAdmin || this.isManager) {
+    if (this.canApprove) {
       this.paging.pageIndex = 1;
       this.loadData();
       return;
@@ -614,5 +571,3 @@ export class TimekeepingExplanationComponent implements OnInit {
     return `${year}-${month}-${day}`;
   }
 }
-
-

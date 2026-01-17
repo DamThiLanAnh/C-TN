@@ -64,15 +64,16 @@ export class AuthService {
   }
 
   refreshToken(refreshToken: string): Observable<RefreshTokenResponse> {
-    console.log('Calling refresh token API:', `${this.apiUrl}/auth/refresh`);
+    console.log('🔄 Calling refresh token API:', `${this.apiUrl}/auth/refresh`);
 
     const headers = new HttpHeaders({
+      'Content-Type': 'application/json',
       'accept': '*/*'
     });
 
     return this.http.post<RefreshTokenResponse>(
-      `${this.apiUrl}/auth/refresh?refreshToken=${refreshToken}`,
-      {},
+      `${this.apiUrl}/auth/refresh`,
+      { refreshToken },
       { headers }
     ).pipe(
       tap((response: RefreshTokenResponse) => {
@@ -115,7 +116,8 @@ export class AuthService {
       lastLogin: response['lastLogin'],
       isAdmin: response['isAdmin'],
       isHR: response['isHR'],
-      isManager: response['isManager']
+      isManager: response['isManager'],
+      canApprove: response['canApprove']
     };
 
     if (userInfo) {
@@ -218,6 +220,16 @@ export class AuthService {
     return isHRRole;
   }
 
+  isAdmin(): boolean {
+    const user = this.getUser();
+    if (user && user.isAdmin === true) return true;
+
+    const role = this.getUserRole();
+    if (!role) return false;
+
+    return role === 'ADMIN' || role === 'ROLE_ADMIN' || role.toUpperCase() === 'ADMIN';
+  }
+
   isHROrAdmin(): boolean {
     const user = this.getUser();
     if (user) {
@@ -238,6 +250,27 @@ export class AuthService {
       role.toUpperCase().includes('ADMIN');
 
     return isHROrAdminRole;
+
+  }
+
+  isOnlyEmployee(): boolean {
+    const user = this.getUser();
+    return !!(user && user.roles && Array.isArray(user.roles) && user.roles.length === 1 && user.roles[0] === 'EMPLOYEE');
+  }
+
+  canApprove(): boolean {
+    const user = this.getUser();
+    return !!(user && user.canApprove === true);
+  }
+
+  getUserRolesState() {
+    return {
+      isHR: this.isHR(),
+      isManager: this.isManager(),
+      isAdmin: this.isAdmin(),
+      isOnlyEmployee: this.isOnlyEmployee(),
+      canApprove: this.canApprove()
+    };
   }
   getRefreshToken(): string | null {
     return localStorage.getItem('refreshToken');
