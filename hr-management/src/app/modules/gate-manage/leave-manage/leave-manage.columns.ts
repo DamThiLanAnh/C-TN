@@ -5,7 +5,7 @@ import {
   ActionConfig,
   RequestStatus,
 } from '../../shares/interfaces';
-import   {IconHtml} from '../../shares/enum/icon-html.enum';
+import { IconHtml } from '../../shares/enum/icon-html.enum';
 
 export const leaveManageColumns = (isManagerOrHR: boolean): StandardColumnModel[] => {
   const actions: ActionConfig[] = [];
@@ -157,38 +157,37 @@ export const leaveManageColumns = (isManagerOrHR: boolean): StandardColumnModel[
     },
     {
       id: 9,
-      name: 'startDate',
+      name: 'leaveDate',
       fixedColumn: false,
       fixedRight: false,
-      attr: 'Ngày yêu cầu',
-      type: StandardColumnType.DATE_RANGE_PICKER,
+      attr: 'Ngày nghỉ',
+      type: StandardColumnType.DATE_PICKER,
       width: '140px',
       isSort: false,
       isFilter: true,
+      filter: { type: StandardColumnType.DATE_PICKER },
     },
     {
       id: 10,
-      name: 'timeRegisterStart',
+      name: 'duration',
       fixedColumn: false,
       fixedRight: false,
-      attr: 'Giờ đăng ký (từ)',
-      type: StandardColumnType.TIME_RANGE_PICKER,
+      attr: 'Thời lượng',
+      type: StandardColumnType.SELECT,
       width: '150px',
       isFilter: true,
       isSort: false,
       classes: 'text-center',
-    },
-    {
-      id: 11,
-      name: 'timeRegisterEnd',
-      fixedColumn: false,
-      fixedRight: false,
-      attr: 'Giờ đăng ký (đến)',
-      type: StandardColumnType.TIME_RANGE_PICKER,
-      width: '150px',
-      isFilter: true,
-      isSort: true,
-      classes: 'text-center',
+      filter: {
+        type: StandardColumnType.SELECT,
+        name: 'duration',
+        options: [
+          { value: 'FULL_DAY', label: 'Cả ngày' },
+          { value: 'MORNING', label: 'Sáng' },
+          { value: 'AFTERNOON', label: 'Chiều' }
+        ],
+        multiple: true,
+      },
     },
     {
       id: 12,

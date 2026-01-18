@@ -130,7 +130,14 @@
               </tbody>
             </nz-table>
           </div>
-          <div *ngIf="isEditMode" class="mt-2">
+          <div class="mt-2 d-flex justify-content-end" *ngIf="totalElements > 0">
+            <nz-pagination [nzPageIndex]="pageIndex" [nzTotal]="totalElements" [nzPageSize]="pageSize"
+              [nzShowSizeChanger]="true" [nzPageSizeOptions]="[5, 10, 20, 50]"
+              (nzPageIndexChange)="onPageIndexChange($event)" (nzPageSizeChange)="onPageSizeChange($event)">
+            </nz-pagination>
+          </div>
+
+          <div *ngIf="isEditMode" class="mt-2 text-start">
             <div class="btn-add pointer" (click)="addRow()">
               <i nz-icon nzType="plus" *ruleAuthorized="personalRoles"></i>
               Thêm mới

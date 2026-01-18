@@ -1,6 +1,7 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { ApproveScheduleConfigService } from '../../approve-schedule-config.service';
 import { finalize } from 'rxjs/operators';
+import { forkJoin } from 'rxjs';
 
 interface ConfigRow {
   staffIds: number[];
@@ -38,6 +39,11 @@ export class ApproveScheduleConfigComponent implements OnInit {
     approverIds: ''
   };
 
+  // Pagination
+  pageIndex = 1;
+  pageSize = 5;
+  totalElements = 0;
+
   private originalConfigList: ConfigRow[] = [];
 
   constructor(
@@ -51,37 +57,66 @@ export class ApproveScheduleConfigComponent implements OnInit {
 
   loadData(): void {
     this.isLoading = true;
-    this.approveScheduleConfigService.getPersonalApprovalConfigs(0, 1000)
-      .pipe(finalize(() => {
-        this.isLoading = false;
-        this.cdr.markForCheck();
-      }))
+
+    // Use forkJoin to load both configuration and list of all users
+    forkJoin({
+      configs: this.approveScheduleConfigService.getPersonalApprovalConfigs(this.pageIndex - 1, this.pageSize),
+      users: this.approveScheduleConfigService.getAllUsers(0, 1000)
+    })
+      .pipe(
+        finalize(() => {
+          this.isLoading = false;
+          this.cdr.markForCheck();
+        })
+      )
       .subscribe(res => {
-        // Collect all options first
-        const staffMap = new Map<number, string>();
-        const approverMap = new Map<number, string>();
+        // 1. Process User List for Dropdowns
+        const allUsers = res.users?.content || [];
 
+        // Filter for 'User / Staff' (sender) - Role: MANAGER
+        this.staffOptions = allUsers
+          .filter((u: any) => u.roles && u.roles.includes('MANAGER'))
+          .map((u: any) => ({
+            label: u.username,
+            value: u.id
+          }));
+
+        // Filter for 'Approver' (receiver) - Role: HR
+        this.approverOptions = allUsers
+          .filter((u: any) => u.roles && u.roles.includes('HR'))
+          .map((u: any) => ({
+            label: u.username,
+            value: u.id
+          }));
+
+        // 2. Process Existing Configurations
         this.configList = [];
-
-        if (res.content) {
-          res.content.forEach(item => {
-            staffMap.set(item.employeeId, item.employeeName);
-            approverMap.set(item.approverId, item.approverName);
-
+        if (res.configs?.content) {
+          this.totalElements = res.configs.totalElements || 0;
+          res.configs.content.forEach((item: any) => {
             this.configList.push({
               staffIds: [item.employeeId],
               approverIds: [item.approverId]
             });
           });
+        } else {
+          this.totalElements = 0;
         }
-
-        // Convert maps to options
-        this.staffOptions = Array.from(staffMap.entries()).map(([value, label]) => ({ value, label }));
-        this.approverOptions = Array.from(approverMap.entries()).map(([value, label]) => ({ value, label }));
 
         this.originalConfigList = JSON.parse(JSON.stringify(this.configList));
         this.initFilteredOptions();
       });
+  }
+
+  onPageIndexChange(pageIndex: number): void {
+    this.pageIndex = pageIndex;
+    this.loadData();
+  }
+
+  onPageSizeChange(pageSize: number): void {
+    this.pageSize = pageSize;
+    this.pageIndex = 1;
+    this.loadData();
   }
 
   /* loadMockData removed */

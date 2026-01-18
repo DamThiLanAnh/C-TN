@@ -11,18 +11,12 @@
                 }
             }
         }
-        
+
         // Add button styles alignment
         button[nzDanger] {
             display: flex;
             align-items: center;
             gap: 4px;
-        }
-
-        .action-icon-btn {
-            display: flex;
-            align-items: center;
-            justify-content: center;
         }
     }
 }

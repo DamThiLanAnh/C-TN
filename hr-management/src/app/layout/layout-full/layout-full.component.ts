@@ -307,7 +307,7 @@ export class LayoutFullComponent implements OnInit {
 
     if (isAdmin) {
       // isAdmin -> Thong tin nguoi dung, Thiet lap he thong
-      allowedTitles = ['Thông tin người dùng', 'Cài đặt hệ thống'];
+      allowedTitles = ['Thông tin người dùng', 'Quản lý vào ra', 'Chi phí', 'Cài đặt hệ thống'];
     } else if (isHR) {
       // isHR -> Nhan vien, Dashboard, Quan ly vao ra, Thong tin nguoi dung, Chi phi, Import du lieu
       allowedTitles = ['Thống kê', 'Nhân viên', 'Quản lý vào ra', 'Thông tin người dùng', 'Chi phí', 'Import dữ liệu'];

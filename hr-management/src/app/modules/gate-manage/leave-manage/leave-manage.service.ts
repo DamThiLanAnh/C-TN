@@ -6,8 +6,8 @@ import { Observable } from 'rxjs';
 export interface LeaveRequest {
   employeeId: number;
   type: string;
-  startDate: string;
-  endDate: string;
+  leaveDate: string;
+  duration: string;
   reason: string;
 }
 

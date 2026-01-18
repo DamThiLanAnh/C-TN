@@ -17,13 +17,14 @@ import { OverlayModule } from '@angular/cdk/overlay';
 import { ScrollingModule } from '@angular/cdk/scrolling';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { NzPaginationModule } from 'ng-zorro-antd/pagination';
 
 @NgModule({
-    declarations: [
-      ApproveScheduleConfigComponent,
-      ApproveScheduleDepartmentConfigComponent,
-      RuleAuthorizedDirective
-    ],
+  declarations: [
+    ApproveScheduleConfigComponent,
+    ApproveScheduleDepartmentConfigComponent,
+    RuleAuthorizedDirective
+  ],
   imports: [
     CommonModule,
     FormsModule,
@@ -37,11 +38,12 @@ import { FormsModule } from '@angular/forms';
     NzDropDownModule,
     NzInputModule,
     OverlayModule,
-    ScrollingModule
+    ScrollingModule,
+    NzPaginationModule
   ],
   exports: [
     ApproveScheduleConfigComponent,
     ApproveScheduleDepartmentConfigComponent
   ]
 })
-export class ApproveScheduleConfigModule {}
+export class ApproveScheduleConfigModule { }

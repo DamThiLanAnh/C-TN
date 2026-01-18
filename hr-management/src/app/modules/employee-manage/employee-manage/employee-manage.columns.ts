@@ -58,7 +58,7 @@ export const employeeManageColumns = (): StandardColumnModel[] => {
     {
       id: 3,
       name: 'code',
-      fixedColumn: true,
+      fixedColumn: false,
       fixedRight: false,
       attr: 'Mã nhân viên',
       type: StandardColumnType.TEXT,
@@ -71,7 +71,7 @@ export const employeeManageColumns = (): StandardColumnModel[] => {
     {
       id: 4,
       name: 'fullName',
-      fixedColumn: true,
+      fixedColumn: false,
       fixedRight: false,
       attr: 'Tên nhân viên',
       type: StandardColumnType.TEXT,
