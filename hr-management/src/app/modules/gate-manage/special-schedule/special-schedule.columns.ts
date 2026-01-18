@@ -6,6 +6,7 @@ import {
   StandardFormItemModel
 } from '../../shares/interfaces';
 import { IconHtml } from '../../shares/enum/icon-html.enum';
+import { scheduleTypes } from './special-schedule.constant';
 export const specialScheduleColumns = (isManagerOrHR: boolean): StandardColumnModel[] => {
   const actions: ActionConfig[] = [];
 
@@ -133,8 +134,9 @@ export const specialScheduleColumns = (isManagerOrHR: boolean): StandardColumnMo
       fixedRight: false,
       attr: 'Giờ đăng ký (từ)',
       type: StandardColumnType.TEXT,
-      width: '90px',
-      isFilter: false,
+      width: '100px',
+      isFilter: true,
+      filter: { type: StandardColumnType.TIME_PICKER },
     },
     {
       id: 10,
@@ -143,8 +145,9 @@ export const specialScheduleColumns = (isManagerOrHR: boolean): StandardColumnMo
       fixedRight: false,
       attr: 'Giờ đăng ký (đến)',
       type: StandardColumnType.TEXT,
-      width: '90px',
-      isFilter: false,
+      width: '100px',
+      isFilter: true,
+      filter: { type: StandardColumnType.TIME_PICKER },
     },
     {
       id: 11,
@@ -157,10 +160,7 @@ export const specialScheduleColumns = (isManagerOrHR: boolean): StandardColumnMo
       isFilter: true,
       filter: {
         type: StandardColumnType.SELECT,
-        options: [
-          { value: 'ON_SITE', label: 'On Site' },
-          { value: 'MATERNITY', label: 'MATERNITY' },
-        ],
+        options: scheduleTypes,
       },
     },
     {

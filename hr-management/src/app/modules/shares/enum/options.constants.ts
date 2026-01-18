@@ -223,24 +223,14 @@ export const RequestStatus = [
     color: '#12B76A',
   },
   {
-    label: 'Bị hủy',
-    value: 'CANCELED',
-    color: '#6E6A68FF',
-  },
-  {
-    label: 'Bị từ chối',
+    label: 'Từ chối',
     value: 'REJECTED',
     color: '#EE0033',
   },
   {
     label: 'Chờ duyệt',
-    value: 'WAITING_FOR_APPROVE',
-    color: '#FF861D',
-  },
-  {
-    label: 'Tạo mới',
-    value: 'NEW',
-    color: '#6E6A68FF',
+    value: 'PENDING',
+    color: '#FFA500',
   },
 ];
 

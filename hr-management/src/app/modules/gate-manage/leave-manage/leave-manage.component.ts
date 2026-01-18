@@ -22,11 +22,8 @@ export class LeaveManageComponent implements OnInit, OnDestroy {
   // hang so
   LEAVE_TYPE_MAP: Record<string, string> = {
     'ANNUAL': 'Nghỉ phép năm',
-    'SICK': 'Nghỉ ốm',
     'UNPAID': 'Nghỉ không lương',
-    'MATERNITY': 'Nghỉ thai sản',
-    'PATERNITY': 'Nghỉ chăm con',
-    'OTHER': 'Khác'
+    'PERSONAL': 'Nghỉ việc riêng',
   };
 
   private readonly STATUS_LABELS = RequestStatus.reduce((acc, status) => {
@@ -223,16 +220,24 @@ export class LeaveManageComponent implements OnInit, OnDestroy {
       employeeEmail: item.employeeEmail || `emp${item.employeeId}@company.com`,
       departmentName: item.departmentName || 'N/A',
       type: item.type,
+      leaveDate: item.leaveDate,
+      duration: this.mapDuration(item.duration),
+      durationCode: item.duration,
       absenceTypeName: this.mapLeaveType(item.type),
-      startDate: item.startDate,
-      endDate: item.endDate,
-      timeRegisterStart: this.formatTimeDisplay(item.startDate),
-      timeRegisterEnd: this.formatTimeDisplay(item.endDate),
       absenceStatus: this.mapLeaveStatus(item.status),
       absenceReason: item.reason || 'Không có lý do',
       approvalUserId: item.approverId,
       checked: false
     };
+  }
+
+  mapDuration(duration: string): string {
+    const map: Record<string, string> = {
+      'FULL_DAY': 'Cả ngày',
+      'MORNING': 'Sáng',
+      'AFTERNOON': 'Chiều'
+    };
+    return map[duration] || duration || 'N/A';
   }
 
   mapLeaveType(type: string): string {
@@ -557,8 +562,8 @@ export class LeaveManageComponent implements OnInit, OnDestroy {
       employeeEmail: data.employeeEmail || data.employeeUserName + '@company.com',
       organizationName: data.organizationName || 'N/A',
       absenceTypeName: data.absenceTypeName,
-      startDate: new Date(data.startDate || ''),
-      endDate: new Date(data.endDate || ''),
+      leaveDate: data.leaveDate,
+      duration: data.duration,
       absenceStatus: this.mapStatusToEnum(data.absenceStatus || ''),
       absenceReason: data.absenceReason,
       rejectReason: 'Không đủ số ngày phép'
@@ -616,19 +621,16 @@ export class LeaveManageComponent implements OnInit, OnDestroy {
         }
       }
 
-      // Filter by absenceTypeName
+      // Filter by absenceTypeName (which now sends codes like 'ANNUAL', 'UNPAID')
       if (this.searchFilters['absenceTypeName'] && this.searchFilters['absenceTypeName'].length > 0) {
         const selectedTypes = this.searchFilters['absenceTypeName'];
-        // Debug log
-        // console.log('Filtering Type:', { selected: selectedTypes, currentItemType: item.absenceTypeName });
-
         if (Array.isArray(selectedTypes)) {
-          // value is just the string name e.g. 'Nghỉ phép năm'
-          if (!selectedTypes.includes(item.absenceTypeName)) {
+          // Compare against item.type (the code) instead of item.absenceTypeName (the label)
+          if (!selectedTypes.includes(item.type)) {
             return false;
           }
         } else {
-          if (item.absenceTypeName !== selectedTypes) {
+          if (item.type !== selectedTypes) {
             return false;
           }
         }
@@ -639,18 +641,24 @@ export class LeaveManageComponent implements OnInit, OnDestroy {
         return false;
       }
 
-      // Filter by startDate
-      if (this.searchFilters['startDate']) {
-        const filterDate = this.formatDateForComparison(this.searchFilters['startDate']);
-        if (item.startDate !== filterDate) {
-          return false;
+      // Filter by duration
+      if (this.searchFilters['duration'] && this.searchFilters['duration'].length > 0) {
+        const selectedDurations = this.searchFilters['duration'];
+        if (Array.isArray(selectedDurations)) {
+          if (!selectedDurations.includes(item.durationCode)) {
+            return false;
+          }
+        } else {
+          if (item.durationCode !== selectedDurations) {
+            return false;
+          }
         }
       }
 
-      // Filter by endDate
-      if (this.searchFilters['endDate']) {
-        const filterDate = this.formatDateForComparison(this.searchFilters['endDate']);
-        if (item.endDate !== filterDate) {
+      // Filter by leaveDate
+      if (this.searchFilters['leaveDate']) {
+        const filterDate = this.formatDateForComparison(this.searchFilters['leaveDate']);
+        if (item.leaveDate !== filterDate) {
           return false;
         }
       }

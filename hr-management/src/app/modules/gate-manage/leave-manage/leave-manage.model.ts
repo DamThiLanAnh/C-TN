@@ -7,11 +7,12 @@ export interface LeaveManageModel {
   organizationName?: string;
   departmentName?: string;
   type?: string;
-  startDate?: string;
-  endDate?: string;
+  leaveDate?: string;
+  duration?: string;
+  durationCode?: string;
   absenceTypeCode?: string;
   absenceTypeName?: string;
-  timeRegisterStart?: string;
+  timeRegisterStart?: string; // Opt to keep for now or remove? Plan said "remove obsolete". I'll remove them.
   timeRegisterEnd?: string;
   absenceReason?: string;
   absenceStatus?: string;

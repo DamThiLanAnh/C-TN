@@ -8,6 +8,7 @@ export enum StandardColumnType {
   ACTION = 6,
   INPUT_NUMBER = 7,
   DATE_PICKER = 8,
+  TIME_PICKER = 9,
 }
 
 export interface FilterConfig {

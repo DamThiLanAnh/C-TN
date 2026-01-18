@@ -11,6 +11,8 @@ import { SpecialScheduleService } from '../special-schedule.service';
 import { AuthService } from '../../../../services/auth.service';
 import { specialScheduleColumns } from '../special-schedule.columns';
 import { StandardColumnModel, StandardColumnType } from '../../../shares/interfaces';
+import { RequestStatus } from '../../../shares/enum/options.constants';
+import { scheduleTypes } from '../special-schedule.constant';
 import { SpecialScheduleDetail } from '../special-schedule.model';
 import { ModalAddSpecialScheduleComponent } from '../modal-add-special-schedule/modal-add-special-schedule.component';
 
@@ -180,6 +182,28 @@ export class SpecialScheduleComponent implements OnInit {
         }
       }
 
+      // Loc theo gio bat dau (morningStart)
+      if (this.searchFilters['morningStart']) {
+        const filterTime = this.searchFilters['morningStart'] instanceof Date
+          ? this.formatTime(this.searchFilters['morningStart'])
+          : this.searchFilters['morningStart'];
+
+        if (!item.morningStart?.includes(filterTime)) {
+          return false;
+        }
+      }
+
+      // Loc theo gio ket thuc (afternoonEnd)
+      if (this.searchFilters['afternoonEnd']) {
+        const filterTime = this.searchFilters['afternoonEnd'] instanceof Date
+          ? this.formatTime(this.searchFilters['afternoonEnd'])
+          : this.searchFilters['afternoonEnd'];
+
+        if (!item.afternoonEnd?.includes(filterTime)) {
+          return false;
+        }
+      }
+
       // Loc theo loai
       if (this.searchFilters['type'] && item.type !== this.searchFilters['type']) {
         return false;
@@ -220,6 +244,15 @@ export class SpecialScheduleComponent implements OnInit {
     const month = String(date.getMonth() + 1).padStart(2, '0');
     const day = String(date.getDate()).padStart(2, '0');
     return `${year}-${month}-${day}`;
+  }
+
+  // Helper formatting Hour
+  formatTime(date: Date): string {
+    if (!date) return '';
+    const hours = String(date.getHours()).padStart(2, '0');
+    const minutes = String(date.getMinutes()).padStart(2, '0');
+    const seconds = String(date.getSeconds()).padStart(2, '0');
+    return `${hours}:${minutes}:${seconds}`;
   }
 
   // Ghi de setupStreamSearch de goi onSearch cuc bo
@@ -278,31 +311,21 @@ export class SpecialScheduleComponent implements OnInit {
   }
 
   onEdit(data: SpecialScheduleDetail): void {
-    this.loadingTable = true;
-    this.specialScheduleService.findByIdApi(data.id).pipe(
-      finalize(() => this.loadingTable = false)
-    ).subscribe({
-      next: (response) => {
-        const modalRef = this.modalService.create({
-          nzTitle: 'Cập nhật lịch làm đặc thù',
-          nzContent: ModalAddSpecialScheduleComponent,
-          nzFooter: null,
-          nzWidth: 800,
-          nzClassName: 'rounded-modal',
-          nzBodyStyle: { padding: '24px' },
-          nzComponentParams: {
-            data: response
-          }
-        });
+    const modalRef = this.modalService.create({
+      nzTitle: 'Cập nhật lịch làm đặc thù',
+      nzContent: ModalAddSpecialScheduleComponent,
+      nzFooter: null,
+      nzWidth: 800,
+      nzClassName: 'rounded-modal',
+      nzBodyStyle: { padding: '24px' },
+      nzComponentParams: {
+        data: data
+      }
+    });
 
-        modalRef.afterClose.subscribe(result => {
-          if (result) {
-            this.loadData();
-          }
-        });
-      },
-      error: (err) => {
-        this.messageService.error('Không thể tải thông tin chi tiết: ' + (err.error?.message || err.message));
+    modalRef.afterClose.subscribe(result => {
+      if (result) {
+        this.loadData();
       }
     });
   }
@@ -385,30 +408,18 @@ export class SpecialScheduleComponent implements OnInit {
   }
 
   viewDetail(row: SpecialScheduleDetail): void {
-    this.loadingTable = true;
-
-    this.specialScheduleService.findByIdApi(row.id).pipe(
-      finalize(() => this.loadingTable = false)
-    ).subscribe(
-      (response) => {
-        this.modalService.create({
-          nzContent: ModalViewDetailSpecialScheduleComponent,
-          nzMaskClosable: false,
-          nzWidth: '35vw',
-          nzFooter: null,
-          nzComponentParams: {
-            item: response, // Pass real API data
-            canApprove: this.canApprove,
-            onApprove: (item: any) => this.onApproveConfirm(item, () => this.loadData()),
-            onReject: (item: any) => this.onRejectConfirm(item, () => this.loadData())
-          },
-        });
+    this.modalService.create({
+      nzContent: ModalViewDetailSpecialScheduleComponent,
+      nzMaskClosable: false,
+      nzWidth: '35vw',
+      nzFooter: null,
+      nzComponentParams: {
+        item: row, // Pass local data directly
+        canApprove: this.canApprove,
+        onApprove: (item: any) => this.onApproveConfirm(item, () => this.loadData()),
+        onReject: (item: any) => this.onRejectConfirm(item, () => this.loadData())
       },
-      (error) => {
-        console.error('Error fetching detail:', error);
-        this.messageService.error('Không thể tải chi tiết. Vui lòng thử lại!');
-      }
-    );
+    });
   }
 
 
@@ -544,6 +555,25 @@ export class SpecialScheduleComponent implements OnInit {
         this.messageService.error(`Lỗi xử lý yêu cầu: ${errorMessage}`);
       }
     );
+  }
+
+  getStatusColor(status: string): string {
+    const statusOption = RequestStatus.find(s => s.value === status);
+    return statusOption?.color || 'default';
+  }
+
+  getStatusLabel(status: string): string {
+    const statusOption = RequestStatus.find(s => s.value === status);
+    return statusOption?.label || status;
+  }
+
+  getTypeLabel(type: string): string {
+    const typeOption = scheduleTypes.find(t => t.value === type);
+    return typeOption?.label || type;
+  }
+
+  getTypeColor(type: string): string {
+    return 'default'; // Or add specific colors if needed
   }
 
   openAddSpecialScheduleModal(): void {

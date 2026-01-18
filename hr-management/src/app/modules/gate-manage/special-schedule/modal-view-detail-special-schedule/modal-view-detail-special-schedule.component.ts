@@ -1,6 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { NzModalRef } from 'ng-zorro-antd/modal';
-import { scheduleStatus } from '../special-schedule.constant';
+import { scheduleStatus, scheduleTypes } from '../special-schedule.constant';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { SpecialScheduleService } from '../special-schedule.service';
 import { NzMessageService } from 'ng-zorro-antd/message';
@@ -26,7 +26,7 @@ export class ModalViewDetailSpecialScheduleComponent implements OnInit {
     private fb: FormBuilder,
     private specialScheduleService: SpecialScheduleService,
     private message: NzMessageService
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     if (this.mode === 'edit') {
@@ -57,6 +57,11 @@ export class ModalViewDetailSpecialScheduleComponent implements OnInit {
         color: 'default',
       }
     );
+  }
+
+  getTypeLabel(type: string): string {
+    const typeOption = scheduleTypes.find(t => t.value === type);
+    return typeOption?.label || type;
   }
 
   approve() {

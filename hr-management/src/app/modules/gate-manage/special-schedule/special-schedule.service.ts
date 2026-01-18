@@ -30,10 +30,6 @@ export class SpecialScheduleService {
     return this.http.get<any>(`${this.baseUrl}/my-approvals`, { params: httpParams });
   }
 
-  findByIdApi(id: string | number): Observable<any> {
-    return this.http.get<any>(`${this.baseUrl}/${id}`);
-  }
-
   getDepartmentSpecialSchedulesApi(params: any): Observable<any> {
     const httpParams = new HttpParams()
       .set('page', params.page !== undefined ? params.page.toString() : '0')

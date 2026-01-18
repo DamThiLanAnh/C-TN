@@ -148,9 +148,9 @@ export const leaveManageColumns = (isManagerOrHR: boolean): StandardColumnModel[
         type: StandardColumnType.SELECT,
         name: 'absenceTypeName',
         options: [
-          { value: 'Nghỉ phép năm', label: 'Phép năm' },
-          { value: 'Nghỉ không lương', label: 'Không lương' },
-          { value: 'Khác', label: 'Khác' }
+          { value: 'ANNUAL', label: 'Phép năm' },
+          { value: 'UNPAID', label: 'Không lương' },
+          { value: 'PERSONAL', label: 'Việc riêng' }
         ],
         multiple: true,
       },
@@ -174,10 +174,10 @@ export const leaveManageColumns = (isManagerOrHR: boolean): StandardColumnModel[
       fixedRight: false,
       attr: 'Thời lượng',
       type: StandardColumnType.SELECT,
-      width: '150px',
+      width: '100px',
       isFilter: true,
       isSort: false,
-      classes: 'text-center',
+      classes: 'text-left',
       filter: {
         type: StandardColumnType.SELECT,
         name: 'duration',
@@ -189,17 +189,7 @@ export const leaveManageColumns = (isManagerOrHR: boolean): StandardColumnModel[
         multiple: true,
       },
     },
-    {
-      id: 12,
-      name: 'absenceReason',
-      fixedColumn: false,
-      fixedRight: false,
-      attr: 'Lý do',
-      type: StandardColumnType.TEXT,
-      width: '160px',
-      isRequire: true,
-      isFilter: true,
-    },
+
     {
       id: 5,
       name: 'absenceStatus',

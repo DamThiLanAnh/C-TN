@@ -2,12 +2,7 @@
   <div class="d-flex justify-content-between mb-2">
     <h6>{{ tableName }}</h6>
     <div nz-row nzJustify="end" class="d-flex align-items-center">
-      <button
-        class="me-2"
-        nz-button
-        nzType="primary"
-        type="button" nzDanger
-        *ngIf="isEmployee"
+      <button class="me-2" nz-button nzType="primary" type="button" nzDanger *ngIf="isEmployee"
         (click)="openAddSpecialScheduleModal()">
         <span nz-icon nzType="plus-circle" nzTheme="outline" aria-hidden="true"></span> Thêm mới
       </button>
@@ -21,82 +16,96 @@
       </button>
     </div>
     <button nz-button nzGhost class="me-2" nzType="primary" type="button" [disabled]="!isDataSelected()"
-            (click)="onRejectList()" *ngIf="canApprove">
+      (click)="onRejectList()" *ngIf="canApprove">
       Từ chối
     </button>
     <button nz-button class="me-2" nzType="primary" type="button" [disabled]="!isDataSelected()"
-            (click)="onApproveList()" *ngIf="canApprove">
+      (click)="onApproveList()" *ngIf="canApprove">
       Duyệt
     </button>
   </div>
 
-  <nz-table #basicTable
-    [nzData]="filteredData"
-    [nzLoading]="loadingTable"
-    [nzBordered]="true"
-    [nzSize]="'small'"
-    [nzScroll]="{ x: '1600px', y: 'calc(100vh - 18rem)' }"
-    [nzShowPagination]="false"
-    (nzQueryParams)="onFilterInTable($event)"
-  >
+  <nz-table #basicTable [nzData]="filteredData" [nzLoading]="loadingTable" [nzBordered]="true" [nzSize]="'small'"
+    [nzScroll]="{ x: '1600px', y: 'calc(100vh - 18rem)' }" [nzShowPagination]="false"
+    (nzQueryParams)="onFilterInTable($event)">
     <thead>
       <tr>
-        <th
-          nzWidth="50px"
-          [nzChecked]="checked"
-          [nzIndeterminate]="indeterminate"
-          (nzCheckedChange)="onChangeSelectAll($event)"
-        ></th>
+        <th nzWidth="50px" [nzChecked]="checked" [nzIndeterminate]="indeterminate"
+          (nzCheckedChange)="onChangeSelectAll($event)"></th>
         <th *ngFor="let col of specialScheduleColumns" [nzWidth]="col.width || null">{{ col.attr }}</th>
       </tr>
       <tr class="filter-row">
         <th></th>
         <ng-container *ngFor="let col of specialScheduleColumns">
           <th *ngIf="col.isFilter">
-            <input *ngIf="col.filter?.type === StandardColumnType.INPUT || col.type === StandardColumnType.TEXT" type="text" nz-input [(ngModel)]="searchFilters[col.name]" (ngModelChange)="searchSubject.next()" [placeholder]="'Tìm...'" nzSize="small" />
+            <input
+              *ngIf="col.filter?.type === StandardColumnType.INPUT || (col.type === StandardColumnType.TEXT && !col.filter?.type)"
+              type="text" nz-input [(ngModel)]="searchFilters[col.name]" (ngModelChange)="searchSubject.next()"
+              [placeholder]="'Tìm...'" nzSize="small" />
             <nz-select *ngIf="col.filter?.type === StandardColumnType.SELECT || col.type === StandardColumnType.SELECT"
-                       [(ngModel)]="searchFilters[col.name]"
-                       (ngModelChange)="searchSubject.next()"
-                       [nzMode]="col.filter?.multiple ? 'multiple' : 'default'"
-                       nzPlaceHolder="Tìm..."
-                       nzAllowClear
-                       nzSize="small"
-                       style="width: 100%">
-              <nz-option *ngFor="let opt of (col.filter?.options || [])" [nzValue]="opt.value" [nzLabel]="opt.label"></nz-option>
+              [(ngModel)]="searchFilters[col.name]" (ngModelChange)="searchSubject.next()"
+              [nzMode]="col.filter?.multiple ? 'multiple' : 'default'" nzPlaceHolder="Tìm..." nzAllowClear
+              nzSize="small" style="width: 100%">
+              <nz-option *ngFor="let opt of (col.filter?.options || [])" [nzValue]="opt.value"
+                [nzLabel]="opt.label"></nz-option>
             </nz-select>
-            <nz-date-picker *ngIf="col.type === StandardColumnType.DATE_PICKER" [(ngModel)]="searchFilters[col.name]" (ngModelChange)="searchSubject.next()" nzFormat="dd/MM/yyyy" nzPlaceHolder="Chọn..." nzSize="small" style="width: 100%"></nz-date-picker>
+            <nz-date-picker *ngIf="col.type === StandardColumnType.DATE_PICKER" [(ngModel)]="searchFilters[col.name]"
+              (ngModelChange)="searchSubject.next()" nzFormat="dd/MM/yyyy" nzPlaceHolder="Chọn..." nzSize="small"
+              style="width: 100%"></nz-date-picker>
+            <nz-time-picker *ngIf="col.filter?.type === StandardColumnType.TIME_PICKER"
+              [(ngModel)]="searchFilters[col.name]" (ngModelChange)="searchSubject.next()" nzFormat="HH:mm:ss"
+              nzPlaceHolder="Chọn giờ..." nzSize="small" style="width: 100%"></nz-time-picker>
           </th>
           <th *ngIf="!col.isFilter"></th>
         </ng-container>
       </tr>
     </thead>
     <tbody>
-      <tr *ngFor="let data of basicTable.data; let i = index">
-        <td
-          [nzChecked]="!!data.checked"
-          [nzDisabled]="!!data.disabled"
-          (nzCheckedChange)="onItemChecked(data, $event)"
-          (click)="$event.stopPropagation()"
-        ></td>
+      <tr *ngFor="let data of basicTable.data; let i = index" (click)="viewDetail(data)" style="cursor: pointer;">
+        <td [nzChecked]="!!data.checked" [nzDisabled]="!!data.disabled" (nzCheckedChange)="onItemChecked(data, $event)"
+          (click)="$event.stopPropagation()"></td>
         <ng-container *ngFor="let col of specialScheduleColumns">
-          <td *ngIf="col.type !== StandardColumnType.ACTION">{{ data[col.name] }}</td>
-          <td *ngIf="col.name === 'action'" [ngClass]="col.classes || ''" class="text-center" (click)="$event.stopPropagation()">
+          <!-- Action Column -->
+          <td *ngIf="col.name === 'action'" [ngClass]="col.classes || ''" class="text-center"
+            (click)="$event.stopPropagation()">
             <div class="action-buttons d-flex justify-content-center gap-1">
               <ng-container *ngFor="let action of col.listAction">
-                <button
-                  *ngIf="(action.key !== 'delete') || isEmployee"
-                  nz-button
-                  nzType="link"
-                  nzSize="small"
-                  nz-tooltip
-                  [nzTooltipTitle]="action.label"
-                  (click)="handleAction(action.key, data)"
-                  [innerHTML]="action.html | vssSafeHtml"
-                  class="action-icon-btn"
-                >
+                <button *ngIf="(action.key !== 'delete') || isEmployee" nz-button nzType="link" nzSize="small"
+                  nz-tooltip [nzTooltipTitle]="action.label" (click)="handleAction(action.key, data)"
+                  [innerHTML]="action.html | vssSafeHtml" class="action-icon-btn">
                 </button>
               </ng-container>
             </div>
+          </td>
+
+          <!-- Status Column -->
+          <td *ngIf="col.name === 'status'" [ngClass]="col.classes || ''">
+            <nz-tag [nzColor]="'transparent'" [style.border-color]="getStatusColor(data[col.name])"
+              style="border-radius: 12px; padding: 2px 10px;">
+              <span class="d-flex align-items-center">
+                <span [style.background-color]="getStatusColor(data[col.name])"
+                  style="width: 6px; height: 6px; border-radius: 50%; margin-right: 6px; display: inline-block;"></span>
+                <span [style.color]="getStatusColor(data[col.name])" style="font-weight: 500;">{{
+                  getStatusLabel(data[col.name]) }}</span>
+              </span>
+            </nz-tag>
+          </td>
+
+          <!-- Type Column -->
+          <td *ngIf="col.name === 'type'" [ngClass]="col.classes || ''">
+            {{ getTypeLabel(data[col.name]) }}
+          </td>
+
+          <!-- Date Columns -->
+          <td
+            *ngIf="col.type !== StandardColumnType.ACTION && col.name !== 'status' && col.name !== 'type' && (col.type === StandardColumnType.DATE_PICKER || col.name.includes('Date'))">
+            {{ data[col.name] | date: 'dd/MM/yyyy' }}
+          </td>
+
+          <!-- Other Text/Select Columns -->
+          <td
+            *ngIf="col.type !== StandardColumnType.ACTION && col.name !== 'status' && col.name !== 'type' && col.type !== StandardColumnType.DATE_PICKER && !col.name.includes('Date')">
+            {{ data[col.name] }}
           </td>
         </ng-container>
       </tr>
@@ -104,13 +113,8 @@
   </nz-table>
 
   <div class="d-flex justify-content-end mt-2">
-    <nz-pagination
-      [nzTotal]="paging.totalElements"
-      [nzPageIndex]="paging.pageIndex"
-      [nzPageSize]="paging.pageSize"
-      [nzShowSizeChanger]="true"
-      (nzPageIndexChange)="getChangePagination($event)"
-      (nzPageSizeChange)="onPageSizeChange($event)"
-    ></nz-pagination>
+    <nz-pagination [nzTotal]="paging.totalElements" [nzPageIndex]="paging.pageIndex" [nzPageSize]="paging.pageSize"
+      [nzShowSizeChanger]="true" (nzPageIndexChange)="getChangePagination($event)"
+      (nzPageSizeChange)="onPageSizeChange($event)"></nz-pagination>
   </div>
 </nz-card>

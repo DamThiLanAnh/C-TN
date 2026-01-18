@@ -7,22 +7,10 @@ import { NzModalRef } from 'ng-zorro-antd/modal';
   styleUrls: ['./modal-leave.component.scss']
 })
 export class ModalLeaveComponent implements OnInit {
-  modalTitle= 'Xem chi tiết vắng mặt';
-  // Mock data for testing
-  itemData: any = {
-    employeeUserName: 'NV001',
-    employeeName: 'Nguyễn Văn A',
-    employeeEmail: 'nguyenvana@example.com',
-    organizationName: 'Phòng Kinh Doanh',
-    absenceTypeName: 'Nghỉ phép năm',
-    startDate: new Date('2025-12-10T08:00:00'),
-    endDate: new Date('2025-12-10T17:00:00'),
-    absenceStatus: 'WAITING_FOR_APPROVE', // Options: 'WAITING_FOR_APPROVE', 'APPROVED', 'REJECTED'
-    absenceReason: 'Xin nghỉ phép để đi du lịch cùng gia đình',
-    rejectReason: 'Không đủ số ngày phép'
-  };
+  modalTitle = 'Xem chi tiết vắng mặt';
+  itemData: any;
 
-  rolesApproveLeave = ['ADMIN', 'MANAGER']; // Mock roles for approval
+  rolesApproveLeave = ['ADMIN', 'MANAGER'];
 
   constructor(private modalRef: NzModalRef) { }
 
@@ -33,7 +21,7 @@ export class ModalLeaveComponent implements OnInit {
   // Get status options with color and label
   getStatusOption(status: string): { color: string; label: string } {
     const statusMap: any = {
-      'WAITING_FOR_APPROVE': { color: '#FFA500', label: 'Chờ duyệt' },
+      'PENDING': { color: '#FFA500', label: 'Chờ duyệt' },
       'APPROVED': { color: '#52C41A', label: 'Đã duyệt' },
       'REJECTED': { color: '#FF4D4F', label: 'Từ chối' }
     };
