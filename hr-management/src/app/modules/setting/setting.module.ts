@@ -16,6 +16,9 @@ import { NzTimePickerModule } from 'ng-zorro-antd/time-picker';
 import { NzPaginationModule } from 'ng-zorro-antd/pagination';
 import { ActivityLogComponent } from './activity-log/activity-log.component';
 import { NzTagModule } from 'ng-zorro-antd/tag';
+import { NzModalModule } from 'ng-zorro-antd/modal';
+import { NzMessageModule } from 'ng-zorro-antd/message';
+import { NzCheckboxModule } from 'ng-zorro-antd/checkbox';
 
 @NgModule({
   imports: [
@@ -32,12 +35,17 @@ import { NzTagModule } from 'ng-zorro-antd/tag';
     NzDatePickerModule,
     NzTimePickerModule,
     NzPaginationModule,
-    NzTagModule
+    NzTagModule,
+    NzModalModule,
+    NzMessageModule,
+    NzCheckboxModule
   ],
   declarations: [
     SettingComponent,
     UserAccountComponent,
     ActivityLogComponent
+  ],
+  providers: [
   ],
   exports: []
 })

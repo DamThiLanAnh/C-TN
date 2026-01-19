@@ -45,4 +45,24 @@ export class SettingService {
 
     return this.http.get(`${environment.apiUrl}/api/employees/no-user`, { params });
   }
+
+  createUserFromEmployee(employeeId: number): Observable<any> {
+    return this.http.post(`${environment.apiUrl}/api/users/from-employee/${employeeId}`, {});
+  }
+
+  updateUserRoles(userId: number, roles: string[]): Observable<any> {
+    return this.http.put(`${environment.apiUrl}/api/users/${userId}/roles`, roles);
+  }
+
+  lockUser(userId: number): Observable<any> {
+    return this.http.put(`${environment.apiUrl}/api/users/${userId}/lock`, {});
+  }
+
+  deactivateUser(userId: number): Observable<any> {
+    return this.http.put(`${environment.apiUrl}/api/users/${userId}/deactivate`, {});
+  }
+
+  activateUser(userId: number): Observable<any> {
+    return this.http.put(`${environment.apiUrl}/api/users/${userId}/activate`, {});
+  }
 }

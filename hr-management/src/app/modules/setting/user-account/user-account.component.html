@@ -28,8 +28,27 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr *ngFor="let data of users; let i = index">
+                            <tr *ngFor="let data of users; let i = index" (click)="openDetailModal(data)"
+                                class="pointer">
                                 <td class="text-center">{{ (pageIndex - 1) * pageSize + i + 1 }}</td>
+                                <td class="text-center">
+                                    <div class="d-flex justify-content-center" style="gap: 12px;">
+                                        <button nz-button nzType="text" (click)="openRoleModal(data)"
+                                            style="border: none; background: transparent; padding: 0;">
+                                            <img src="./assets/icons/icon-edit-btn.svg" alt="edit" width="20"
+                                                height="20">
+                                        </button>
+                                        <button nz-button nzType="text" (click)="lockUser(data)"
+                                            style="border: none; background: transparent; padding: 0;">
+                                            <img src="./assets/icons/lock-01.svg" alt="lock" width="20" height="20">
+                                        </button>
+                                        <button nz-button nzType="text" (click)="deactivateUser(data)"
+                                            style="border: none; background: transparent; padding: 0;">
+                                            <img src="./assets/icons/minus-circle.svg" alt="deactivate" width="20"
+                                                height="20">
+                                        </button>
+                                    </div>
+                                </td>
                                 <td>{{ data.username }}</td>
                                 <td>
                                     <div class="d-flex align-items-center" style="gap: 4px; flex-wrap: wrap;">
@@ -43,7 +62,7 @@
                                         {{ data.status }}
                                     </nz-tag>
                                 </td>
-                                <td>{{ data.employeeId }}</td>
+
 
                                 <td>{{ data.createdAt | date: 'dd/MM/yyyy' }}</td>
                                 <td>{{ data.updatedAt | date: 'dd/MM/yyyy' }}</td>
@@ -71,6 +90,11 @@
                             <tr *ngFor="let data of noUserEmployees; let i = index">
                                 <td class="text-center">{{ (noUserPageIndex - 1) * noUserPageSize + i + 1 }}</td>
                                 <td>{{ data.code }}</td>
+                                <td class="text-center">
+                                    <button nz-button nzType="text" (click)="createAccount(data)">
+                                        <img src="./assets/icons/key.svg" alt="key" width="20" height="20">
+                                    </button>
+                                </td>
                                 <td>{{ data.fullName }}</td>
                                 <td>{{ data.departmentName }}</td>
                                 <td>{{ data.position }}</td>
@@ -89,3 +113,62 @@
         </nz-card>
     </div>
 </nz-card>
+<nz-modal [(nzVisible)]="isVisibleRoleModal" nzTitle="Cập nhật quyền người dùng" (nzOnCancel)="handleCancelRoleModal()"
+    (nzOnOk)="submitUpdateRoles()" [nzOkLoading]="isRolesLoading">
+    <ng-container *nzModalContent>
+        <div *ngIf="selectedUserForRole">
+            <p>Chọn quyền cho tài khoản <b>{{ selectedUserForRole.username }}</b>:</p>
+            <div class="d-flex flex-column" style="gap: 10px;">
+                <label nz-checkbox *ngFor="let option of roleOptions" [(ngModel)]="option.checked"
+                    [nzDisabled]="option.disabled">
+                    {{ option.label }}
+                </label>
+            </div>
+        </div>
+    </ng-container>
+</nz-modal>
+
+<nz-modal [(nzVisible)]="isVisibleDetailModal" nzTitle="Chi tiết tài khoản" (nzOnCancel)="handleCancelDetailModal()"
+    [nzFooter]="null">
+    <ng-container *nzModalContent>
+        <div *ngIf="selectedUserForDetail">
+            <div class="d-flex flex-column" style="gap: 12px;">
+                <div class="d-flex justify-content-between">
+                    <span class="fw-bold">Tên đăng nhập:</span>
+                    <span>{{ selectedUserForDetail.username }}</span>
+                </div>
+
+                <div class="d-flex justify-content-between">
+                    <span class="fw-bold">Trạng thái:</span>
+                    <nz-tag [nzColor]="selectedUserForDetail.status === 'ACTIVE' ? 'success' : 'error'">
+                        {{ selectedUserForDetail.status }}
+                    </nz-tag>
+                </div>
+                <div class="d-flex justify-content-between">
+                    <span class="fw-bold">Vai trò:</span>
+                    <div class="d-flex">
+                        <ng-container *ngFor=" let role of selectedUserForDetail.roles">
+                            <nz-tag [nzColor]="'blue'" class="m-0 ms-1">{{ role }}</nz-tag>
+                        </ng-container>
+                    </div>
+                </div>
+                <div class="d-flex justify-content-between">
+                    <span class="fw-bold">Ngày tạo:</span>
+                    <span>{{ selectedUserForDetail.createdAt | date: 'dd/MM/yyyy HH:mm' }}</span>
+                </div>
+                <div class="d-flex justify-content-between">
+                    <span class="fw-bold">Ngày cập nhật:</span>
+                    <span>{{ selectedUserForDetail.updatedAt | date: 'dd/MM/yyyy HH:mm' }}</span>
+                </div>
+
+                <div class="border-top mt-2 pt-3 d-flex justify-content-end"
+                    *ngIf="selectedUserForDetail.status === 'INACTIVE' || selectedUserForDetail.status === 'LOCKED'">
+                    <button nz-button nzType="primary" (click)="activateUser(selectedUserForDetail)"
+                        style="background-color: #e6ffe6; border-color: #4dff4d; color: #4CAF50">
+                        {{ selectedUserForDetail.status === 'LOCKED' ? 'Mở khóa tài khoản' : 'Kích hoạt tài khoản' }}
+                    </button>
+                </div>
+            </div>
+        </div>
+    </ng-container>
+</nz-modal>

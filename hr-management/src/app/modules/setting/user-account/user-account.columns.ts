@@ -6,6 +6,12 @@ export const USER_ACCOUNT_COLUMNS = [
         className: 'text-center'
     },
     {
+        header: 'Thao tác',
+        field: 'action',
+        width: '100px',
+        className: 'text-center'
+    },
+    {
         header: 'Tên đăng nhập',
         field: 'username',
         width: 'auto'
@@ -21,11 +27,7 @@ export const USER_ACCOUNT_COLUMNS = [
         width: '70px',
         className: 'text-center'
     },
-    {
-        header: 'MNV',
-        field: 'employeeId',
-        width: 'auto'
-    },
+
 
     {
         header: 'Ngày tạo',
@@ -55,6 +57,12 @@ export const EMPLOYEE_NO_USER_COLUMNS = [
         header: 'Mã NV',
         field: 'code',
         width: 'auto'
+    },
+    {
+        header: 'Thao tác',
+        field: 'action',
+        width: '80px',
+        className: 'text-center'
     },
     {
         header: 'Họ và tên',

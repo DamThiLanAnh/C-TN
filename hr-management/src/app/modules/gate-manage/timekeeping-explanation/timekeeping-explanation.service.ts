@@ -102,7 +102,7 @@ export class TimekeepingExplanationService {
     });
   }
 
-  // Lay danh sach giai trinh cong can duyet (cho Manager/Admin)
+  // Lay danh sach giai trinh cong can duyet
   getPendingTimekeepingExplanationsApi(params: TimekeepingExplanationQueryParams = {}): Observable<any> {
     const { page = 0, size = 10, employeeCode, department, fromDate, toDate, status } = params;
 
