@@ -132,5 +132,25 @@ export const certificatesManageColumns = (): StandardColumnModel[] => [
       type: StandardColumnType.DATE_PICKER,
     },
     isSort: true,
+  },
+  {
+    id: 8,
+    name: 'status',
+    fixedColumn: false,
+    fixedRight: false,
+    attr: 'Trạng thái',
+    type: StandardColumnType.TEXT,
+    width: '150px',
+    isRequire: true,
+    isFilter: true,
+    filter: {
+      type: StandardColumnType.SELECT,
+      options: [
+        { value: 'ACTIVE', label: 'Hoạt động' },
+        { value: 'INACTIVE', label: 'Ngừng hoạt động' }
+      ]
+    },
+    isSort: true,
+    classes: 'text-center'
   }
 ];

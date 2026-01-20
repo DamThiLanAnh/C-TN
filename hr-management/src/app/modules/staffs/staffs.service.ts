@@ -34,4 +34,11 @@ export class StaffsService {
             .set('size', size.toString());
         return this.http.get<any>(`${this.apiUrl}/certificates/my`, { params });
     }
+
+    getMySpecialSchedules(page: number = 0, size: number = 10): Observable<any> {
+        const params = new HttpParams()
+            .set('page', page.toString())
+            .set('size', size.toString());
+        return this.http.get<any>(`${this.apiUrl}/special-schedules/my`, { params });
+    }
 }

@@ -2,41 +2,38 @@
   <div class="d-flex justify-content-between mb-2">
     <h6>{{ tableName }}</h6>
     <div nz-row nzJustify="end" class="d-flex align-items-center">
-      <button *ngIf="isHR" class="me-2 d-flex align-items-center gap-1" nz-button nzType="primary" nzDanger (click)="openAddCertificateModal()">
+      <button *ngIf="isHR" class="me-2 d-flex align-items-center gap-1" nz-button nzType="primary" nzDanger
+        (click)="openAddCertificateModal()">
         <span nz-icon nzType="plus-circle" nzTheme="outline" aria-hidden="true"></span> Thêm mới
       </button>
     </div>
   </div>
 
-  <nz-table #basicTable
-    [nzData]="listOfData"
-    [nzLoading]="loadingTable"
-    [nzBordered]="true"
-    [nzSize]="'small'"
-    [nzScroll]="{ x: '1000px', y: 'calc(100vh - 18rem)' }"
-    [nzShowPagination]="false"
-    (nzQueryParams)="onFilterInTable($event)"
-  >
+  <nz-table #basicTable [nzData]="listOfData" [nzLoading]="loadingTable" [nzBordered]="true" [nzSize]="'small'"
+    [nzScroll]="{ x: '1000px', y: 'calc(100vh - 18rem)' }" [nzShowPagination]="false"
+    (nzQueryParams)="onFilterInTable($event)">
     <thead>
       <tr>
-        <th *ngFor="let col of certificatesColumns" [nzWidth]="col.width || null" [nzLeft]="col.fixedColumn || false" [nzRight]="col.fixedRight || false" [ngClass]="col.classes || ''">{{ col.attr }}</th>
+        <th *ngFor="let col of certificatesColumns" [nzWidth]="col.width || null" [nzLeft]="col.fixedColumn || false"
+          [nzRight]="col.fixedRight || false" [ngClass]="col.classes || ''">{{ col.attr }}</th>
       </tr>
       <tr class="filter-row">
         <ng-container *ngFor="let col of certificatesColumns">
           <th *ngIf="col.isFilter" [nzLeft]="col.fixedColumn || false" [nzRight]="col.fixedRight || false">
-            <input *ngIf="(col.filter?.type === StandardColumnType.INPUT || col.type === StandardColumnType.TEXT) && col.filter?.type !== StandardColumnType.DATE_PICKER && col.filter?.type !== StandardColumnType.SELECT" type="text" nz-input [(ngModel)]="searchFilters[col.name]" (ngModelChange)="searchSubject.next()" [placeholder]="'Tìm...'" nzSize="small" />
-            <nz-select *ngIf="col.filter?.type === StandardColumnType.SELECT || col.type === StandardColumnType.SELECT" [(ngModel)]="searchFilters[col.name]" (ngModelChange)="searchSubject.next()" nzPlaceHolder="Tìm..." nzAllowClear nzSize="small" style="width: 100%">
+            <input
+              *ngIf="(col.filter?.type === StandardColumnType.INPUT || col.type === StandardColumnType.TEXT) && col.filter?.type !== StandardColumnType.DATE_PICKER && col.filter?.type !== StandardColumnType.SELECT"
+              type="text" nz-input [(ngModel)]="searchFilters[col.name]" (ngModelChange)="searchSubject.next()"
+              [placeholder]="'Tìm...'" nzSize="small" />
+            <nz-select *ngIf="col.filter?.type === StandardColumnType.SELECT || col.type === StandardColumnType.SELECT"
+              [(ngModel)]="searchFilters[col.name]" (ngModelChange)="searchSubject.next()" nzPlaceHolder="Tìm..."
+              nzAllowClear nzSize="small" style="width: 100%">
               <ng-container *ngFor="let opt of (col.filter?.options || [])">
                 <nz-option [nzValue]="opt.value" [nzLabel]="opt.label"></nz-option>
               </ng-container>
             </nz-select>
             <nz-date-picker *ngIf="col.filter?.type === StandardColumnType.DATE_PICKER"
-                [(ngModel)]="searchFilters[col.name]"
-                (ngModelChange)="searchSubject.next()"
-                [nzPlaceHolder]="'Chọn ngày'"
-                nzSize="small"
-                [nzFormat]="'dd/MM/yyyy'"
-                style="width: 100%">
+              [(ngModel)]="searchFilters[col.name]" (ngModelChange)="searchSubject.next()" [nzPlaceHolder]="'Chọn ngày'"
+              nzSize="small" [nzFormat]="'dd/MM/yyyy'" style="width: 100%">
             </nz-date-picker>
           </th>
           <th *ngIf="!col.isFilter" [nzLeft]="col.fixedColumn || false" [nzRight]="col.fixedRight || false"></th>
@@ -46,50 +43,54 @@
     <tbody>
       <tr *ngFor="let data of basicTable.data; let i = index">
         <ng-container *ngFor="let col of certificatesColumns">
-            <!-- Normal Column -->
-            <td *ngIf="col.type !== StandardColumnType.ACTION" [nzLeft]="col.fixedColumn || false" [nzRight]="col.fixedRight || false" [ngClass]="col.classes || ''">
-                <ng-container [ngSwitch]="col.name">
-                    <span *ngSwitchCase="'issuedDate'">
-                        {{ data.issuedDate | date: 'dd/MM/yyyy' }}
-                    </span>
-                    <span *ngSwitchCase="'expiredDate'">
-                        {{ data.expiredDate | date: 'dd/MM/yyyy' }}
-                    </span>
-                    <span *ngSwitchDefault>{{ data[col.name] }}</span>
-                </ng-container>
-            </td>
+          <!-- Normal Column -->
+          <td *ngIf="col.type !== StandardColumnType.ACTION && col.name !== 'status'"
+            [nzLeft]="col.fixedColumn || false" [nzRight]="col.fixedRight || false" [ngClass]="col.classes || ''">
+            <ng-container [ngSwitch]="col.name">
+              <span *ngSwitchCase="'issuedDate'">
+                {{ data.issuedDate | date: 'dd/MM/yyyy' }}
+              </span>
+              <span *ngSwitchCase="'expiredDate'">
+                {{ data.expiredDate | date: 'dd/MM/yyyy' }}
+              </span>
+              <span *ngSwitchDefault>{{ data[col.name] }}</span>
+            </ng-container>
+          </td>
 
-            <!-- Action Column -->
-            <td *ngIf="col.name === 'action'" [ngClass]="col.classes || ''" class="text-center" (click)="$event.stopPropagation()" [nzLeft]="col.fixedColumn || false" [nzRight]="col.fixedRight || false">
-                <div class="action-buttons d-flex justify-content-center gap-1">
-                <ng-container *ngFor="let action of col.listAction">
-                    <button
-                    nz-button
-                    nzType="link"
-                    nzSize="small"
-                    nz-tooltip
-                    [nzTooltipTitle]="action.label"
-                    (click)="handleAction(action.key, data)"
-                    [innerHTML]="action.html | vssSafeHtml"
-                    class="action-icon-btn"
-                    >
-                    </button>
-                </ng-container>
-                </div>
-            </td>
+          <!-- Status Column -->
+          <td *ngIf="col.name === 'status'" [ngClass]="col.classes || ''" [nzLeft]="col.fixedColumn || false"
+            [nzRight]="col.fixedRight || false">
+            <nz-tag [nzColor]="'transparent'" [style.border-color]="getStatusColor(data[col.name])"
+              style="border-radius: 12px; padding: 2px 10px;">
+              <span class="d-flex align-items-center">
+                <span [style.background-color]="getStatusColor(data[col.name])"
+                  style="width: 6px; height: 6px; border-radius: 50%; margin-right: 6px; display: inline-block;"></span>
+                <span [style.color]="getStatusColor(data[col.name])" style="font-weight: 500;">{{
+                  getStatusLabel(data[col.name]) }}</span>
+              </span>
+            </nz-tag>
+          </td>
+
+          <!-- Action Column -->
+          <td *ngIf="col.name === 'action'" [ngClass]="col.classes || ''" class="text-center"
+            (click)="$event.stopPropagation()" [nzLeft]="col.fixedColumn || false" [nzRight]="col.fixedRight || false">
+            <div class="action-buttons d-flex justify-content-center gap-1">
+              <ng-container *ngFor="let action of col.listAction">
+                <button nz-button nzType="link" nzSize="small" nz-tooltip [nzTooltipTitle]="action.label"
+                  (click)="handleAction(action.key, data)" [innerHTML]="action.html | vssSafeHtml"
+                  class="action-icon-btn">
+                </button>
+              </ng-container>
+            </div>
+          </td>
         </ng-container>
       </tr>
     </tbody>
   </nz-table>
 
   <div class="d-flex justify-content-end mt-2">
-    <nz-pagination
-      [nzTotal]="paging.totalElements"
-      [nzPageIndex]="paging.pageIndex"
-      [nzPageSize]="paging.pageSize"
-      [nzShowSizeChanger]="true"
-      (nzPageIndexChange)="getChangePagination($event)"
-      (nzPageSizeChange)="onPageSizeChange($event)"
-    ></nz-pagination>
+    <nz-pagination [nzTotal]="paging.totalElements" [nzPageIndex]="paging.pageIndex" [nzPageSize]="paging.pageSize"
+      [nzShowSizeChanger]="true" (nzPageIndexChange)="getChangePagination($event)"
+      (nzPageSizeChange)="onPageSizeChange($event)"></nz-pagination>
   </div>
 </nz-card>

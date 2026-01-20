@@ -232,6 +232,16 @@ export const RequestStatus = [
     value: 'PENDING',
     color: '#FFA500',
   },
+  {
+    label: 'Hoạt động',
+    value: 'ACTIVE',
+    color: '#12B76A',
+  },
+  {
+    label: 'Ngừng hoạt động',
+    value: 'INACTIVE',
+    color: '#667085',
+  },
 ];
 
 export const ReasonDetail: OptionModel[] = [

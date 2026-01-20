@@ -1,12 +1,13 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Router, NavigationEnd } from '@angular/router';
 import { CurrentUser, UiNavModel } from '../menu/menu.component';
 import { IconHtml } from '../../modules/shares/enum/icon-html.enum';
-import { filter } from 'rxjs/operators';
+import { filter, debounceTime, takeUntil } from 'rxjs/operators';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { AuthService } from '../../services/auth.service';
 import { NzNotificationService } from 'ng-zorro-antd/notification';
 import { AllNotificationService, Notification } from '../../services/all-notification.service';
+import { Subject } from 'rxjs'; // Add Subject import
 
 interface UINotification extends Notification {
   staffId?: string;
@@ -27,7 +28,7 @@ interface Tab {
   templateUrl: './layout-full.component.html',
   styleUrls: ['./layout-full.component.scss'],
 })
-export class LayoutFullComponent implements OnInit {
+export class LayoutFullComponent implements OnInit, OnDestroy {
   isCollapsed = false;
   nzPopoverVisible = false;
   nzPopoverUserVisible = false;
@@ -261,6 +262,9 @@ export class LayoutFullComponent implements OnInit {
   dataNotify: UINotification[] = [];
   allDataNotify: UINotification[] = []; // Store all notifications
 
+  private notifyRefreshSubject = new Subject<void>();
+  private destroy$ = new Subject<void>();
+
   constructor(
     private router: Router,
     private fb: FormBuilder,
@@ -277,12 +281,21 @@ export class LayoutFullComponent implements OnInit {
 
     this.addTabFromCurrentRoute();
 
+    // Setup debounce for notifications
+    this.notifyRefreshSubject.pipe(
+      debounceTime(300),
+      takeUntil(this.destroy$)
+    ).subscribe(() => {
+      this.doLoadNotifications();
+    });
+
     if (this.router.url.includes('/staffs/detail')) {
       this.loadNotifications();
     }
 
     this.router.events.pipe(
-      filter(event => event instanceof NavigationEnd)
+      filter(event => event instanceof NavigationEnd),
+      takeUntil(this.destroy$)
     ).subscribe((event) => {
       const navEvent = event as NavigationEnd;
       this.addOrSelectTab(navEvent.urlAfterRedirects);
@@ -292,6 +305,11 @@ export class LayoutFullComponent implements OnInit {
         this.loadNotifications();
       }
     });
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   private filterMenuByRole(): void {
@@ -510,6 +528,10 @@ export class LayoutFullComponent implements OnInit {
   }
 
   loadNotifications(): void {
+    this.notifyRefreshSubject.next();
+  }
+
+  private doLoadNotifications(): void {
     this.isLoadingNotify = true;
     this.allNotificationService.getNotifications().subscribe(
       (data) => {

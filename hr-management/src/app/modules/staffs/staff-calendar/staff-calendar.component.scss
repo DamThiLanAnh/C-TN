@@ -47,6 +47,7 @@
     width: calc(100% - 250px);
 
     .calendar-cell {
+
       //.project {
       //  height: 8px;
       //  margin-bottom: 3px;
@@ -102,8 +103,7 @@
           }
         }
 
-        .ant-picker-cell-in-view.ant-picker-cell-selected
-        .ant-picker-cell-inner {
+        .ant-picker-cell-in-view.ant-picker-cell-selected .ant-picker-cell-inner {
           background: #e6f7ff !important;
         }
 
@@ -200,6 +200,10 @@
 
 .status-display {
   text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 
   @media (min-width: 1661px) and (max-width: 1661px) {
     width: auto;
@@ -259,15 +263,15 @@
 }
 
 .legend-dot.full-day {
-  background-color: #5be95b;
+  background-color: #EE0033;
 }
 
 .legend-dot.half-day {
-  background-color: #f59e0b;
+  background-color: #F59E0B;
 }
 
 .legend-dot.off-day {
-  background-color: #898E99;
+  background-color: #D1D3D8;
 }
 
 .time-display {
@@ -310,4 +314,3 @@
     }
   }
 }
-

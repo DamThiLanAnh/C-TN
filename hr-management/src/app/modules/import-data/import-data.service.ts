@@ -38,11 +38,18 @@ export class ImportDataService {
         });
     }
 
-    importSalary(month: string, file: File): Observable<any> {
+    importSalary(dateStr: string, file: File): Observable<any> {
         const formData = new FormData();
         formData.append('file', file);
-        const params = new HttpParams().set('month', month);
-        return this.http.post(`${this.salaryUrl}/import`, formData, { params });
+
+        // dateStr format: yyyy-MM
+        const [year, month] = dateStr.split('-');
+
+        const params = new HttpParams()
+            .set('month', month)
+            .set('year', year);
+
+        return this.http.post(`${environment.apiUrl}/api/salaries/import`, formData, { params });
     }
 
     getSalaryImportHistories(page: number, size: number, month?: string): Observable<any> {

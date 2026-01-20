@@ -4,6 +4,7 @@ import { debounceTime, finalize } from 'rxjs/operators';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import { NzTableQueryParams } from 'ng-zorro-antd/table';
 import { StandardColumnModel, StandardColumnType } from '../../shares/interfaces';
+import { RequestStatus } from '../../shares/enum/options.constants';
 import { CertificatesManageService } from './certificates-manage.service';
 import { NzModalService } from 'ng-zorro-antd/modal';
 
@@ -141,6 +142,10 @@ export class CertificatesManageComponent implements OnInit {
       const val = `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')}`;
       processedData = processedData.filter((item: any) => item.expiredDate && item.expiredDate.includes(val));
     }
+    if (this.searchFilters['status']) {
+      const val = this.searchFilters['status'];
+      processedData = processedData.filter((item: any) => item.status === val);
+    }
 
 
     // Update Total based on filtered result
@@ -223,6 +228,16 @@ export class CertificatesManageComponent implements OnInit {
         this.messageService.error('Xóa chứng chỉ thất bại: ' + (error.error?.message || 'Lỗi hệ thống'));
       }
     );
+  }
+
+  getStatusColor(status: string): string {
+    const statusOption = RequestStatus.find(s => s.value === status);
+    return statusOption?.color || 'default';
+  }
+
+  getStatusLabel(status: string): string {
+    const statusOption = RequestStatus.find(s => s.value === status);
+    return statusOption?.label || status;
   }
 
   openAddCertificateModal(id?: any, data?: any): void {

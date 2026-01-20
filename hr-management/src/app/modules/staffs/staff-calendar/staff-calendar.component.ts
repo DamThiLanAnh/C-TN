@@ -19,10 +19,31 @@ export class StaffCalendarComponent implements OnInit {
   attendanceData: Map<string, AttendanceStatus> = new Map();
   specialSchedules: SpecialSchedule[] = [];
 
+  stats = {
+    totalPaidMinutes: 0,
+    totalWorkingDays: 0,
+    totalOTMinutes: 0,
+    totalOTHours: 0,
+    annualLeaveQuota: 0,
+    annualLeaveUsed: 0,
+    annualLeaveRemaining: 0
+  };
+
   constructor(private staffsService: StaffsService) { }
 
   ngOnInit() {
     this.loadAttendanceData();
+    this.loadSpecialSchedules();
+  }
+
+  loadSpecialSchedules() {
+    this.staffsService.getMySpecialSchedules(0, 10).subscribe((res: any) => {
+      if (res && res.content) {
+        this.specialSchedules = res.content;
+      } else {
+        this.specialSchedules = [];
+      }
+    });
   }
 
   loadAttendanceData() {
@@ -38,26 +59,33 @@ export class StaffCalendarComponent implements OnInit {
         data.forEach((item: any) => {
           const dateStr = item.date;
           if (dateStr) {
-             if (item.checkIn || item.checkOut) {
-                 this.dataCheckInOut.push({
-                   time_date: dateStr,
-                   in_time: item.checkIn ? item.checkIn.slice(0, 5) : null,
-                   out_time: item.checkOut ? item.checkOut.slice(0, 5) : null
-                 });
-             }
+            if (item.checkIn || item.checkOut) {
+              this.dataCheckInOut.push({
+                time_date: dateStr,
+                in_time: item.checkIn ? item.checkIn.slice(0, 5) : null,
+                out_time: item.checkOut ? item.checkOut.slice(0, 5) : null
+              });
+            }
 
-             if (item.display) {
-               const upperDisplay = item.display.toUpperCase();
-               this.attendanceData.set(dateStr, {
-                 statusCode: upperDisplay,
-                 color: item.color || this.getColorByStatus(upperDisplay)
-               });
-             }
+            if (item.display) {
+              const upperDisplay = item.display.toUpperCase();
+              this.attendanceData.set(dateStr, {
+                statusCode: upperDisplay,
+                color: item.color || this.getColorByStatus(upperDisplay)
+              });
+            }
           }
         });
       }
 
-      this.calculateTotalActualDays();
+      // Map stats from response
+      this.stats.totalWorkingDays = res.totalWorkingDays ?? 0;
+      this.stats.totalOTMinutes = res.totalOTMinutes ?? 0;
+      this.stats.totalOTHours = res.totalOTHours ?? 0;
+      this.stats.annualLeaveQuota = res.annualLeaveQuota ?? 0;
+      this.stats.annualLeaveUsed = res.annualLeaveUsed ?? 0;
+      this.stats.annualLeaveRemaining = res.annualLeaveRemaining ?? 0;
+
       this.loading = false;
     }, (err) => {
       this.loading = false;
@@ -65,43 +93,14 @@ export class StaffCalendarComponent implements OnInit {
   }
 
   getColorByStatus(status: string): string {
-    if (status.startsWith('X')) return '#52c41a'; // Green
-    if (status.startsWith('M')) return '#faad14'; // Orange (Muộn)
-    if (status.startsWith('P')) return '#1890ff'; // Blue (Phép)
-    if (status.startsWith('L')) return '#ff4d4f'; // Red (Lễ)
-    return '#d9d9d9'; // Gray
+    if (status.startsWith('X')) return '#EE0033';
+    if (status.startsWith('RV')) return '#EE0033';
+    if (status.startsWith('Ro')) return '#EE0033';
+    if (status.startsWith('P')) return '#F59E0B';
+    if (status.startsWith('L')) return '#EE0033';
+    return '#D1D3D8';
   }
 
-  calculateTotalActualDays() {
-    let count = 0;
-
-    this.dataCheckInOut.forEach((record) => {
-      if (record.in_time && record.out_time) {
-        const workedHours = this.calculateWorkedHours(record.in_time, record.out_time);
-
-        if (workedHours >= 8) {
-          count += 1;
-        } else if (workedHours >= 4) {
-          count += 0.5;
-        }
-      }
-    });
-
-    this.totalActualDays = count;
-  }
-
-  calculateWorkedHours(checkIn: string, checkOut: string): number {
-    const [inHour, inMinute] = checkIn.split(':').map(Number);
-    const [outHour, outMinute] = checkOut.split(':').map(Number);
-
-    const inTotalMinutes = inHour * 60 + inMinute;
-    const outTotalMinutes = outHour * 60 + outMinute;
-
-    const workedMinutes = outTotalMinutes - inTotalMinutes;
-    const workedHours = workedMinutes / 60;
-
-    return workedHours;
-  }
 
   viewPreMonth() {
     const newDate = new Date(this.selectedDate);
