@@ -54,7 +54,11 @@ export class EmployeeManageService {
       position: employee.position || employee.workPositionName || '',
       departmentId: employee.departmentId || employee.department || null,
       email: employee.email || '',
-      phoneNumber: employee.phone || employee.phoneNumber || ''
+      phoneNumber: employee.phone || employee.phoneNumber || '',
+      citizenId: employee.citizenId || '',
+      gender: employee.gender || null,
+      address: employee.address || '',
+      status: employee.status || 'ACTIVE'
     };
 
     return this.http.post(this.contextPath, payload, {
