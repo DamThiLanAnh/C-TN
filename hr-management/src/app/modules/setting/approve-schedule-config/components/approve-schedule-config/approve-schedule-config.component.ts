@@ -93,6 +93,22 @@ export class ApproveScheduleConfigComponent implements OnInit {
         if (res.configs?.content) {
           this.totalElements = res.configs.totalElements || 0;
           res.configs.content.forEach((item: any) => {
+            // Ensure staff option exists
+            if (!this.staffOptions.find(opt => opt.value === item.employeeId)) {
+              this.staffOptions.push({
+                label: item.targetUsername || item.employeeName,
+                value: item.employeeId
+              });
+            }
+
+            // Ensure approver option exists
+            if (!this.approverOptions.find(opt => opt.value === item.approverId)) {
+              this.approverOptions.push({
+                label: item.approverUsername || item.approverName,
+                value: item.approverId
+              });
+            }
+
             this.configList.push({
               staffIds: [item.employeeId],
               approverIds: [item.approverId]

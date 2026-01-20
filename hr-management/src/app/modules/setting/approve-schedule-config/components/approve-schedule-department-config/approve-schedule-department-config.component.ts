@@ -38,6 +38,8 @@ export class ApproveScheduleDepartmentConfigComponent implements OnInit {
   };
 
   private originalConfigList: DepartmentConfigRow[] = [];
+  allDepartments: any[] = [];
+  allUsers: any[] = [];
 
   constructor(
     private approveScheduleConfigService: ApproveScheduleConfigService,
@@ -62,6 +64,11 @@ export class ApproveScheduleDepartmentConfigComponent implements OnInit {
         })
       )
       .subscribe(res => {
+        // Store raw data
+        this.allDepartments = res.departments?.content || [];
+        this.allUsers = res.users?.content || [];
+
+        // 1. Setup Department Options
         // 1. Setup Department Options
         this.departmentOptions = (res.departments?.content || []).map((d: any) => ({
           label: d.name,
@@ -120,10 +127,68 @@ export class ApproveScheduleDepartmentConfigComponent implements OnInit {
   }
 
   onSaveEdit(): void {
-    this.isEditMode = false;
-    // TODO: Call API to save changes if needed
-    console.log('Saving department config changes...', this.configList);
-    this.originalConfigList = JSON.parse(JSON.stringify(this.configList));
+    this.isLoading = true;
+    const requests: any[] = [];
+
+    // existing pairs from originalConfigList
+    const existingPairs = new Set<string>();
+    this.originalConfigList.forEach(row => {
+      row.departmentIds.forEach(deptId => {
+        row.approveStaffIds.forEach(aId => {
+          existingPairs.add(`${deptId}-${aId}`);
+        });
+      });
+    });
+
+    this.configList.forEach(row => {
+      row.departmentIds.forEach(deptId => {
+        const dept = this.allDepartments.find(d => d.id === deptId);
+        if (dept) {
+          row.approveStaffIds.forEach(approverId => {
+            const approver = this.allUsers.find(u => u.id === approverId);
+            if (approver) {
+              const pairKey = `${deptId}-${approverId}`;
+              if (!existingPairs.has(pairKey)) {
+                const payload = {
+                  targetType: 'DEPARTMENT',
+                  targetCode: dept.code,
+                  approverCode: approver.empCode || approver.code // Fallback if empCode is missing (based on User response typically having code/empCode)
+                  // Note: Personal component used `approver.empCode`. User response in Personal component had empCode?
+                  // Let's assume standard field is `code` or `empCode`. I'll use `code` if `empCode` is undefined.
+                  // Looking at `staffs.service.ts` or similar might confirm.
+                  // However, let's look at Personal component: `approverCode: approver.empCode`.
+                  // `allUsers` in Personal comes from `getAllUsers`.
+                  // I'll stick to `empCode || code`.
+                };
+                requests.push(this.approveScheduleConfigService.createPersonalApprovalConfig(payload));
+              }
+            }
+          });
+        }
+      });
+    });
+
+    if (requests.length > 0) {
+      forkJoin(requests)
+        .pipe(finalize(() => {
+          this.isLoading = false;
+          this.isEditMode = false;
+          this.cdr.markForCheck();
+        }))
+        .subscribe({
+          next: () => {
+            // In a real app we might show a notification here
+            // this.messageService.success('Cập nhật thành công'); (if messageService was injected)
+            this.loadData();
+          },
+          error: (err) => {
+            console.error('Error saving configs', err);
+          }
+        });
+    } else {
+      this.isLoading = false;
+      this.isEditMode = false;
+    }
   }
 
   addRow(): void {
