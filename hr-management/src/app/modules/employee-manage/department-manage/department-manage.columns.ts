@@ -94,8 +94,8 @@ export const departmentManageColumns = (): StandardColumnModel[] => {
       filter: {
         type: StandardColumnType.SELECT,
         options: [
-          { value: 'ACTIVE', label: 'Hoạt động' },
-          { value: 'INACTIVE', label: 'Ngừng hoạt động' },
+          { value: true, label: 'Hoạt động' },
+          { value: false, label: 'Ngừng hoạt động' },
         ],
       },
     },

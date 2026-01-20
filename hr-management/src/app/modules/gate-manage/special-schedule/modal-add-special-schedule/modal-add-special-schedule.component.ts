@@ -24,23 +24,55 @@ export class ModalAddSpecialScheduleComponent implements OnInit {
 
   ngOnInit(): void {
     if (this.data) {
-        this.modalTitle = 'Cập nhật lịch đặc thù';
+      this.modalTitle = 'Cập nhật lịch đặc thù';
     }
 
     this.addForm = this.fb.group({
       // Pass the date string directly (YYYY-MM-DD) for input type="date"
       startDate: [this.data?.startDate || null],
       endDate: [this.data?.endDate || null],
-      morningStart: [this.parseTime(this.data?.morningStart)],
-      morningEnd: [this.parseTime(this.data?.morningEnd)],
+      morningStart: [this.parseTime(this.data?.morningStart), [Validators.required]],
+      morningEnd: [this.parseTime(this.data?.morningEnd), [Validators.required]],
       afternoonStart: [this.parseTime(this.data?.afternoonStart)],
       afternoonEnd: [this.parseTime(this.data?.afternoonEnd)],
-      projectCode: [this.data?.projectCode || null, [Validators.required]],
-      projectName: [this.data?.projectName || null, [Validators.required]],
-      managerCode: [this.data?.managerCode || null, [Validators.required]],
-      managerName: [this.data?.managerName || null, [Validators.required]],
-      type: [this.data?.type || 'ON_SITE'],
+      projectCode: [this.data?.projectCode || null],
+      projectName: [this.data?.projectName || null],
+      managerCode: [this.data?.managerCode || null],
+      managerName: [this.data?.managerName || null],
+      type: [this.data?.type || 'ON_SITE', [Validators.required]],
       reason: [this.data?.reason || null]
+    });
+
+    this.setupTypeValidation();
+  }
+
+  setupTypeValidation() {
+    const typeControl = this.addForm.get('type');
+    if (!typeControl) return;
+
+    // Initial check
+    this.updateValidators(typeControl.value);
+
+    typeControl.valueChanges.subscribe(value => {
+      this.updateValidators(value);
+    });
+  }
+
+  updateValidators(type: string) {
+    const isOnSite = type === 'ON_SITE';
+    const fields = ['projectCode', 'projectName', 'managerCode', 'managerName'];
+
+    fields.forEach(field => {
+      const control = this.addForm.get(field);
+      if (control) {
+        if (isOnSite) {
+          control.setValidators([Validators.required]);
+        } else {
+          control.clearValidators();
+          control.setValue(null); // Optional: clear value when hiding
+        }
+        control.updateValueAndValidity();
+      }
     });
   }
 
@@ -90,26 +122,26 @@ export class ModalAddSpecialScheduleComponent implements OnInit {
     if (formValue.morningEnd instanceof Date) formValue.morningEnd = this.formatTime(formValue.morningEnd);
     if (formValue.afternoonStart instanceof Date) formValue.afternoonStart = this.formatTime(formValue.afternoonStart);
     if (formValue.afternoonEnd instanceof Date) formValue.afternoonEnd = this.formatTime(formValue.afternoonEnd);
-    
+
     let request;
     if (this.data && this.data.id) {
-        request = this.specialScheduleService.updateSpecialScheduleApi(this.data.id, formValue);
+      request = this.specialScheduleService.updateSpecialScheduleApi(this.data.id, formValue);
     } else {
-        request = this.specialScheduleService.createSpecialScheduleApi(formValue);
+      request = this.specialScheduleService.createSpecialScheduleApi(formValue);
     }
 
     request.subscribe({
-        next: () => {
-          this.message.success(this.data ? 'Cập nhật lịch đặc thù thành công!' : 'Thêm mới lịch đặc thù thành công!');
-          this.modalRef.close(true);
-        },
-        error: (err) => {
-          this.message.error((this.data ? 'Cập nhật' : 'Thêm mới') + ' thất bại!');
-        },
-        complete: () => {
-          this.loading = false;
-        }
-      });
+      next: () => {
+        this.message.success(this.data ? 'Cập nhật lịch đặc thù thành công!' : 'Thêm mới lịch đặc thù thành công!');
+        this.modalRef.close(true);
+      },
+      error: (err) => {
+        this.message.error((this.data ? 'Cập nhật' : 'Thêm mới') + ' thất bại!');
+      },
+      complete: () => {
+        this.loading = false;
+      }
+    });
   }
 
   close(): void {

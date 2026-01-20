@@ -34,6 +34,7 @@ export class UserAccountComponent implements OnInit {
   roleOptions = [
     { label: 'Nhân viên', value: 'EMPLOYEE', disabled: true, checked: true },
     { label: 'Quản lý', value: 'MANAGER', disabled: false, checked: false },
+    { label: 'Nhân sự', value: 'HR', disabled: false, checked: false },
     { label: 'Quản trị viên', value: 'ADMIN', disabled: false, checked: false }
   ];
   isRolesLoading = false;

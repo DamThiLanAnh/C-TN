@@ -147,7 +147,7 @@ export const certificatesManageColumns = (): StandardColumnModel[] => [
       type: StandardColumnType.SELECT,
       options: [
         { value: 'ACTIVE', label: 'Hoạt động' },
-        { value: 'INACTIVE', label: 'Ngừng hoạt động' }
+        { value: 'EXPIRED', label: 'Hết hạn' }
       ]
     },
     isSort: true,

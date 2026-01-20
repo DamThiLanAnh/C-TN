@@ -1,6 +1,7 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { ApproveScheduleConfigService } from '../../approve-schedule-config.service';
 import { finalize } from 'rxjs/operators';
+import { forkJoin } from 'rxjs';
 
 interface DepartmentConfigRow {
   departmentIds: number[];
@@ -49,25 +50,41 @@ export class ApproveScheduleDepartmentConfigComponent implements OnInit {
 
   loadData(): void {
     this.isLoading = true;
-    this.approveScheduleConfigService.getDepartmentApprovalConfigs(0, 1000)
-      .pipe(finalize(() => {
-        this.isLoading = false;
-        this.cdr.markForCheck();
-      }))
+    forkJoin({
+      configs: this.approveScheduleConfigService.getDepartmentApprovalConfigs(0, 1000),
+      departments: this.approveScheduleConfigService.getAllDepartments(0, 1000),
+      users: this.approveScheduleConfigService.getAllUsers(0, 1000)
+    })
+      .pipe(
+        finalize(() => {
+          this.isLoading = false;
+          this.cdr.markForCheck();
+        })
+      )
       .subscribe(res => {
-        const deptMap = new Map<number, string>();
-        const staffMap = new Map<number, string>();
+        // 1. Setup Department Options
+        this.departmentOptions = (res.departments?.content || []).map((d: any) => ({
+          label: d.name,
+          value: d.id
+        }));
 
+        // 2. Setup User Options (Approvers)
+        // User requested "userName của các manager".
+        this.staffOptions = (res.users?.content || [])
+          .filter((u: any) => u.roles && u.roles.includes('MANAGER'))
+          .map((u: any) => ({
+            label: u.username,
+            value: u.id
+          }));
+
+        // 3. Process Existing Configs
         this.configList = [];
-
-        if (res.content) {
-          res.content.forEach(item => {
-            deptMap.set(item.departmentId, item.departmentName);
-
+        if (res.configs?.content) {
+          res.configs.content.forEach((item: any) => {
+            // We can use the existing data, but options are now master data from APIs
             // Handle potential null approver
             const approverIds: number[] = [];
             if (item.approverId) {
-              staffMap.set(item.approverId, item.approverName || '');
               approverIds.push(item.approverId);
             }
 
@@ -77,9 +94,6 @@ export class ApproveScheduleDepartmentConfigComponent implements OnInit {
             });
           });
         }
-
-        this.departmentOptions = Array.from(deptMap.entries()).map(([value, label]) => ({ value, label }));
-        this.staffOptions = Array.from(staffMap.entries()).map(([value, label]) => ({ value, label }));
 
         this.originalConfigList = JSON.parse(JSON.stringify(this.configList));
         this.initFilteredOptions();

@@ -63,11 +63,16 @@ export class DepartmentManageComponent implements OnInit {
     this.loadingTable = true;
 
     // Prepare params from paging and searchFilters
-    const params = {
+    const params: any = {
       page: this.paging.pageIndex - 1,
       size: this.paging.pageSize,
       ...this.searchFilters
     };
+
+    if (params.status !== undefined && params.status !== null) {
+      params.active = params.status;
+      delete params.status;
+    }
 
     this.departmentManageService.getDepartmentsApi(params).pipe(
       finalize(() => this.loadingTable = false)

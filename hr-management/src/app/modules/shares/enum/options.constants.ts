@@ -242,6 +242,11 @@ export const RequestStatus = [
     value: 'INACTIVE',
     color: '#667085',
   },
+  {
+    label: 'Hết hạn',
+    value: 'EXPIRED',
+    color: '#F04438',
+  },
 ];
 
 export const ReasonDetail: OptionModel[] = [
@@ -436,9 +441,9 @@ export const GenderOptions: OptionModel[] = [
 ];
 
 export const PositionOptions: OptionModel[] = [
-  { label: 'TV', value: 'TV' },
-  { label: 'CV', value: 'CV' },
-  { label: 'CVC', value: 'CVC' },
-  { label: 'CVCC', value: 'CVCC' },
-  { label: 'TP', value: 'TP' }
+  { label: 'Thử việc', value: 'Thử việc' },
+  { label: 'Chuyên viên', value: 'Chuyên viên' },
+  { label: 'Chuyên viên chính', value: 'Chuyên viên chính' },
+  { label: 'Chuyên viên cấp cao', value: 'Chuyên viên cấp cao' },
+  { label: 'Trưởng phòng', value: 'Trưởng phòng' }
 ];

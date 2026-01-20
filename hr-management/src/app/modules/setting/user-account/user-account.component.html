@@ -33,16 +33,19 @@
                                 <td class="text-center">{{ (pageIndex - 1) * pageSize + i + 1 }}</td>
                                 <td class="text-center">
                                     <div class="d-flex justify-content-center" style="gap: 12px;">
-                                        <button nz-button nzType="text" (click)="openRoleModal(data)"
+                                        <button nz-button nzType="text"
+                                            (click)="openRoleModal(data); $event.stopPropagation()"
                                             style="border: none; background: transparent; padding: 0;">
                                             <img src="./assets/icons/icon-edit-btn.svg" alt="edit" width="20"
                                                 height="20">
                                         </button>
-                                        <button nz-button nzType="text" (click)="lockUser(data)"
+                                        <button nz-button nzType="text"
+                                            (click)="lockUser(data); $event.stopPropagation()"
                                             style="border: none; background: transparent; padding: 0;">
                                             <img src="./assets/icons/lock-01.svg" alt="lock" width="20" height="20">
                                         </button>
-                                        <button nz-button nzType="text" (click)="deactivateUser(data)"
+                                        <button nz-button nzType="text"
+                                            (click)="deactivateUser(data); $event.stopPropagation()"
                                             style="border: none; background: transparent; padding: 0;">
                                             <img src="./assets/icons/minus-circle.svg" alt="deactivate" width="20"
                                                 height="20">

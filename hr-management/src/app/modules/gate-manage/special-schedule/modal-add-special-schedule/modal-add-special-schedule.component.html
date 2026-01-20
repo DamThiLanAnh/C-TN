@@ -21,7 +21,7 @@
     <!-- Ca làm việc -->
     <div nz-col nzSpan="12">
       <nz-form-item>
-        <nz-form-label>Giờ đăng ký (từ)</nz-form-label>
+        <nz-form-label nzRequired>Giờ đăng ký (từ)</nz-form-label>
         <nz-form-control>
           <nz-time-picker formControlName="morningStart" [nzFormat]="'HH:mm'" style="width: 100%;"></nz-time-picker>
         </nz-form-control>
@@ -29,7 +29,7 @@
     </div>
     <div nz-col nzSpan="12">
       <nz-form-item>
-        <nz-form-label>Giờ đăng ký (đến)</nz-form-label>
+        <nz-form-label nzRequired>Giờ đăng ký (đến)</nz-form-label>
         <nz-form-control>
           <nz-time-picker formControlName="morningEnd" [nzFormat]="'HH:mm'" style="width: 100%;"></nz-time-picker>
         </nz-form-control>
@@ -52,54 +52,57 @@
         </nz-form-item>
       </div> -->
 
-    <!-- Thông tin dự án -->
-    <div nz-col nzSpan="8">
-      <nz-form-item>
-        <nz-form-label nzRequired>Mã dự án</nz-form-label>
-        <nz-form-control [nzErrorTip]="'Bắt buộc'">
-          <input nz-input formControlName="projectCode" placeholder="Mã DA" />
-        </nz-form-control>
-      </nz-form-item>
-    </div>
-    <div nz-col nzSpan="16">
-      <nz-form-item>
-        <nz-form-label nzRequired>Tên dự án</nz-form-label>
-        <nz-form-control [nzErrorTip]="'Bắt buộc'">
-          <input nz-input formControlName="projectName" placeholder="Tên dự án" />
-        </nz-form-control>
-      </nz-form-item>
-    </div>
-
-    <!-- Thông tin quản lý -->
-    <div nz-col nzSpan="8">
-      <nz-form-item>
-        <nz-form-label nzRequired>Mã quản lý</nz-form-label>
-        <nz-form-control [nzErrorTip]="'Bắt buộc'">
-          <input nz-input formControlName="managerCode" placeholder="Mã QL" />
-        </nz-form-control>
-      </nz-form-item>
-    </div>
-    <div nz-col nzSpan="16">
-      <nz-form-item>
-        <nz-form-label nzRequired>Tên quản lý</nz-form-label>
-        <nz-form-control [nzErrorTip]="'Bắt buộc'">
-          <input nz-input formControlName="managerName" placeholder="Tên quản lý" />
-        </nz-form-control>
-      </nz-form-item>
-    </div>
-
     <!-- Loại & Lý do -->
-    <div nz-col nzSpan="12">
+    <div nz-col nzSpan="24">
       <nz-form-item>
-        <nz-form-label>Loại</nz-form-label>
+        <nz-form-label nzRequired>Loại</nz-form-label>
         <nz-form-control>
           <nz-select formControlName="type" [nzPlaceHolder]="'Chọn loại'">
             <nz-option nzValue="ON_SITE" nzLabel="On Site"></nz-option>
-            <nz-option nzValue="MATERNITY" nzLabel="Thai sản (Maternity)"></nz-option>
+            <nz-option nzValue="CHILD_SUPPORT" nzLabel="Con nhỏ"></nz-option>
           </nz-select>
         </nz-form-control>
       </nz-form-item>
     </div>
+
+    <!-- Thông tin dự án -->
+    <ng-container *ngIf="addForm.get('type')?.value === 'ON_SITE'">
+      <div nz-col nzSpan="8">
+        <nz-form-item>
+          <nz-form-label nzRequired>Mã dự án</nz-form-label>
+          <nz-form-control [nzErrorTip]="'Bắt buộc'">
+            <input nz-input formControlName="projectCode" placeholder="Mã DA" />
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+      <div nz-col nzSpan="16">
+        <nz-form-item>
+          <nz-form-label nzRequired>Tên dự án</nz-form-label>
+          <nz-form-control [nzErrorTip]="'Bắt buộc'">
+            <input nz-input formControlName="projectName" placeholder="Tên dự án" />
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+
+      <!-- Thông tin quản lý -->
+      <div nz-col nzSpan="8">
+        <nz-form-item>
+          <nz-form-label nzRequired>Mã quản lý</nz-form-label>
+          <nz-form-control [nzErrorTip]="'Bắt buộc'">
+            <input nz-input formControlName="managerCode" placeholder="Mã QL" />
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+      <div nz-col nzSpan="16">
+        <nz-form-item>
+          <nz-form-label nzRequired>Tên quản lý</nz-form-label>
+          <nz-form-control [nzErrorTip]="'Bắt buộc'">
+            <input nz-input formControlName="managerName" placeholder="Tên quản lý" />
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+    </ng-container>
+
 
     <div nz-col nzSpan="24">
       <nz-form-item>
