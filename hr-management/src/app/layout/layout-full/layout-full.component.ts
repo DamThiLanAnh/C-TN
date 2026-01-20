@@ -6,14 +6,14 @@ import { filter } from 'rxjs/operators';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { AuthService } from '../../services/auth.service';
 import { NzNotificationService } from 'ng-zorro-antd/notification';
+import { AllNotificationService, Notification } from '../../services/all-notification.service';
 
-interface Notification {
-  id: string;
-  title: string;
-  message: string;
-  staffId: string;
-  createdDate: Date;
-  readNotify: boolean;
+interface UINotification extends Notification {
+  staffId?: string;
+  message?: string;
+  createdDate?: Date;
+  readNotify?: boolean;
+  senderName?: string;
 }
 
 interface Tab {
@@ -234,20 +234,22 @@ export class LayoutFullComponent implements OnInit {
   };
 
   // Notification data
-  totalNewNotify = 5;
+  totalNewNotify = 0;
+  totalAllNotify = 0;
   indexSysNotifyActivate = 0;
   indexTabNotifyActive = 0;
+  isLoadingNotify = false;
 
   sysNotification = [
     {
       label: 'Hệ thống',
-      totalNewNotify: 3,
-      totalAllNotify: 10
+      totalNewNotify: 0,
+      totalAllNotify: 0
     },
     {
       label: 'Cá nhân',
-      totalNewNotify: 2,
-      totalAllNotify: 5
+      totalNewNotify: 0,
+      totalAllNotify: 0
     }
   ];
 
@@ -256,30 +258,15 @@ export class LayoutFullComponent implements OnInit {
     { name: 'Tất cả', textCount: 'totalAllNotify' }
   ];
 
-  dataNotify: Notification[] = [
-    {
-      id: '1',
-      title: 'Thông báo mới',
-      message: 'Bạn có một yêu cầu nghỉ phép mới',
-      staffId: 'NV001',
-      createdDate: new Date(),
-      readNotify: false
-    },
-    {
-      id: '2',
-      title: 'Cập nhật thông tin',
-      message: 'Thông tin nhân viên đã được cập nhật',
-      staffId: 'NV002',
-      createdDate: new Date(Date.now() - 86400000),
-      readNotify: false
-    }
-  ];
+  dataNotify: UINotification[] = [];
+  allDataNotify: UINotification[] = []; // Store all notifications
 
   constructor(
     private router: Router,
     private fb: FormBuilder,
     private authService: AuthService,
-    private notification: NzNotificationService
+    private notification: NzNotificationService,
+    private allNotificationService: AllNotificationService
   ) {
   }
 
@@ -290,11 +277,20 @@ export class LayoutFullComponent implements OnInit {
 
     this.addTabFromCurrentRoute();
 
+    if (this.router.url.includes('/staffs/detail')) {
+      this.loadNotifications();
+    }
+
     this.router.events.pipe(
       filter(event => event instanceof NavigationEnd)
     ).subscribe((event) => {
       const navEvent = event as NavigationEnd;
       this.addOrSelectTab(navEvent.urlAfterRedirects);
+
+      // Check for specific route to trigger notification refresh
+      if (navEvent.urlAfterRedirects.includes('/staffs/detail')) {
+        this.loadNotifications();
+      }
     });
   }
 
@@ -496,27 +492,124 @@ export class LayoutFullComponent implements OnInit {
     );
   }
 
-  popoverNotifyOnChangeShow(visible: boolean): void {
-    if (visible) {
-      // Load notifications
+  onPopoverVisibleChange(visible: boolean): void {
+    this.nzPopoverVisible = visible;
+    if (visible && this.indexSysNotifyActivate === 1) {
+      this.loadNotifications();
     }
   }
 
-  changeTabNotify(index: number): void {
+  onSysTabChange(params: any): void {
+    const index = params.index;
+    this.indexSysNotifyActivate = index;
+    if (index === 1) {
+      this.loadNotifications();
+    } else {
+      this.dataNotify = [];
+    }
+  }
+
+  loadNotifications(): void {
+    this.isLoadingNotify = true;
+    this.allNotificationService.getNotifications().subscribe(
+      (data) => {
+        this.isLoadingNotify = false;
+        this.allDataNotify = data.map(item => ({
+          ...item,
+          message: this.formatMessageDate(item.content),
+          createdDate: new Date(item.createdAt),
+          readNotify: item.isRead,
+          staffId: '', // API does not return staffId yet
+          senderName: this.extractEmployeeName(item.content)
+        }));
+        this.totalAllNotify = this.allDataNotify.length;
+        this.totalNewNotify = this.allDataNotify.filter(n => !n.readNotify).length;
+
+        // Initial load based on current tab
+        this.filterNotifications();
+      },
+      (error) => {
+        this.isLoadingNotify = false;
+        console.error('Error fetching notifications:', error);
+      }
+    );
+  }
+
+  filterNotifications(): void {
+    if (this.indexTabNotifyActive === 0) {
+      // Unread tab
+      this.dataNotify = this.allDataNotify.filter(n => !n.readNotify);
+    } else {
+      // All tab
+      this.dataNotify = [...this.allDataNotify];
+    }
+  }
+
+  private formatMessageDate(content: string): string {
+    if (!content) return '';
+    // Identify date pattern YYYY-MM-DD
+    const datePattern = /(\d{4})-(\d{2})-(\d{2})/g;
+    return content.replace(datePattern, (match, year, month, day) => {
+      return `${day}/${month}/${year}`;
+    });
+  }
+
+  private extractEmployeeName(content: string): string {
+    if (!content) return '';
+    const match = content.match(/^Nhân viên (.+?) (đã|gửi|yêu cầu)/);
+    return match ? match[1] : '';
+  }
+
+  changeTabNotify(params: any): void {
+    const index = params.index;
     this.indexTabNotifyActive = index;
+    this.filterNotifications();
+  }
+
+  getNotificationLabel(type: string): string {
+    const typeMapping: { [key: string]: string } = {
+      'EXPLANATION_REQUEST': 'Giải trình',
+      'LEAVE_REQUEST': 'Đơn nghỉ phép',
+      'OVERTIME_REQUEST': 'Làm thêm giờ',
+      'Compensatory_LEAVE': 'Nghỉ bù',
+      'LATE_EARLY_REQUEST': 'Đi muộn về sớm',
+    };
+    return typeMapping[type] || 'Thông báo';
   }
 
   updateReadAll(): void {
-    this.dataNotify.forEach(n => n.readNotify = true);
-    this.totalNewNotify = 0;
+    this.allNotificationService.markAllAsRead().subscribe({
+      next: () => {
+        this.allDataNotify.forEach(n => {
+          n.readNotify = true;
+          n.isRead = true;
+        });
+        this.totalNewNotify = 0;
+        this.filterNotifications();
+        this.notification.success('Thành công', 'Đã đánh dấu tất cả là đã đọc');
+      },
+      error: (err) => console.error('Error marking all as read', err)
+    });
   }
 
   refreshNotify(): void {
-    // Reload notifications
+    this.loadNotifications();
   }
 
-  routerNotify(item: Notification): void {
-    item.readNotify = true;
-    this.totalNewNotify = Math.max(0, this.totalNewNotify - 1);
+  routerNotify(item: UINotification): void {
+    if (!item.readNotify) {
+      this.allNotificationService.markAsRead(item.id).subscribe({
+        next: () => {
+          item.readNotify = true;
+          item.isRead = true; // Update original property too if needed
+          this.totalNewNotify = Math.max(0, this.totalNewNotify - 1);
+          this.filterNotifications(); // Refresh list to remove from 'Unread' tab if needed
+        },
+        error: (err) => console.error('Error marking as read', err)
+      });
+    } else {
+      // Already read, just navigate or whatever logic needed
+    }
+    // Add navigation logic here if applicable, for now it just marks as read
   }
 }

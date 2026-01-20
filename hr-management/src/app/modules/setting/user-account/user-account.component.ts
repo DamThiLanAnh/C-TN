@@ -248,4 +248,24 @@ export class UserAccountComponent implements OnInit {
         }
       });
   }
+
+  resetPassword(user: any): void {
+    this.modal.confirm({
+      nzTitle: 'Xác nhận reset mật khẩu',
+      nzContent: `Bạn có chắc chắn muốn reset mật khẩu cho tài khoản <b>${user.username}</b> không?`,
+      nzOkText: 'Có',
+      nzCancelText: 'Không',
+      nzOnOk: () => {
+        this.settingService.resetPassword(user.id)
+          .subscribe({
+            next: (res) => {
+              this.message.success(`Reset mật khẩu cho tài khoản ${user.username} thành công`);
+            },
+            error: (err) => {
+              this.message.error(err.error?.message || 'Có lỗi xảy ra khi reset mật khẩu');
+            }
+          });
+      }
+    });
+  }
 }

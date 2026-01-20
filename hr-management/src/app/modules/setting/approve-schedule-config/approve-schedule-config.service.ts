@@ -28,11 +28,15 @@ export class ApproveScheduleConfigService {
         return this.http.get<DepartmentApprovalConfigResponse>(`${this.baseUrl}/api/approval-configs/departments`, { params });
     }
 
-    getAllUsers(page: number = 0, size: number = 1000): Observable<any> {
+    getAllUsers(page: number = 0, size: number = 10): Observable<any> {
         const params = new HttpParams()
             .set('page', page.toString())
             .set('size', size.toString());
 
         return this.http.get<any>(`${this.baseUrl}/api/users`, { params });
+    }
+
+    createPersonalApprovalConfig(payload: any): Observable<any> {
+        return this.http.post<any>(`${this.baseUrl}/api/approval-configs`, payload);
     }
 }

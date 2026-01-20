@@ -58,7 +58,7 @@ export class LoginComponent implements OnInit {
           this.loginError = false;
 
           setTimeout(() => {
-            this.router.navigate(['/staffs/user-information/detail']);
+            this.router.navigate(['/staffs/detail']);
           }, 100);
         },
         error: (error) => {

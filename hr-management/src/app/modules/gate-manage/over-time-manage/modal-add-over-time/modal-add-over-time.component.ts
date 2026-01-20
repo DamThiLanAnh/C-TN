@@ -15,6 +15,8 @@ export class ModalAddOverTimeComponent implements OnInit {
   @Input() data: any;
 
   formGroup!: FormGroup;
+  isRejected = false;
+  rejectReason = '';
   isLoading = false;
 
   constructor(
@@ -43,24 +45,27 @@ export class ModalAddOverTimeComponent implements OnInit {
 
   patchValue(): void {
     if (this.data) {
-        this.formGroup.patchValue({
-            employeeCode: this.data.employeeCode,
-            otDate: this.data.otDate, 
-            reason: this.data.reason
-        });
-        
-        if (this.data.startTime) {
-             const start = new Date(); 
-             const [h, m, s] = this.data.startTime.split(':');
-             start.setHours(+h, +m, +s || 0);
-             this.formGroup.get('startTime')?.setValue(start);
-        }
-        if (this.data.endTime) {
-            const end = new Date(); 
-            const [h, m, s] = this.data.endTime.split(':');
-            end.setHours(+h, +m, +s || 0);
-            this.formGroup.get('endTime')?.setValue(end);
-       }
+      this.formGroup.patchValue({
+        employeeCode: this.data.employeeCode,
+        otDate: this.data.otDate,
+        reason: this.data.reason
+      });
+
+      this.isRejected = this.data.status === 'REJECTED';
+      this.rejectReason = this.data.rejectReason || '';
+
+      if (this.data.startTime) {
+        const start = new Date();
+        const [h, m, s] = this.data.startTime.split(':');
+        start.setHours(+h, +m, +s || 0);
+        this.formGroup.get('startTime')?.setValue(start);
+      }
+      if (this.data.endTime) {
+        const end = new Date();
+        const [h, m, s] = this.data.endTime.split(':');
+        end.setHours(+h, +m, +s || 0);
+        this.formGroup.get('endTime')?.setValue(end);
+      }
     }
   }
 
@@ -80,7 +85,7 @@ export class ModalAddOverTimeComponent implements OnInit {
     }
 
     const formValue = this.formGroup.value;
-    
+
     // Format payload without moment
     const otDate = new Date(formValue.otDate);
     const formattedDate = `${otDate.getFullYear()}-${('0' + (otDate.getMonth() + 1)).slice(-2)}-${('0' + otDate.getDate()).slice(-2)}`;
@@ -92,35 +97,35 @@ export class ModalAddOverTimeComponent implements OnInit {
     const formattedEndTime = `${('0' + endTime.getHours()).slice(-2)}:${('0' + endTime.getMinutes()).slice(-2)}:${('0' + endTime.getSeconds()).slice(-2)}`;
 
     const payload = {
-        employeeCodes: [formValue.employeeCode],
-        otDate: formattedDate,
-        startTime: formattedStartTime,
-        endTime: formattedEndTime,
-        reason: formValue.reason,
+      employeeCodes: [formValue.employeeCode],
+      otDate: formattedDate,
+      startTime: formattedStartTime,
+      endTime: formattedEndTime,
+      reason: formValue.reason,
     };
 
     if (this.id) {
-        // Update
-        this.isLoading = true;
-        this.overTimeManageService.updateOverTimeApi(this.id, payload).pipe(
-            finalize(() => this.isLoading = false)
-        ).subscribe(res => {
-            this.messageService.success('Cập nhật thành công');
-            this.modal.close(true);
-        }, err => {
-            this.messageService.error(err.error?.message || 'Có lỗi xảy ra');
-        });
+      // Update
+      this.isLoading = true;
+      this.overTimeManageService.updateOverTimeApi(this.id, payload).pipe(
+        finalize(() => this.isLoading = false)
+      ).subscribe(res => {
+        this.messageService.success('Cập nhật thành công');
+        this.modal.close(true);
+      }, err => {
+        this.messageService.error(err.error?.message || 'Có lỗi xảy ra');
+      });
     } else {
-        // Create
-        this.isLoading = true;
-        this.overTimeManageService.createOverTimeApi(payload).pipe(
-            finalize(() => this.isLoading = false)
-        ).subscribe(res => {
-            this.messageService.success('Thêm mới thành công');
-            this.modal.close(true);
-        }, err => {
-            this.messageService.error(err.error?.message || 'Có lỗi xảy ra');
-        });
+      // Create
+      this.isLoading = true;
+      this.overTimeManageService.createOverTimeApi(payload).pipe(
+        finalize(() => this.isLoading = false)
+      ).subscribe(res => {
+        this.messageService.success('Thêm mới thành công');
+        this.modal.close(true);
+      }, err => {
+        this.messageService.error(err.error?.message || 'Có lỗi xảy ra');
+      });
     }
   }
 }

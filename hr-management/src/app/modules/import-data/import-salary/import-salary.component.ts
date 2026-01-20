@@ -36,12 +36,13 @@ export class ImportSalaryComponent implements OnInit {
   }
 
   loadData() {
-    if (!this.selectedMonth) return;
-    const formattedMonth = this.datePipe.transform(this.selectedMonth, 'yyyy-MM');
-    if (!formattedMonth) return;
+    let formattedMonth: string | undefined;
+    if (this.selectedMonth) {
+      formattedMonth = this.datePipe.transform(this.selectedMonth, 'yyyy-MM') || undefined;
+    }
 
     this.loading = true;
-    this.importDataService.getSalaryImportHistories(formattedMonth, this.pageIndex - 1, this.pageSize).subscribe({
+    this.importDataService.getSalaryImportHistories(this.pageIndex - 1, this.pageSize, formattedMonth).subscribe({
       next: (res: any) => {
         this.loading = false;
         this.data = (res?.content || []).map((item: any) => ({

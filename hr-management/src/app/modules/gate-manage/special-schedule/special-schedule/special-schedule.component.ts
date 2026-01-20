@@ -73,8 +73,6 @@ export class SpecialScheduleComponent implements OnInit {
     this.currentUser = this.authService.getUser();
 
     // Dieu chinh giao dien dua tren quyen
-    // Dieu chinh giao dien dua tren quyen
-    // Set canApprove based on role/auth service
     this.canApprove = this.authService.canApprove();
 
     if (this.canApprove) {
@@ -96,8 +94,6 @@ export class SpecialScheduleComponent implements OnInit {
   loadData(): void {
     this.loadingTable = true;
     let apiCall;
-    // Chien luoc loc phia client: Tai "tat ca" (gioi han 1000)
-    // Chien luoc loc phia client: Tai "tat ca" (gioi han 1000)
     const params = {
       page: this.paging.pageIndex > 0 ? this.paging.pageIndex - 1 : 0,
       size: this.paging.pageSize
@@ -315,9 +311,9 @@ export class SpecialScheduleComponent implements OnInit {
       nzTitle: 'Cập nhật lịch làm đặc thù',
       nzContent: ModalAddSpecialScheduleComponent,
       nzFooter: null,
-      nzWidth: 800,
+      nzWidth: 600,
       nzClassName: 'rounded-modal',
-      nzBodyStyle: { padding: '24px' },
+      nzBodyStyle: { padding: '16px' },
       nzComponentParams: {
         data: data
       }
@@ -581,9 +577,9 @@ export class SpecialScheduleComponent implements OnInit {
       nzTitle: 'Thêm mới lịch đặc thù',
       nzContent: ModalAddSpecialScheduleComponent,
       nzFooter: null,
-      nzWidth: 800,
+      nzWidth: 600,
       nzClassName: 'rounded-modal',
-      nzBodyStyle: { padding: '24px' }
+      nzBodyStyle: { padding: '16px' }
     });
     modalRef.afterClose.subscribe((result) => {
       if (result) {

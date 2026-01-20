@@ -1,9 +1,6 @@
-<vss-menu #menu [listMenus]="menus" [contentTpl]="contentTpl" [isCollapsed]="isCollapsed"
-          (onLogout)="logout()" xmlns=""
-          logoUrl="./assets/icons/logo-full.svg"
-
-          [username]="user" [popoverInfoUserTpl]="InfoUser"
-          *ngIf="user && menus?.length">
+<vss-menu #menu [listMenus]="menus" [contentTpl]="contentTpl" [isCollapsed]="isCollapsed" (onLogout)="logout()" xmlns=""
+  logoUrl="./assets/icons/logo-full.svg" [username]="user" [popoverInfoUserTpl]="InfoUser"
+  *ngIf="user && menus?.length">
 </vss-menu>
 
 
@@ -13,35 +10,21 @@
       <nz-content>
         <div class="content-header d-flex justify-content-between align-items-center mt-2 mb-1">
           <div class="tabs-container flex-grow-1" *ngIf="dynamicTabs.length > 0">
-            <nz-tabset
-              [(nzSelectedIndex)]="selectedTabIndex"
-              nzType="card"
-              [nzHideAdd]="true"
+            <nz-tabset [(nzSelectedIndex)]="selectedTabIndex" nzType="card" [nzHideAdd]="true"
               (nzSelectChange)="onTabChange($event)">
-              <nz-tab
-                *ngFor="let tab of dynamicTabs; let i = index"
-                [nzTitle]="titleTemplate">
+              <nz-tab *ngFor="let tab of dynamicTabs; let i = index" [nzTitle]="titleTemplate">
                 <ng-template #titleTemplate>
-                  <div class="tab-title-wrapper"
-                       style="
+                  <div class="tab-title-wrapper" style="
                        display: flex;
                        align-items: center;
                        justify-content: space-between;
                        width: 100%;
                        gap: 8px;">
-                    <span
-                      class="tab-title-text"
-                      style="flex: 1;
+                    <span class="tab-title-text" style="flex: 1;
                       overflow: hidden;
                       text-overflow: ellipsis;
-                      white-space: nowrap;"
-                    >{{ tab.title }}</span>
-                    <i
-                      *ngIf="dynamicTabs.length > 1"
-                      nz-icon
-                      nzType="close"
-                      class="tab-close-btn"
-                      style="
+                      white-space: nowrap;">{{ tab.title }}</span>
+                    <i *ngIf="dynamicTabs.length > 1" nz-icon nzType="close" class="tab-close-btn" style="
                       flex-shrink: 0;
                       margin-left: auto;
                       margin-right: 0;
@@ -52,8 +35,7 @@
                        justify-content: center;
                        border-radius: 50%;
                        color: #6e6a68;
-                       cursor: pointer;"
-                      (click)="closeTab(i, $event)">
+                       cursor: pointer;" (click)="closeTab(i, $event)">
                     </i>
                   </div>
                 </ng-template>
@@ -74,18 +56,10 @@
 <ng-template #userInforWrapper>
   <div class="d-flex align-items-center">
     <div class="tab-header-container me-4 ms-2">
-      <div
-        nz-popover
-        [nzPopoverContent]="popoverNotification"
-        nzPopoverTrigger="click"
-        nzPopoverOverlayClassName="notify-modal"
-        [(nzPopoverVisible)]="nzPopoverVisible"
-        (nzPopoverVisibleChange)="popoverNotifyOnChangeShow($event)"
-        nzPopoverPlacement="bottomRight">
-        <nz-badge
-          [nzCount]="totalNewNotify"
-          [nzOverflowCount]="9"
-          class="notify-icon cursor-pointer">
+      <div nz-popover [nzPopoverContent]="popoverNotification" nzPopoverTrigger="click"
+        nzPopoverOverlayClassName="notify-modal" [nzPopoverVisible]="nzPopoverVisible"
+        (nzPopoverVisibleChange)="onPopoverVisibleChange($event)" nzPopoverPlacement="bottomRight">
+        <nz-badge [nzCount]="totalNewNotify" [nzOverflowCount]="9" class="notify-icon cursor-pointer">
           <img src="/assets/icons/icon-bell.svg" alt="">
         </nz-badge>
       </div>
@@ -93,12 +67,12 @@
     <div class="tab-header-container">
       <div class="d-flex flex-row justify-content-between align-items-center">
         <div class="pointer d-inline-flex align-items-center" nz-popover
-             [nzPopoverOverlayClassName]="'info-user-popup--wrapper'" [nzPopoverContent]="InfoUser"
-             nzPopoverTrigger="click" [nzPopoverPlacement]="'bottomRight'" nzPopoverPlacement="rightBottom"
-             [(nzPopoverVisible)]="nzPopoverUserVisible" nzPopoverOverlayClassName="info-user-popup">
+          [nzPopoverOverlayClassName]="'info-user-popup--wrapper'" [nzPopoverContent]="InfoUser"
+          nzPopoverTrigger="click" [nzPopoverPlacement]="'bottomRight'" nzPopoverPlacement="rightBottom"
+          [(nzPopoverVisible)]="nzPopoverUserVisible" nzPopoverOverlayClassName="info-user-popup">
           <!-- vss-ui-avatar-text thay thế bằng nz-avatar -->
           <nz-avatar *ngIf="user?.userName || 'user name' " [nzSize]="32"
-                     [nzText]="getUserInitials(user?.userName)"></nz-avatar>
+            [nzText]="getUserInitials(user?.userName)"></nz-avatar>
         </div>
       </div>
     </div>
@@ -109,7 +83,7 @@
   <div class="info-user">
     <div class="border-bottom d-flex flex-row" style="padding: 12px 16px">
       <nz-avatar *ngIf="user?.userName || 'user name'" [nzSize]="32"
-                 [nzText]="getUserInitials(user?.userName)"></nz-avatar>
+        [nzText]="getUserInitials(user?.userName)"></nz-avatar>
 
       <div class="d-flex flex-column name-container">
         <p class="mb-0" style="font-weight: 600">{{ user?.userName }}</p>
@@ -138,12 +112,12 @@
     <!--      </div>-->
     <!--    </div>-->
     <div class="border-bottom">
-      <img src="/assets/icons/key.svg" alt="organization"/>
+      <img src="/assets/icons/key.svg" alt="organization" />
       <span class="cursor-pointer" (click)="handleChangePassword()">Đổi mật khẩu</span>
     </div>
     <div class="border-bottom">
       <div (click)="logout()" class="bottom-logout d-flex align-items-center cursor-pointer">
-        <img src="/assets/icons/logout.png" alt="logout"/>
+        <img src="/assets/icons/logout.png" alt="logout" />
         Đăng xuất
       </div>
     </div>
@@ -152,20 +126,19 @@
 
 <ng-template #popoverNotification>
   <div class="content-notify">
-    <nz-tabset [nzSelectedIndex]="indexSysNotifyActivate">
+    <nz-tabset [nzSelectedIndex]="indexSysNotifyActivate" (nzSelectChange)="onSysTabChange($event)">
       <nz-tab [nzTitle]="titleSys" *ngFor="let sys of sysNotification">
         <ng-template #titleSys>
           <div>
             {{ sys.label }}
             <nz-badge *ngIf="sys.totalNewNotify" [nzCount]="sys.totalNewNotify" [nzOverflowCount]="9"
-                      class="notify-icon">
+              class="notify-icon">
             </nz-badge>
           </div>
         </ng-template>
       </nz-tab>
     </nz-tabset>
-    <nz-tabset class="px-3" [(nzSelectedIndex)]="indexTabNotifyActive">
-      <!--      (nzSelectChange)="changeTabNotify($event)"-->
+    <nz-tabset class="px-3" [(nzSelectedIndex)]="indexTabNotifyActive" (nzSelectChange)="changeTabNotify($event)">
 
       <nz-tab [nzTitle]="titleTab" *ngFor="let tab of tabs" class="bg-white">
         <ng-template #titleTab>
@@ -195,60 +168,71 @@
         <i nz-icon nzType="reload" aria-hidden="true"></i>
       </a>
     </div>
-    <div>
-      <cdk-virtual-scroll-viewport itemSize="100" class="virtual-scroll custom-scroll-bar" maxBufferPx="320"
-                                   minBufferPx="10">
-        <div *cdkVirtualFor="let item of dataNotify; let i = index" class="px-3 scroll-item">
-          <div class="d-flex align-items-center border-bottom" *ngIf="item" (click)="routerNotify(item)">
-            <div>
-              <nz-avatar nzIcon="setting" class="bg-gray text-warning"></nz-avatar>
-            </div>
-            <div class="content p-3 pe-0 flex-fill">
-              <div class="d-flex justify-content-between">
-                <div>
-                  <span class="fw-bolder me-2">DRP</span>
-                  <span class="time-noti">{{
-                      item.createdDate | date : "dd/MM/yyyy HH:mm:ss"
-                    }}</span>
-                </div>
-                <nz-badge [nzStatus]="!item.readNotify ? 'success' : 'default'"></nz-badge>
-              </div>
-              <p class="text-blue mb-0">{{ item.staffId }}</p>
-              <p class="mb-0">{{ item.title }}</p>
-              <p class="mb-0">{{ item.message }}</p>
-            </div>
-          </div>
-          <div *ngIf="!item" class="text-center">
-            <i nz-icon nzType="loading" nzIconfont="30" aria-hidden="true"></i>
-          </div>
-        </div>
-      </cdk-virtual-scroll-viewport>
+    <!-- Loading State -->
+    <div *ngIf="isLoadingNotify" class="d-flex justify-content-center align-items-center" style="height: 300px;">
+      <nz-spin nzSimple nzTip="Đang tải..."></nz-spin>
     </div>
+
+    <!-- Content State (Only when NOT loading) -->
+    <ng-container *ngIf="!isLoadingNotify">
+      <!-- Data List -->
+      <div *ngIf="dataNotify && dataNotify.length > 0; else emptyBlock">
+        <cdk-virtual-scroll-viewport itemSize="100" class="virtual-scroll custom-scroll-bar" maxBufferPx="320"
+          minBufferPx="10">
+          <div *cdkVirtualFor="let item of dataNotify; let i = index" class="px-3 scroll-item">
+            <div class="d-flex align-items-center border-bottom" *ngIf="item" (click)="routerNotify(item)">
+              <div>
+                <nz-avatar [nzText]="getUserInitials(item.senderName)" class="bg-gray text-warning fw-bolder"
+                  [nzSize]="40" style="background-color: #fde3cf; color: #f56a00;"></nz-avatar>
+              </div>
+              <div class="content p-3 pe-0 flex-fill">
+                <div class="d-flex justify-content-between">
+                  <div>
+                    <span class="fw-bolder me-2">{{ getNotificationLabel(item.type) }}</span>
+                    <span class="time-noti">{{
+                      item.createdDate | date : "HH:mm dd/MM/yyyy"
+                      }}</span>
+                  </div>
+                  <nz-badge [nzStatus]="!item.readNotify ? 'success' : 'default'"></nz-badge>
+                </div>
+                <p class="text-blue mb-0">{{ item.staffId }}</p>
+                <p class="mb-0">{{ item.title }}</p>
+                <p class="mb-0">{{ item.message }}</p>
+              </div>
+            </div>
+            <div *ngIf="!item" class="text-center">
+              <i nz-icon nzType="loading" nzIconfont="30" aria-hidden="true"></i>
+            </div>
+          </div>
+        </cdk-virtual-scroll-viewport>
+      </div>
+
+      <!-- Empty State -->
+      <ng-template #emptyBlock>
+        <div class="d-flex flex-column align-items-center justify-content-center" style="height: 300px;">
+          <img src="assets/icons/empty.svg" alt="Empty" style="width: 100px; height: auto; margin-bottom: 8px;">
+          <span class="text-secondary" *ngIf="indexSysNotifyActivate === 0">Tính năng đang phát triển</span>
+          <span class="text-secondary" *ngIf="indexSysNotifyActivate === 1">Không có thông báo</span>
+        </div>
+      </ng-template>
+    </ng-container>
   </div>
 </ng-template>
 
-<nz-modal
-  [(nzVisible)]="isVisibleChangePassword"
-  nzTitle="Đổi mật khẩu"
-  (nzOnCancel)="handleCancelChangePassword()"
-  (nzOnOk)="submitChangePassword()"
-  [nzOkLoading]="isLoadingChangePassword"
->
+<nz-modal [(nzVisible)]="isVisibleChangePassword" nzTitle="Đổi mật khẩu" (nzOnCancel)="handleCancelChangePassword()"
+  (nzOnOk)="submitChangePassword()" [nzOkLoading]="isLoadingChangePassword">
   <ng-container *nzModalContent>
     <form [formGroup]="changePasswordForm" nz-form nzLayout="vertical">
       <nz-form-item>
         <nz-form-label nzRequired>Mật khẩu cũ</nz-form-label>
         <nz-form-control [nzErrorTip]="oldPassErrorTpl">
           <nz-input-group [nzSuffix]="suffixTemplate">
-            <input
-              [type]="passwordVisible ? 'text' : 'password'"
-              nz-input
-              formControlName="oldPassword"
-              placeholder="Nhập mật khẩu cũ"
-            />
+            <input [type]="passwordVisible ? 'text' : 'password'" nz-input formControlName="oldPassword"
+              placeholder="Nhập mật khẩu cũ" />
           </nz-input-group>
           <ng-template #suffixTemplate>
-            <i nz-icon [nzType]="passwordVisible ? 'eye-invisible' : 'eye'" (click)="passwordVisible = !passwordVisible"></i>
+            <i nz-icon [nzType]="passwordVisible ? 'eye-invisible' : 'eye'"
+              (click)="passwordVisible = !passwordVisible"></i>
           </ng-template>
           <ng-template #oldPassErrorTpl let-control>
             <ng-container *ngIf="control.hasError('required')">Vui lòng nhập mật khẩu cũ!</ng-container>
@@ -260,15 +244,12 @@
         <nz-form-label nzRequired>Mật khẩu mới</nz-form-label>
         <nz-form-control [nzErrorTip]="newPassErrorTpl">
           <nz-input-group [nzSuffix]="suffixNewTemplate">
-            <input
-              [type]="newPasswordVisible ? 'text' : 'password'"
-              nz-input
-              formControlName="newPassword"
-              placeholder="Nhập mật khẩu mới"
-            />
+            <input [type]="newPasswordVisible ? 'text' : 'password'" nz-input formControlName="newPassword"
+              placeholder="Nhập mật khẩu mới" />
           </nz-input-group>
           <ng-template #suffixNewTemplate>
-            <i nz-icon [nzType]="newPasswordVisible ? 'eye-invisible' : 'eye'" (click)="newPasswordVisible = !newPasswordVisible"></i>
+            <i nz-icon [nzType]="newPasswordVisible ? 'eye-invisible' : 'eye'"
+              (click)="newPasswordVisible = !newPasswordVisible"></i>
           </ng-template>
           <ng-template #newPassErrorTpl let-control>
             <ng-container *ngIf="control.hasError('required')">Vui lòng nhập mật khẩu mới!</ng-container>

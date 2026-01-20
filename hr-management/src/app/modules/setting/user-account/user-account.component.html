@@ -161,9 +161,14 @@
                     <span>{{ selectedUserForDetail.updatedAt | date: 'dd/MM/yyyy HH:mm' }}</span>
                 </div>
 
-                <div class="border-top mt-2 pt-3 d-flex justify-content-end"
-                    *ngIf="selectedUserForDetail.status === 'INACTIVE' || selectedUserForDetail.status === 'LOCKED'">
-                    <button nz-button nzType="primary" (click)="activateUser(selectedUserForDetail)"
+                <div class="border-top mt-2 pt-3 d-flex justify-content-end gap-2">
+                    <button nz-button nzType="primary" (click)="resetPassword(selectedUserForDetail)"
+                        style="background-color: #e6f7ff; border-color: #1890ff; color: #1890ff">
+                        Reset mật khẩu
+                    </button>
+                    <button
+                        *ngIf="selectedUserForDetail.status === 'INACTIVE' || selectedUserForDetail.status === 'LOCKED'"
+                        nz-button nzType="primary" (click)="activateUser(selectedUserForDetail)"
                         style="background-color: #e6ffe6; border-color: #4dff4d; color: #4CAF50">
                         {{ selectedUserForDetail.status === 'LOCKED' ? 'Mở khóa tài khoản' : 'Kích hoạt tài khoản' }}
                     </button>

@@ -129,7 +129,7 @@
             </td>
             <ng-template #tagColumn>
               <td [ngClass]="col.classes || ''">
-                <nz-tag [nzColor]="getStatusColor(data[col.name])">
+                <nz-tag class="common-status-tag" [nzColor]="getStatusColor(data[col.name])">
                   {{ data[col.name] }}
                 </nz-tag>
               </td>

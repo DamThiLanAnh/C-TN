@@ -36,7 +36,7 @@ export class ImportDataService {
             params,
             responseType: 'blob'
         });
-    }   
+    }
 
     importSalary(month: string, file: File): Observable<any> {
         const formData = new FormData();
@@ -45,11 +45,18 @@ export class ImportDataService {
         return this.http.post(`${this.salaryUrl}/import`, formData, { params });
     }
 
-    getSalaryImportHistories(month: string, page: number, size: number): Observable<any> {
-        const params = new HttpParams()
-            .set('month', month)
+    getSalaryImportHistories(page: number, size: number, month?: string): Observable<any> {
+        let params = new HttpParams()
             .set('page', page)
             .set('size', size);
-        return this.http.get(`${this.salaryUrl}/import-histories`, { params });
+
+        let url = `${this.salaryUrl}/import-histories`;
+
+        if (month) {
+            params = params.set('month', month);
+            url = `${this.salaryUrl}/import-histories/by-month`;
+        }
+
+        return this.http.get(url, { params });
     }
 }

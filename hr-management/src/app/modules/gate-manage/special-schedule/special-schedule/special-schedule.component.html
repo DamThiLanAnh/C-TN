@@ -2,7 +2,7 @@
   <div class="d-flex justify-content-between mb-2">
     <h6>{{ tableName }}</h6>
     <div nz-row nzJustify="end" class="d-flex align-items-center">
-      <button class="me-2" nz-button nzType="primary" type="button" nzDanger *ngIf="isEmployee"
+      <button class="me-1" nz-button nzType="primary" type="button" nzDanger *ngIf="isEmployee || isManager"
         (click)="openAddSpecialScheduleModal()">
         <span nz-icon nzType="plus-circle" nzTheme="outline" aria-hidden="true"></span> Thêm mới
       </button>

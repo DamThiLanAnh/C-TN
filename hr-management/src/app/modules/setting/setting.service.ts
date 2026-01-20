@@ -65,4 +65,8 @@ export class SettingService {
   activateUser(userId: number): Observable<any> {
     return this.http.put(`${environment.apiUrl}/api/users/${userId}/activate`, {});
   }
+
+  resetPassword(userId: number): Observable<any> {
+    return this.http.put(`${environment.apiUrl}/api/users/${userId}/reset-password`, {});
+  }
 }

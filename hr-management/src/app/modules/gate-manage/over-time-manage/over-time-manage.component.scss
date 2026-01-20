@@ -11,14 +11,14 @@
                 }
             }
 
-            
+
             nz-date-picker {
                 input {
                     border-radius: 6px !important;
                 }
             }
         }
-        
+
         // Add button styles alignment
         button[nzDanger] {
             display: flex;
@@ -38,4 +38,8 @@
             }
         }
     }
+}
+
+.cursor-pointer {
+    cursor: pointer;
 }

@@ -18,6 +18,8 @@ import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { NzInputModule } from 'ng-zorro-antd/input';
 import { NzFormModule } from 'ng-zorro-antd/form';
 import { NzNotificationModule } from 'ng-zorro-antd/notification';
+import { NzSpinModule } from 'ng-zorro-antd/spin';
+import { ScrollingModule } from '@angular/cdk/scrolling';
 
 @NgModule({
   declarations: [
@@ -42,7 +44,10 @@ import { NzNotificationModule } from 'ng-zorro-antd/notification';
     FormsModule,
     NzInputModule,
     NzFormModule,
-    NzNotificationModule
+    NzFormModule,
+    NzNotificationModule,
+    NzSpinModule,
+    ScrollingModule
   ],
   providers: [],
   exports: []

@@ -26,6 +26,7 @@ export class ApproveScheduleConfigComponent implements OnInit {
   businessRoles = ['ADMIN', 'HR'];
 
   configList: ConfigRow[] = [];
+  allUsers: any[] = [];
   staffOptions: OptionItem[] = [];
   approverOptions: OptionItem[] = [];
 
@@ -45,6 +46,7 @@ export class ApproveScheduleConfigComponent implements OnInit {
   totalElements = 0;
 
   private originalConfigList: ConfigRow[] = [];
+  currentApproverSubset: OptionItem[] = [];
 
   constructor(
     private approveScheduleConfigService: ApproveScheduleConfigService,
@@ -71,23 +73,20 @@ export class ApproveScheduleConfigComponent implements OnInit {
       )
       .subscribe(res => {
         // 1. Process User List for Dropdowns
-        const allUsers = res.users?.content || [];
+        this.allUsers = res.users?.content || [];
+        const allUsers = this.allUsers;
 
-        // Filter for 'User / Staff' (sender) - Role: MANAGER
-        this.staffOptions = allUsers
-          .filter((u: any) => u.roles && u.roles.includes('MANAGER'))
-          .map((u: any) => ({
-            label: u.username,
-            value: u.id
-          }));
+        // Staff Options: Show all users
+        this.staffOptions = allUsers.map((u: any) => ({
+          label: u.username,
+          value: u.id
+        }));
 
-        // Filter for 'Approver' (receiver) - Role: HR
-        this.approverOptions = allUsers
-          .filter((u: any) => u.roles && u.roles.includes('HR'))
-          .map((u: any) => ({
-            label: u.username,
-            value: u.id
-          }));
+        // Approver Options: Show all users initially (filtered dynamically)
+        this.approverOptions = allUsers.map((u: any) => ({
+          label: u.username,
+          value: u.id
+        }));
 
         // 2. Process Existing Configurations
         this.configList = [];
@@ -144,10 +143,66 @@ export class ApproveScheduleConfigComponent implements OnInit {
   }
 
   onSaveEdit(): void {
-    this.isEditMode = false;
-    // TODO: Call API to save changes if needed
-    console.log('Saving changes...', this.configList);
-    this.originalConfigList = JSON.parse(JSON.stringify(this.configList));
+    this.isLoading = true;
+    const requests: any[] = [];
+
+    // existing pairs from originalConfigList to avoid re-creating
+    const existingPairs = new Set<string>();
+    this.originalConfigList.forEach(row => {
+      row.staffIds.forEach(sId => {
+        row.approverIds.forEach(aId => {
+          existingPairs.add(`${sId}-${aId}`);
+        });
+      });
+    });
+
+    this.configList.forEach(row => {
+      row.staffIds.forEach(staffId => {
+        const staff = this.allUsers.find(u => u.id === staffId);
+        if (staff) {
+          row.approverIds.forEach(approverId => {
+            const approver = this.allUsers.find(u => u.id === approverId);
+            if (approver) {
+              const pairKey = `${staffId}-${approverId}`;
+
+              // Only create if it didn't exist before
+              if (!existingPairs.has(pairKey)) {
+                const payload = {
+                  targetType: 'EMPLOYEE',
+                  targetCode: staff.empCode, // Assuming empCode exists
+                  approverCode: approver.empCode
+                };
+                requests.push(this.approveScheduleConfigService.createPersonalApprovalConfig(payload));
+              }
+            }
+          });
+        }
+      });
+    });
+
+    if (requests.length > 0) {
+      forkJoin(requests)
+        .pipe(finalize(() => {
+          this.isLoading = false;
+          this.isEditMode = false;
+          this.cdr.markForCheck();
+        }))
+        .subscribe({
+          next: () => {
+            // Show success message if you have a notification service injected, e.g. this.notification.success(...)
+            console.log('New configs saved successfully');
+            this.loadData();
+          },
+          error: (err) => {
+            console.error('Error saving configs', err);
+            // Handle error (maybe show notification)
+          }
+        });
+    } else {
+      this.isLoading = false;
+      this.isEditMode = false;
+      console.log('No new configurations to save.');
+    }
   }
 
   addRow(): void {
@@ -180,18 +235,7 @@ export class ApproveScheduleConfigComponent implements OnInit {
     return option ? option.label : `ID: ${id}`;
   }
 
-  filterOption(field: 'staffIds' | 'approverIds'): void {
-    const keyword = this.searchKeyword[field].toLowerCase();
-    const sourceOptions = field === 'staffIds' ? this.staffOptions : this.approverOptions;
 
-    if (!keyword) {
-      this.filteredOptions[field] = [...sourceOptions];
-    } else {
-      this.filteredOptions[field] = sourceOptions.filter(opt =>
-        opt.label.toLowerCase().includes(keyword)
-      );
-    }
-  }
 
   onStaffDropdownVisibleChange(visible: boolean, index: number): void {
     if (visible) {
@@ -203,7 +247,46 @@ export class ApproveScheduleConfigComponent implements OnInit {
   onApproverDropdownVisibleChange(visible: boolean, index: number): void {
     if (visible) {
       this.searchKeyword['approverIds'] = '';
-      this.filterOption('approverIds');
+
+      const currentRow = this.configList[index];
+      const selectedStaffIds = currentRow.staffIds || [];
+      const selectedStaffs = this.allUsers.filter(u => selectedStaffIds.includes(u.id));
+
+      const hasManagerSender = selectedStaffs.some(u => u.roles && u.roles.includes('MANAGER'));
+      const targetRole = hasManagerSender ? 'HR' : 'MANAGER';
+
+      const filteredApprovers = this.allUsers.filter(u => u.roles && u.roles.includes(targetRole));
+
+      this.currentApproverSubset = filteredApprovers.map(u => ({
+        label: u.username,
+        value: u.id
+      }));
+
+      this.filteredOptions['approverIds'] = [...this.currentApproverSubset];
+    } else {
+      this.currentApproverSubset = [];
+    }
+  }
+
+
+
+  filterOption(field: 'staffIds' | 'approverIds'): void {
+    const keyword = this.searchKeyword[field].toLowerCase();
+
+    let sourceOptions: OptionItem[] = [];
+    if (field === 'staffIds') {
+      sourceOptions = this.staffOptions;
+    } else {
+      // Use the subset if available/relevant, otherwise base
+      sourceOptions = this.currentApproverSubset.length > 0 ? this.currentApproverSubset : this.approverOptions;
+    }
+
+    if (!keyword) {
+      this.filteredOptions[field] = [...sourceOptions];
+    } else {
+      this.filteredOptions[field] = sourceOptions.filter(opt =>
+        opt.label.toLowerCase().includes(keyword)
+      );
     }
   }
 
