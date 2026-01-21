@@ -69,9 +69,15 @@ export class StaffCalendarComponent implements OnInit {
 
             if (item.display) {
               const upperDisplay = item.display.toUpperCase();
+              let color = item.color || this.getColorByStatus(upperDisplay);
+
+              if (item.checkIn && item.checkOut) {
+                color = this.calculateWorkColor(item.checkIn, item.checkOut);
+              }
+
               this.attendanceData.set(dateStr, {
                 statusCode: upperDisplay,
-                color: item.color || this.getColorByStatus(upperDisplay)
+                color: color
               });
             }
           }
@@ -93,11 +99,11 @@ export class StaffCalendarComponent implements OnInit {
   }
 
   getColorByStatus(status: string): string {
-    if (status.startsWith('X')) return '#EE0033';
+    if (status.startsWith('X')) return '#00ff00';
     if (status.startsWith('RV')) return '#EE0033';
-    if (status.startsWith('Ro')) return '#EE0033';
+    if (status.startsWith('Ro')) return '#00ff00';
     if (status.startsWith('P')) return '#F59E0B';
-    if (status.startsWith('L')) return '#EE0033';
+    if (status.startsWith('L')) return '#00ff00';
     return '#D1D3D8';
   }
 
@@ -169,5 +175,25 @@ export class StaffCalendarComponent implements OnInit {
 
   showSpecialSchedule(visible: boolean) {
     this.isShowSpecialSchedulePopover = visible;
+  }
+
+  calculateWorkColor(checkIn: string, checkOut: string): string {
+    if (!checkIn || !checkOut) return '#D1D3D8';
+
+    const inParts = checkIn.split(':').map(Number);
+    const outParts = checkOut.split(':').map(Number);
+
+    if (inParts.length < 2 || outParts.length < 2) return '#D1D3D8';
+
+    const inMinutes = inParts[0] * 60 + inParts[1];
+    const outMinutes = outParts[0] * 60 + outParts[1];
+
+    const diffMinutes = outMinutes - inMinutes;
+
+    if (diffMinutes >= 480) { // >= 8 hours
+      return '#00ff00';
+    } else {
+      return '#F59E0B'; // < 8 hours
+    }
   }
 }
